@@ -1,0 +1,48 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Node / Frontend
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Video recordings & snapshots (generated during runtime)
+recordings/
+snapshots/
+*.mp4
+*.mkv
+*.ts
+*.m3u8
+
+# Models (downloaded weights)
+*.pt
+*.onnx
+models/*.pt
+models/*.onnx
+
+# Database / SQLite / Local storage
+*.db
+*.sqlite3
+postgres_data/
+
+# Environment and sensitive keys
+.env
+.env.local
+.env.*.local
+
+# IDE / OS files
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+.DS_Store
