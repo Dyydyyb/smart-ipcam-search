@@ -3,7 +3,7 @@ import io
 import time
 from pathlib import Path
 from contextlib import asynccontextmanager
-from typing import Optional
+from typing import Optional, List, Dict, Any
 
 import cv2
 from fastapi import FastAPI, Depends, Query, HTTPException, Response, status
@@ -66,6 +66,9 @@ if frontend_dir.exists():
 class SearchRequest(BaseModel):
     query: str
 
+class BatchDeleteRequest(BaseModel):
+    event_ids: List[str]
+
 @app.get("/", response_class=HTMLResponse)
 async def serve_index():
     """Sirve la interfaz web principal."""
@@ -104,16 +107,109 @@ async def get_events(
     limit: int = 50,
     offset: int = 0,
     object_class: Optional[str] = None,
+    all: bool = False,
     db: AsyncSession = Depends(get_db)
 ):
     """Lista los eventos registrados con filtros opcionales."""
-    stmt = select(SecurityEvent).order_by(desc(SecurityEvent.start_time)).limit(limit).offset(offset)
+    stmt = select(SecurityEvent).order_by(desc(SecurityEvent.start_time))
     if object_class:
         stmt = stmt.where(SecurityEvent.object_class == object_class)
+    if not all:
+        stmt = stmt.limit(limit).offset(offset)
     
     result = await db.execute(stmt)
     events = result.scalars().all()
     return [e.to_dict() for e in events]
+
+@app.delete("/api/events/{event_id}")
+async def delete_single_event(event_id: str, db: AsyncSession = Depends(get_db)):
+    """Elimina una grabación individual por su ID, removiendo también sus archivos en disco."""
+    stmt = select(SecurityEvent).where(SecurityEvent.id == event_id)
+    result = await db.execute(stmt)
+    event = result.scalar_one_or_none()
+    
+    if not event:
+        raise HTTPException(status_code=404, detail="Grabación no encontrada")
+        
+    # Borrar archivos físicos
+    if event.thumbnail_path and os.path.exists(event.thumbnail_path):
+        try:
+            os.remove(event.thumbnail_path)
+        except Exception as e:
+            logger.warning(f"No se pudo borrar thumbnail {event.thumbnail_path}: {e}")
+            
+    if event.clip_path and os.path.exists(event.clip_path):
+        try:
+            os.remove(event.clip_path)
+        except Exception as e:
+            logger.warning(f"No se pudo borrar clip {event.clip_path}: {e}")
+            
+    await db.delete(event)
+    await db.commit()
+    return {"status": "ok", "deleted_id": event_id}
+
+@app.post("/api/events/batch-delete")
+async def delete_events_batch(req: BatchDeleteRequest, db: AsyncSession = Depends(get_db)):
+    """Elimina un conjunto de grabaciones seleccionadas por sus IDs."""
+    if not req.event_ids:
+        return {"status": "ok", "deleted_count": 0}
+        
+    stmt = select(SecurityEvent).where(SecurityEvent.id.in_(req.event_ids))
+    result = await db.execute(stmt)
+    events = result.scalars().all()
+    
+    deleted_count = 0
+    for ev in events:
+        if ev.thumbnail_path and os.path.exists(ev.thumbnail_path):
+            try:
+                os.remove(ev.thumbnail_path)
+            except Exception:
+                pass
+        if ev.clip_path and os.path.exists(ev.clip_path):
+            try:
+                os.remove(ev.clip_path)
+            except Exception:
+                pass
+        await db.delete(ev)
+        deleted_count += 1
+        
+    await db.commit()
+    return {"status": "ok", "deleted_count": deleted_count}
+
+@app.delete("/api/events")
+async def delete_events_filtered_or_all(
+    object_class: Optional[str] = None,
+    delete_all: bool = False,
+    db: AsyncSession = Depends(get_db)
+):
+    """Elimina grabaciones por filtro de clase o todo el historial completo."""
+    if not delete_all and not object_class:
+        raise HTTPException(status_code=400, detail="Especifique un filtro de clase o delete_all=true")
+        
+    stmt = select(SecurityEvent)
+    if object_class:
+        stmt = stmt.where(SecurityEvent.object_class == object_class)
+        
+    result = await db.execute(stmt)
+    events = result.scalars().all()
+    
+    deleted_count = 0
+    for ev in events:
+        if ev.thumbnail_path and os.path.exists(ev.thumbnail_path):
+            try:
+                os.remove(ev.thumbnail_path)
+            except Exception:
+                pass
+        if ev.clip_path and os.path.exists(ev.clip_path):
+            try:
+                os.remove(ev.clip_path)
+            except Exception:
+                pass
+        await db.delete(ev)
+        deleted_count += 1
+        
+    await db.commit()
+    return {"status": "ok", "deleted_count": deleted_count, "filter": object_class or "all"}
 
 @app.post("/api/search")
 async def search_events(req: SearchRequest, db: AsyncSession = Depends(get_db)):
