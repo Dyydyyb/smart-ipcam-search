@@ -3,24 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartCam AI | Búsqueda Inteligente para Cámaras IP</title>
-  <meta name="description" content="Plataforma de videovigilancia inteligente con búsqueda en lenguaje natural y visión artificial local.">
+  <title>Baddgroup Vision AI | Plataforma Inteligente de Cámaras IP</title>
+  <meta name="description" content="Plataforma de videovigilancia inteligente y búsqueda en lenguaje natural por IA local desarrollada por Baddgroup.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-main: #07090e;
-      --bg-card: rgba(18, 24, 38, 0.7);
-      --bg-card-hover: rgba(28, 38, 58, 0.85);
-      --border-color: rgba(255, 255, 255, 0.08);
-      --border-glow: rgba(0, 242, 254, 0.3);
-      --accent-cyan: #00f2fe;
-      --accent-blue: #4facfe;
+      --bg-dark-base: #070a12;
+      --bg-dark-surface: #0e1526;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-card-hover: rgba(26, 38, 66, 0.9);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(56, 189, 248, 0.45);
+      --accent-cyan: #38bdf8;
+      --accent-sky: #0ea5e9;
       --accent-emerald: #10b981;
-      --accent-amber: #f59e0b;
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
+      --accent-purple: #a78bfa;
+      --text-main: #f8fafc;
+      --text-body: #94a3b8;
+      --text-muted: #64748b;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
     }
 
     * {
@@ -30,23 +35,25 @@
     }
 
     body {
-      background-color: var(--bg-main);
+      background-color: var(--bg-dark-base);
       color: var(--text-main);
-      font-family: 'Inter', -apple-system, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
       background-image: 
-        radial-gradient(circle at 15% 10%, rgba(0, 242, 254, 0.05) 0%, transparent 40%),
-        radial-gradient(circle at 85% 85%, rgba(79, 172, 254, 0.05) 0%, transparent 40%);
+        radial-gradient(circle at 10% 8%, rgba(56, 189, 248, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 90% 25%, rgba(16, 185, 129, 0.06) 0%, transparent 45%),
+        radial-gradient(circle at 50% 90%, rgba(167, 139, 250, 0.05) 0%, transparent 50%);
+      background-attachment: fixed;
     }
 
-    /* HEADER */
+    /* HEADER BADDGROUP */
     header {
-      background: rgba(10, 14, 23, 0.85);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border-color);
+      background: rgba(11, 15, 25, 0.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
       position: sticky;
       top: 0;
       z-index: 50;
@@ -54,67 +61,87 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
 
-    .brand {
+    .brand-logo {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 14px;
+      text-decoration: none;
+      flex-shrink: 0;
     }
 
-    .brand-icon {
-      width: 38px;
-      height: 38px;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-      border-radius: 10px;
+    .brand-logo-icon {
+      width: 44px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+      flex-shrink: 0;
+      transition: transform 0.2s ease, filter 0.2s ease;
+      filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.5));
     }
 
-    .brand-icon svg {
-      width: 22px;
-      height: 22px;
-      fill: #000;
+    .brand-logo:hover .brand-logo-icon {
+      transform: scale(1.05) rotate(2deg);
+      filter: drop-shadow(0 0 22px rgba(56, 189, 248, 0.75));
     }
 
-    .brand-text h1 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      background: linear-gradient(90deg, #fff, #94a3b8);
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      background: linear-gradient(90deg, #ffffff 30%, #38bdf8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      line-height: 1.15;
     }
 
-    .brand-text p {
-      font-size: 0.75rem;
-      color: var(--text-muted);
+    .brand-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
-    .status-badges {
+    .brand-title span {
+      color: var(--accent-cyan);
+    }
+
+    .header-badges {
       display: flex;
       align-items: center;
       gap: 0.75rem;
+      flex-wrap: wrap;
     }
 
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      padding: 0.35rem 0.75rem;
+      gap: 0.45rem;
+      padding: 0.38rem 0.8rem;
       border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-body);
     }
 
     .badge-live {
       color: var(--accent-emerald);
-      border-color: rgba(16, 185, 129, 0.3);
+      border-color: rgba(16, 185, 129, 0.35);
       background: rgba(16, 185, 129, 0.1);
     }
 
@@ -128,6 +155,12 @@
       animation: pulse 1.8s infinite;
     }
 
+    .badge-model {
+      color: var(--accent-cyan);
+      border-color: rgba(56, 189, 248, 0.3);
+      background: rgba(56, 189, 248, 0.08);
+    }
+
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.4; transform: scale(0.85); }
@@ -136,38 +169,186 @@
     /* MAIN CONTAINER */
     main {
       flex: 1;
-      max-width: 1600px;
+      max-width: 1540px;
       width: 100%;
       margin: 0 auto;
-      padding: 2rem;
+      padding: 1.5rem 2rem 3rem;
       display: flex;
       flex-direction: column;
-      gap: 2rem;
+      gap: 1.75rem;
     }
 
-    /* SEARCH HERO */
+    /* SECTION 1: LIVE STREAM PRINCIPAL Y GRANDE */
+    .live-hero-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .live-hero-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.65), 0 0 25px rgba(56, 189, 248, 0.12);
+      transition: border-color 0.3s ease;
+    }
+
+    .live-hero-card:hover {
+      border-color: rgba(56, 189, 248, 0.45);
+    }
+
+    .live-hero-header {
+      padding: 0.85rem 1.4rem;
+      background: rgba(10, 15, 28, 0.94);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .live-hero-title {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #fff;
+    }
+
+    .hud-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+    }
+
+    .hud-btn:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent-cyan);
+      color: #fff;
+    }
+
+    .live-video-viewport {
+      width: 100%;
+      height: 520px;
+      max-height: 65vh;
+      background: #020617;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    @media (max-width: 900px) {
+      .live-video-viewport {
+        height: 360px;
+      }
+    }
+
+    .live-video-stream {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #000;
+      display: block;
+    }
+
+    /* HUD OVERLAYS */
+    .hud-overlay-top-left {
+      position: absolute;
+      top: 1rem;
+      left: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .hud-pill {
+      background: rgba(8, 12, 22, 0.8);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      width: fit-content;
+    }
+
+    .hud-overlay-bottom-right {
+      position: absolute;
+      bottom: 1rem;
+      right: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .live-hero-footer {
+      padding: 0.75rem 1.4rem;
+      background: rgba(10, 15, 28, 0.94);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    /* SECTION 2: SEARCH HERO CON IA */
     .search-hero {
       background: var(--bg-card);
       backdrop-filter: blur(20px);
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 2rem;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.6rem 2rem;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
+      gap: 1.15rem;
+      position: relative;
     }
 
     .search-title-wrap {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
     }
 
     .search-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 600;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
     }
 
     .search-input-box {
@@ -176,7 +357,7 @@
       align-items: center;
     }
 
-    .search-input-box svg {
+    .search-input-box svg.search-icon {
       position: absolute;
       left: 1.25rem;
       width: 22px;
@@ -186,10 +367,11 @@
 
     .search-input {
       width: 100%;
-      padding: 1.15rem 1.25rem 1.15rem 3.4rem;
-      background: rgba(8, 12, 20, 0.9);
-      border: 1px solid var(--border-color);
-      border-radius: 14px;
+      padding: 1.1rem 1.25rem 1.1rem 3.4rem;
+      padding-right: 180px;
+      background: rgba(8, 12, 22, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-md);
       color: #fff;
       font-size: 1.05rem;
       font-family: inherit;
@@ -199,36 +381,40 @@
 
     .search-input:focus {
       border-color: var(--accent-cyan);
-      box-shadow: 0 0 25px rgba(0, 242, 254, 0.2);
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.25);
+      background: rgba(10, 16, 30, 0.95);
     }
 
     .search-btn {
       position: absolute;
-      right: 0.75rem;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-      color: #000;
-      font-weight: 600;
-      font-size: 0.9rem;
-      padding: 0.75rem 1.4rem;
+      right: 0.65rem;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-emerald));
+      color: #020617;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.92rem;
+      padding: 0.75rem 1.45rem;
       border: none;
-      border-radius: 10px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.5rem;
       transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
     }
 
     .search-btn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 15px rgba(0, 242, 254, 0.35);
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+      filter: brightness(1.08);
     }
 
     /* QUICK FILTER CHIPS */
     .filter-chips {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.6rem;
+      gap: 0.55rem;
       align-items: center;
     }
 
@@ -236,15 +422,17 @@
       font-size: 0.8rem;
       color: var(--text-muted);
       margin-right: 0.25rem;
+      font-weight: 500;
     }
 
     .chip {
       background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border-subtle);
       color: var(--text-main);
-      padding: 0.45rem 0.9rem;
+      padding: 0.42rem 0.9rem;
       border-radius: 9999px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
+      font-weight: 500;
       cursor: pointer;
       transition: all 0.2s ease;
       display: flex;
@@ -252,70 +440,207 @@
       gap: 0.35rem;
     }
 
-    .chip:hover, .chip.active {
-      background: rgba(0, 242, 254, 0.12);
+    .chip:hover {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #fff;
+    }
+
+    .chip.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(16, 185, 129, 0.2));
       border-color: var(--accent-cyan);
-      color: var(--accent-cyan);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
     }
 
-    /* CONTENT LAYOUT: EVENTS & LIVE FEED */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: 1fr 420px;
-      gap: 2rem;
-      align-items: start;
+    /* AI ANSWER BANNER */
+    .ai-answer-banner {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(16, 185, 129, 0.1));
+      border: 1.5px solid var(--accent-cyan);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.6rem;
+      box-shadow: 0 0 35px rgba(56, 189, 248, 0.25);
+      display: none;
+      flex-direction: column;
+      gap: 0.75rem;
+      animation: fadeIn 0.3s ease;
     }
 
-    @media (max-width: 1200px) {
-      .dashboard-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* EVENTS FEED */
-    .section-header {
+    .ai-answer-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.25rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
-    .section-header h2 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.25rem;
+    .ai-answer-body {
+      font-size: 1.18rem;
       font-weight: 600;
+      color: #fff;
+      line-height: 1.5;
     }
 
-    .events-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.25rem;
+    .reset-search-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      padding: 0.45rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
+    .reset-search-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* SECTION 3: REEL / SLIDER HORIZONTAL DE GRABACIONES */
+    .slider-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+    }
+
+    .slider-header-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .slider-title-box {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .slider-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .slider-nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .slider-arrow-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .slider-arrow-btn:hover {
+      background: var(--accent-cyan);
+      color: #020617;
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+      transform: scale(1.06);
+    }
+
+    /* CONTENEDOR SLIDER HORIZONTAL */
+    .recordings-slider-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .recordings-slider {
+      display: flex;
+      gap: 1.35rem;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      scroll-snap-type: x mandatory;
+      padding: 0.5rem 0.25rem 1.4rem;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(56, 189, 248, 0.4) rgba(15, 23, 42, 0.5);
+    }
+
+    .recordings-slider::-webkit-scrollbar {
+      height: 7px;
+    }
+
+    .recordings-slider::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 9999px;
+    }
+
+    .recordings-slider::-webkit-scrollbar-thumb {
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-emerald));
+      border-radius: 9999px;
+    }
+
+    /* CARD INDIVIDUAL EN SLIDER */
     .event-card {
+      flex: 0 0 290px;
+      max-width: 310px;
+      min-width: 280px;
+      scroll-snap-align: start;
       background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
       overflow: hidden;
       display: flex;
       flex-direction: column;
       transition: all 0.25s ease;
       cursor: pointer;
       position: relative;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
     }
 
     .event-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-5px);
       border-color: var(--border-glow);
       background: var(--bg-card-hover);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.2);
+    }
+
+    .event-card.featured-event {
+      border: 2px solid var(--accent-cyan);
+      box-shadow: 0 0 35px rgba(56, 189, 248, 0.4), 0 12px 35px rgba(0, 0, 0, 0.7);
+      transform: scale(1.02);
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: 0.65rem;
+      left: 0.65rem;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-emerald));
+      color: #020617;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      z-index: 10;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
     }
 
     .thumb-wrapper {
       position: relative;
       width: 100%;
-      height: 180px;
-      background: #000;
+      height: 175px;
+      background: #020617;
       overflow: hidden;
     }
 
@@ -327,7 +652,7 @@
     }
 
     .event-card:hover .thumb-img {
-      transform: scale(1.05);
+      transform: scale(1.06);
     }
 
     .thumb-play-overlay {
@@ -348,18 +673,18 @@
     .play-circle {
       width: 48px;
       height: 48px;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-emerald));
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 20px rgba(0, 242, 254, 0.6);
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.7);
     }
 
     .play-circle svg {
       width: 20px;
       height: 20px;
-      fill: #000;
+      fill: #020617;
       margin-left: 3px;
     }
 
@@ -367,19 +692,21 @@
       position: absolute;
       bottom: 0.6rem;
       right: 0.6rem;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(4px);
-      padding: 0.2rem 0.5rem;
+      background: rgba(8, 12, 22, 0.85);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.25rem 0.55rem;
       border-radius: 6px;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 700;
+      color: #fff;
     }
 
     .card-content {
-      padding: 1rem 1.15rem;
+      padding: 0.95rem 1.15rem;
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
+      gap: 0.55rem;
     }
 
     .card-top {
@@ -390,94 +717,65 @@
 
     .class-tag {
       text-transform: capitalize;
-      font-weight: 600;
-      font-size: 0.95rem;
+      font-weight: 700;
+      font-size: 0.92rem;
       display: flex;
       align-items: center;
       gap: 0.4rem;
+      color: #fff;
     }
 
     .conf-tag {
       font-size: 0.75rem;
       color: var(--accent-emerald);
-      background: rgba(16, 185, 129, 0.1);
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.25);
       padding: 0.2rem 0.5rem;
       border-radius: 6px;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .card-time {
-      font-size: 0.8rem;
-      color: var(--text-muted);
+      font-size: 0.78rem;
+      color: var(--text-body);
       display: flex;
       align-items: center;
       gap: 0.35rem;
     }
 
-    /* LIVE FEED PANEL */
-    .live-panel {
+    .empty-state {
+      width: 100%;
+      padding: 3rem 2rem;
+      text-align: center;
       background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      overflow: hidden;
+      border: 1px dashed var(--border-subtle);
+      border-radius: var(--radius-md);
       display: flex;
       flex-direction: column;
-      position: sticky;
-      top: 5.5rem;
-    }
-
-    .live-header {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .live-header h3 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .live-feed-wrapper {
-      width: 100%;
-      height: 300px;
-      background: #000;
-      position: relative;
-      display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .live-feed-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .live-footer {
-      padding: 1rem 1.25rem;
-      font-size: 0.8rem;
       color: var(--text-muted);
-      display: flex;
-      justify-content: space-between;
-      border-top: 1px solid var(--border-color);
     }
 
-    /* MODAL VIDEO PLAYER */
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      fill: var(--text-muted);
+      margin-bottom: 0.85rem;
+    }
+
+    /* VIDEO MODAL */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(12px);
+      background: rgba(2, 6, 23, 0.85);
+      backdrop-filter: blur(16px);
       z-index: 100;
       display: none;
       align-items: center;
       justify-content: center;
       padding: 2rem;
+      animation: fadeIn 0.25s ease;
     }
 
     .modal-overlay.active {
@@ -485,54 +783,57 @@
     }
 
     .modal-card {
-      background: #0d121f;
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
+      background: #0b1120;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: var(--radius-lg);
+      max-width: 960px;
       width: 100%;
-      max-width: 850px;
       overflow: hidden;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.2);
       display: flex;
       flex-direction: column;
     }
 
     .modal-header {
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--border-color);
+      padding: 1.15rem 1.5rem;
+      background: rgba(15, 23, 42, 0.9);
+      border-bottom: 1px solid var(--border-subtle);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
     .modal-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.15rem;
-      font-weight: 600;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
     }
 
     .close-btn {
       background: rgba(255, 255, 255, 0.08);
       border: none;
       color: #fff;
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
+      font-size: 1.3rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
 
     .close-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(239, 68, 68, 0.3);
+      color: #ef4444;
     }
 
     .modal-video-container {
       width: 100%;
+      height: 520px;
       background: #000;
-      max-height: 500px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -540,85 +841,17 @@
 
     .modal-video-container video {
       width: 100%;
-      max-height: 500px;
-      outline: none;
+      height: 100%;
+      object-fit: contain;
     }
 
     .modal-footer {
-      padding: 1.25rem 1.5rem;
+      padding: 1rem 1.5rem;
+      background: rgba(15, 23, 42, 0.9);
+      border-top: 1px solid var(--border-subtle);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    /* AI ANSWER BANNER */
-    .ai-answer-banner {
-      background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(79, 172, 254, 0.08));
-      border: 1px solid var(--accent-cyan);
-      border-radius: 16px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 0 30px rgba(0, 242, 254, 0.2);
-      display: none;
-      flex-direction: column;
-      gap: 0.6rem;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .ai-answer-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--accent-cyan);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .ai-answer-body {
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: #fff;
-      line-height: 1.5;
-    }
-
-    .reset-search-btn {
-      align-self: flex-start;
-      margin-top: 0.4rem;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid var(--border-color);
-      color: #fff;
-      padding: 0.4rem 0.9rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .reset-search-btn:hover {
-      background: rgba(255, 255, 255, 0.25);
-    }
-
-    .event-card.featured-event {
-      border: 2px solid var(--accent-cyan);
-      box-shadow: 0 0 35px rgba(0, 242, 254, 0.35);
-    }
-
-    .featured-badge {
-      position: absolute;
-      top: 0.6rem;
-      left: 0.6rem;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-      color: #000;
-      font-weight: 700;
-      font-size: 0.75rem;
-      padding: 0.25rem 0.6rem;
-      border-radius: 6px;
-      z-index: 10;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
 
     @keyframes fadeIn {
@@ -629,43 +862,135 @@
 </head>
 <body>
 
-  <!-- HEADER -->
+  <!-- HEADER BADDGROUP -->
   <header>
-    <div class="brand">
-      <div class="brand-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    <a href="#" class="brand-logo" aria-label="BADDGROUP - Inicio">
+      <div class="brand-logo-icon">
+        <!-- Exact Baddgroup Hexagonal High-Tech Obsidian Shield SVG Logo -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+          <defs>
+            <linearGradient id="bgGradMain" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#38BDF8"/>
+              <stop offset="50%" stop-color="#0EA5E9"/>
+              <stop offset="100%" stop-color="#10B981"/>
+            </linearGradient>
+            <linearGradient id="bgGradAccent" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#10B981"/>
+              <stop offset="100%" stop-color="#34D399"/>
+            </linearGradient>
+            <linearGradient id="bgDarkBase" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#0F172A"/>
+              <stop offset="100%" stop-color="#020617"/>
+            </linearGradient>
+            <filter id="bgGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
+          </defs>
+          <polygon points="50,4 92,26 92,74 50,96 8,74 8,26" fill="url(#bgDarkBase)" stroke="rgba(56, 189, 248, 0.5)" stroke-width="2.5"/>
+          <polygon points="50,10 86,29 86,71 50,90 14,71 14,29" fill="none" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1.2"/>
+          <path d="M28 24 H48 C54.5 24 59 28 59 33.5 C59 37.5 56.5 41 52.5 42.5 C57.5 44 61 48 61 53.5 C61 60 55.5 64 48 64 H28 V24 Z" 
+                fill="none" stroke="url(#bgGradMain)" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+          <path d="M28 44 H48" stroke="url(#bgGradMain)" stroke-width="4.5" stroke-linecap="round"/>
+          <path d="M72 40 V62 C72 68 66 73 58 73 H46" 
+                fill="none" stroke="url(#bgGradAccent)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M58 58 H72" stroke="url(#bgGradAccent)" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="50" cy="14" r="3.5" fill="#38BDF8" filter="url(#bgGlow)"/>
+          <circle cx="72" cy="40" r="3" fill="#10B981" filter="url(#bgGlow)"/>
+          <circle cx="28" cy="24" r="3" fill="#38BDF8"/>
+          <circle cx="28" cy="64" r="3" fill="#10B981"/>
+        </svg>
       </div>
       <div class="brand-text">
-        <h1>SmartCam AI Search</h1>
-        <p>Plataforma de Búsqueda Inteligente para Cámaras IP</p>
+        <span class="brand-name">BADDGROUP</span>
+        <span class="brand-title">VISION AI <span>&bull;</span> SECURITY TECH</span>
       </div>
-    </div>
+    </a>
 
-    <div class="status-badges">
-      <div class="badge badge-live">Cámara Imou Conectada</div>
-      <div class="badge" id="cameraResBadge">2304x1296 (2K)</div>
+    <div class="header-badges">
+      <div class="badge badge-live">Cámara Imou En Vivo</div>
+      <div class="badge" id="cameraResBadge">2304x1296 (2K @ 15 FPS)</div>
+      <div class="badge badge-model">⚡ YOLO11 + ByteTrack</div>
+      <div class="badge badge-model">🧠 Qwen 2.5 (Ollama)</div>
       <div class="badge" id="eventsCountBadge">0 Eventos</div>
     </div>
   </header>
 
   <!-- MAIN -->
   <main>
-    <!-- SEARCH HERO -->
+
+    <!-- 1. LIVE CAMERA HERO (GRANDE Y PRINCIPAL) -->
+    <section class="live-hero-section">
+      <div class="live-hero-card" id="liveCard">
+        <div class="live-hero-header">
+          <div class="live-hero-title">
+            <span style="color: var(--accent-emerald); font-size: 1.2rem;">●</span>
+            <span>Transmisión Principal en Vivo con Detección Neuronal</span>
+            <span class="badge badge-live" style="margin-left: 0.5rem;">YOLO11 ON</span>
+          </div>
+          <div class="live-hud-controls">
+            <button class="hud-btn" onclick="toggleLiveFullscreen()">
+              <svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+              <span>Pantalla Completa</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="live-video-viewport" id="liveViewport">
+          <img 
+            id="liveStreamImg" 
+            class="live-video-stream" 
+            src="/api/live" 
+            alt="Transmisión en vivo con cajas de tracking IA"
+            onerror="this.src=''; this.alt='Conectando al stream RTSP de la cámara...';"
+          >
+          
+          <!-- HUD OVERLAYS -->
+          <div class="hud-overlay-top-left">
+            <div class="hud-pill">
+              <span style="color:var(--accent-emerald);">●</span> REC CONTINUO &bull; RTSP ACTIVO
+            </div>
+            <div class="hud-pill" style="font-size:0.72rem; color:var(--text-body);">
+              CÁMARA: Imou Cruiser (Dahua OEM) &bull; IP: 192.168.100.209
+            </div>
+          </div>
+
+          <div class="hud-overlay-bottom-right">
+            <div class="hud-pill" id="liveTimeBadge">
+              --:--:--
+            </div>
+            <div class="hud-pill" style="color:var(--accent-cyan);">
+              DirectML AMD Radeon RX 7600
+            </div>
+          </div>
+        </div>
+
+        <div class="live-hero-footer">
+          <span>Resolución Nativa: 2304x1296 (2K Substream IA: 640x480 @ 15 FPS)</span>
+          <span>Buffer Pre-roll: 3.0s H.264 &bull; Segmentación FastStart</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. BÚSQUEDA EN LENGUAJE NATURAL CON IA -->
     <section class="search-hero">
       <div class="search-title-wrap">
-        <div class="search-title">🔍 Búsqueda en Lenguaje Natural con IA Local</div>
-        <div class="badge" style="color: var(--accent-cyan); border-color: rgba(0, 242, 254, 0.3);">
-          ⚡ Modelo: Qwen 2.5 (Ollama)
+        <div class="search-title">
+          <span>🔍</span>
+          <span>Búsqueda Inteligente en Lenguaje Natural</span>
+        </div>
+        <div class="badge badge-model">
+          🧠 Motor LLM: Qwen 2.5 (3B Local)
         </div>
       </div>
 
       <form id="searchForm" class="search-input-box" onsubmit="handleSearch(event)">
-        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
         <input 
           id="searchInput" 
           type="text" 
           class="search-input" 
-          placeholder="Ej: '¿Cuándo pasó un auto?', 'Mostrame personas de la última hora', 'perros y gatos hoy'..." 
+          placeholder="Ej: 'en que momento alguien movio un brazo', 'cuando paso un auto', 'personas de la ultima hora'..." 
           autocomplete="off"
         >
         <button type="submit" class="search-btn">
@@ -678,6 +1003,7 @@
       <div class="filter-chips">
         <span class="chip-label">Sugerencias rápidas:</span>
         <button class="chip active" onclick="filterByChip('')">✨ Todos los eventos</button>
+        <button class="chip" onclick="searchPreset('en que momento alguien movio un brazo')">🦾 Movió un brazo</button>
         <button class="chip" onclick="filterByChip('person')">👤 Personas</button>
         <button class="chip" onclick="filterByChip('car')">🚗 Vehículos</button>
         <button class="chip" onclick="searchPreset('personas de la última hora')">⏱️ Última hora</button>
@@ -685,58 +1011,46 @@
       </div>
     </section>
 
-    <!-- CONTENT GRID -->
-    <div class="dashboard-grid">
-      <!-- LEFT: EVENTS FEED -->
-      <section>
-        <div class="section-header">
-          <h2 id="feedTitle">Registro de Eventos Detectados</h2>
-          <span id="activeQueryIndicator" style="font-size: 0.85rem; color: var(--accent-cyan);"></span>
-        </div>
-
-        <!-- AI ANSWER BANNER -->
-        <div id="aiAnswerBanner" class="ai-answer-banner">
-          <div class="ai-answer-header">
-            <span>✨ Análisis de IA (Qwen 2.5 Local)</span>
-            <span id="aiConfidenceBadge" class="badge badge-live">Momento Identificado</span>
-          </div>
-          <div class="ai-answer-body" id="aiAnswerText">
-            <!-- Texto de respuesta del LLM -->
-          </div>
-          <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap: wrap; margin-top:0.4rem;">
-            <button id="btnPlayFoundEvent" class="search-btn" style="position:static; padding: 0.5rem 1.1rem; font-size: 0.85rem;" onclick="playFoundEvent()">
-              ▶ Ver video de este momento
-            </button>
-            <button class="reset-search-btn" onclick="resetSearch()">
-              ✕ Ver todas las grabaciones
-            </button>
-          </div>
-        </div>
-
-        <div id="eventsContainer" class="events-grid">
-          <!-- Dinámico -->
-        </div>
-      </section>
-
-      <!-- RIGHT: LIVE CAMERA PREVIEW -->
-      <aside>
-        <div class="live-panel">
-          <div class="live-header">
-            <h3>
-              <span style="color: var(--accent-emerald);">●</span> Transmisión en Vivo (IA)
-            </h3>
-            <span class="badge badge-live">YOLO11</span>
-          </div>
-          <div class="live-feed-wrapper">
-            <img class="live-feed-img" src="/api/live" alt="Stream en vivo con cajas delimitadoras" onerror="this.src=''; this.alt='Cargando stream...'">
-          </div>
-          <div class="live-footer">
-            <span>Imou IP: 192.168.100.209</span>
-            <span>Sampling: 5 FPS</span>
-          </div>
-        </div>
-      </aside>
+    <!-- AI ANSWER BANNER -->
+    <div id="aiAnswerBanner" class="ai-answer-banner">
+      <div class="ai-answer-header">
+        <span>✨ Análisis de Inteligencia Artificial (Qwen 2.5 Local)</span>
+        <span id="aiConfidenceBadge" class="badge badge-live">Momento Identificado</span>
+      </div>
+      <div class="ai-answer-body" id="aiAnswerText">
+        <!-- Texto de respuesta del LLM -->
+      </div>
+      <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap: wrap; margin-top:0.4rem;">
+        <button id="btnPlayFoundEvent" class="search-btn" style="position:static; padding: 0.5rem 1.1rem; font-size: 0.85rem;" onclick="playFoundEvent()">
+          ▶ Ver video de este momento
+        </button>
+        <button class="reset-search-btn" onclick="resetSearch()">
+          ✕ Ver todas las grabaciones
+        </button>
+      </div>
     </div>
+
+    <!-- 3. SLIDER HORIZONTAL DE GRABACIONES / EVENTOS -->
+    <section class="slider-section">
+      <div class="slider-header-wrap">
+        <div class="slider-title-box">
+          <h2 id="feedTitle" class="slider-title">Registro de Eventos Grabados</h2>
+          <span id="activeQueryIndicator" style="font-size: 0.85rem; color: var(--accent-cyan); font-weight:600;"></span>
+        </div>
+
+        <div class="slider-nav-controls">
+          <button class="slider-arrow-btn" onclick="scrollSlider(-1)" title="Anteriores">‹</button>
+          <button class="slider-arrow-btn" onclick="scrollSlider(1)" title="Siguientes">›</button>
+        </div>
+      </div>
+
+      <div class="recordings-slider-container">
+        <div id="eventsContainer" class="recordings-slider">
+          <!-- Tarjetas horizontales generadas dinámicamente -->
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- VIDEO MODAL -->
@@ -750,7 +1064,7 @@
         <video id="modalVideo" controls autoplay playsinline></video>
       </div>
       <div class="modal-footer">
-        <span id="modalMeta">Duración: 0s</span>
+        <span id="modalMeta" style="color:var(--text-muted); font-size:0.85rem;">Duración: 0s</span>
         <a id="modalDownload" href="#" download class="chip" style="color:var(--accent-cyan); text-decoration:none;">
           ⬇ Descargar Clip MP4
         </a>
@@ -762,6 +1076,16 @@
     let currentFilterClass = '';
     let isSearchActive = false;
     let lastFoundEvent = null;
+
+    // Actualizar reloj digital en HUD en vivo
+    function updateHUDTime() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const badge = document.getElementById('liveTimeBadge');
+      if (badge) badge.innerText = `HORA LOCAL: ${timeStr}`;
+    }
+    setInterval(updateHUDTime, 1000);
+    updateHUDTime();
 
     async function updateStatus() {
       try {
@@ -779,7 +1103,7 @@
     }
 
     async function loadEvents(objectClass = '') {
-      if (isSearchActive) return; // No sobreescribir si el usuario está viendo un resultado de búsqueda
+      if (isSearchActive) return; // Congelar si hay búsqueda activa para no borrar el resultado del usuario
       try {
         let url = '/api/events?limit=50';
         if (objectClass) {
@@ -799,8 +1123,8 @@
         container.innerHTML = `
           <div class="empty-state">
             <svg viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z"/></svg>
-            <h3>${isSpecific ? 'No se encontró una grabación exacta para esta búsqueda' : 'Aún no hay eventos registrados'}</h3>
-            <p style="margin-top:0.5rem; font-size:0.9rem;">
+            <h3 style="color:#fff; margin-bottom:0.35rem;">${isSpecific ? 'No se encontró una grabación exacta para esta búsqueda' : 'Aún no hay eventos registrados'}</h3>
+            <p style="font-size:0.88rem;">
               ${isSpecific ? 'Prueba con otra descripción o haz clic en "Ver todas las grabaciones".' : 'Pasa frente a la cámara o acerca un objeto para generar un evento automático.'}
             </p>
             ${isSpecific ? '<button class="reset-search-btn" style="margin-top:1rem;" onclick="resetSearch()">✕ Ver todas las grabaciones</button>' : ''}
@@ -841,6 +1165,35 @@
           </div>
         `;
       }).join('');
+
+      // Desplazar el slider al inicio suavemente
+      container.scrollTo({ left: 0, behavior: 'smooth' });
+    }
+
+    function scrollSlider(direction) {
+      const container = document.getElementById('eventsContainer');
+      const scrollAmount = 320 * direction;
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+
+    // Permitir scroll horizontal con la rueda del ratón
+    const sliderEl = document.getElementById('eventsContainer');
+    sliderEl.addEventListener('wheel', (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        sliderEl.scrollBy({ left: e.deltaY * 1.5, behavior: 'smooth' });
+      }
+    });
+
+    function toggleLiveFullscreen() {
+      const liveCard = document.getElementById('liveCard');
+      if (!document.fullscreenElement) {
+        liveCard.requestFullscreen().catch(err => {
+          console.error("Error al activar pantalla completa:", err);
+        });
+      } else {
+        document.exitFullscreen();
+      }
     }
 
     function getClassIcon(cls) {
@@ -872,9 +1225,9 @@
       isSearchActive = true;
       const banner = document.getElementById('aiAnswerBanner');
       banner.style.display = 'flex';
-      document.getElementById('aiAnswerText').innerHTML = `<span style="color:var(--text-muted); font-size:0.95rem;">🧠 Analizando grabaciones y seleccionando el momento exacto con IA...</span>`;
+      document.getElementById('aiAnswerText').innerHTML = `<span style="color:var(--text-muted); font-size:0.95rem;">🧠 Baddgroup IA: Analizando grabaciones y razonando momento exacto...</span>`;
       document.getElementById('activeQueryIndicator').innerText = `Búsqueda activa: "${query}"`;
-      document.getElementById('feedTitle').innerText = 'Analizando eventos con IA...';
+      document.getElementById('feedTitle').innerText = 'Analizando grabaciones con IA...';
 
       try {
         const res = await fetch('/api/search', {
@@ -905,6 +1258,10 @@
           document.getElementById('btnPlayFoundEvent').style.display = 'none';
           renderEvents(results, false);
         }
+
+        // Scroll suave al banner de respuesta
+        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
       } catch (err) {
         console.error("Error en búsqueda:", err);
         document.getElementById('aiAnswerText').innerText = "Hubo un error al procesar la búsqueda con IA.";
@@ -926,7 +1283,7 @@
       document.getElementById('searchInput').value = '';
       document.getElementById('aiAnswerBanner').style.display = 'none';
       document.getElementById('activeQueryIndicator').innerText = '';
-      document.getElementById('feedTitle').innerText = 'Registro de Eventos Detectados';
+      document.getElementById('feedTitle').innerText = 'Registro de Eventos Grabados';
       document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
       const allChip = document.querySelector('.filter-chips .chip');
       if (allChip) allChip.classList.add('active');
@@ -947,7 +1304,7 @@
       document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
       event.target.classList.add('active');
       document.getElementById('activeQueryIndicator').innerText = cls ? `Categoría: ${cls}` : '';
-      document.getElementById('feedTitle').innerText = 'Registro de Eventos Detectados';
+      document.getElementById('feedTitle').innerText = 'Registro de Eventos Grabados';
       loadEvents(cls);
     }
 
@@ -981,12 +1338,16 @@
       }
     }
 
+    // Cerrar modal con tecla Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
     // Inicialización y polling continuo
     updateStatus();
     loadEvents();
     setInterval(updateStatus, 3000);
     setInterval(() => {
-      // Si el usuario está viendo un resultado de búsqueda específico, congelar el feed
       if (!isSearchActive) {
         loadEvents(currentFilterClass);
       }
