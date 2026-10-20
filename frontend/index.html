@@ -553,18 +553,77 @@
       color: var(--text-muted);
     }
 
-    .empty-state {
-      padding: 4rem 2rem;
-      text-align: center;
-      color: var(--text-muted);
-      grid-column: 1 / -1;
+    /* AI ANSWER BANNER */
+    .ai-answer-banner {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(79, 172, 254, 0.08));
+      border: 1px solid var(--accent-cyan);
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 0 30px rgba(0, 242, 254, 0.2);
+      display: none;
+      flex-direction: column;
+      gap: 0.6rem;
+      animation: fadeIn 0.3s ease;
     }
 
-    .empty-state svg {
-      width: 56px;
-      height: 56px;
-      fill: rgba(255, 255, 255, 0.15);
-      margin-bottom: 1rem;
+    .ai-answer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .ai-answer-body {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.5;
+    }
+
+    .reset-search-btn {
+      align-self: flex-start;
+      margin-top: 0.4rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .reset-search-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .event-card.featured-event {
+      border: 2px solid var(--accent-cyan);
+      box-shadow: 0 0 35px rgba(0, 242, 254, 0.35);
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: 0.6rem;
+      left: 0.6rem;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+      color: #000;
+      font-weight: 700;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      z-index: 10;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -635,6 +694,25 @@
           <span id="activeQueryIndicator" style="font-size: 0.85rem; color: var(--accent-cyan);"></span>
         </div>
 
+        <!-- AI ANSWER BANNER -->
+        <div id="aiAnswerBanner" class="ai-answer-banner">
+          <div class="ai-answer-header">
+            <span>✨ Análisis de IA (Qwen 2.5 Local)</span>
+            <span id="aiConfidenceBadge" class="badge badge-live">Momento Identificado</span>
+          </div>
+          <div class="ai-answer-body" id="aiAnswerText">
+            <!-- Texto de respuesta del LLM -->
+          </div>
+          <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap: wrap; margin-top:0.4rem;">
+            <button id="btnPlayFoundEvent" class="search-btn" style="position:static; padding: 0.5rem 1.1rem; font-size: 0.85rem;" onclick="playFoundEvent()">
+              ▶ Ver video de este momento
+            </button>
+            <button class="reset-search-btn" onclick="resetSearch()">
+              ✕ Ver todas las grabaciones
+            </button>
+          </div>
+        </div>
+
         <div id="eventsContainer" class="events-grid">
           <!-- Dinámico -->
         </div>
@@ -682,6 +760,8 @@
 
   <script>
     let currentFilterClass = '';
+    let isSearchActive = false;
+    let lastFoundEvent = null;
 
     async function updateStatus() {
       try {
@@ -699,6 +779,7 @@
     }
 
     async function loadEvents(objectClass = '') {
+      if (isSearchActive) return; // No sobreescribir si el usuario está viendo un resultado de búsqueda
       try {
         let url = '/api/events?limit=50';
         if (objectClass) {
@@ -706,20 +787,23 @@
         }
         const res = await fetch(url);
         const events = await res.json();
-        renderEvents(events);
+        renderEvents(events, false);
       } catch (e) {
         console.error("Error cargando eventos:", e);
       }
     }
 
-    function renderEvents(events) {
+    function renderEvents(events, isSpecific = false) {
       const container = document.getElementById('eventsContainer');
       if (!events || events.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
             <svg viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z"/></svg>
-            <h3>Aún no hay eventos registrados</h3>
-            <p style="margin-top:0.5rem; font-size:0.9rem;">Pasa frente a la cámara o acerca un auto/objeto para generar un evento automático.</p>
+            <h3>${isSpecific ? 'No se encontró una grabación exacta para esta búsqueda' : 'Aún no hay eventos registrados'}</h3>
+            <p style="margin-top:0.5rem; font-size:0.9rem;">
+              ${isSpecific ? 'Prueba con otra descripción o haz clic en "Ver todas las grabaciones".' : 'Pasa frente a la cámara o acerca un objeto para generar un evento automático.'}
+            </p>
+            ${isSpecific ? '<button class="reset-search-btn" style="margin-top:1rem;" onclick="resetSearch()">✕ Ver todas las grabaciones</button>' : ''}
           </div>
         `;
         return;
@@ -729,9 +813,12 @@
         const icon = getClassIcon(ev.object_class);
         const timeFormatted = formatTime(ev.start_time);
         const durationFormatted = `${ev.duration_seconds}s`;
+        const featuredClass = isSpecific ? 'featured-event' : '';
+        const badgeHtml = isSpecific ? '<div class="featured-badge">🎯 MOMENTO EXACTO</div>' : '';
 
         return `
-          <div class="event-card" onclick="openVideoModal('${ev.id}', '${ev.object_class}', '${timeFormatted}', '${durationFormatted}')">
+          <div class="event-card ${featuredClass}" onclick="openVideoModal('${ev.id}', '${ev.object_class}', '${timeFormatted}', '${durationFormatted}')">
+            ${badgeHtml}
             <div class="thumb-wrapper">
               <img class="thumb-img" src="${ev.thumbnail_url || '/static/placeholder.jpg'}" alt="${ev.object_class}" onerror="this.style.display='none'">
               <div class="thumb-play-overlay">
@@ -782,7 +869,13 @@
       const query = document.getElementById('searchInput').value.trim();
       if (!query) return;
 
-      document.getElementById('activeQueryIndicator').innerText = `Filtrando por IA: "${query}"`;
+      isSearchActive = true;
+      const banner = document.getElementById('aiAnswerBanner');
+      banner.style.display = 'flex';
+      document.getElementById('aiAnswerText').innerHTML = `<span style="color:var(--text-muted); font-size:0.95rem;">🧠 Analizando grabaciones y seleccionando el momento exacto con IA...</span>`;
+      document.getElementById('activeQueryIndicator').innerText = `Búsqueda activa: "${query}"`;
+      document.getElementById('feedTitle').innerText = 'Analizando eventos con IA...';
+
       try {
         const res = await fetch('/api/search', {
           method: 'POST',
@@ -790,10 +883,55 @@
           body: JSON.stringify({ query: query })
         });
         const data = await res.json();
-        renderEvents(data.results || []);
+        
+        const results = data.results || [];
+        if (data.is_specific) {
+          document.getElementById('feedTitle').innerText = `🎯 Momento Encontrado (${results.length} grabación aislada)`;
+          if (data.ai_answer) {
+            document.getElementById('aiAnswerText').innerText = data.ai_answer;
+          }
+          if (results.length > 0) {
+            lastFoundEvent = results[0];
+            document.getElementById('btnPlayFoundEvent').style.display = 'inline-flex';
+          } else {
+            document.getElementById('btnPlayFoundEvent').style.display = 'none';
+          }
+          renderEvents(results, true);
+        } else {
+          document.getElementById('feedTitle').innerText = `Resultados de Búsqueda (${results.length})`;
+          if (data.ai_answer) {
+            document.getElementById('aiAnswerText').innerText = data.ai_answer;
+          }
+          document.getElementById('btnPlayFoundEvent').style.display = 'none';
+          renderEvents(results, false);
+        }
       } catch (err) {
         console.error("Error en búsqueda:", err);
+        document.getElementById('aiAnswerText').innerText = "Hubo un error al procesar la búsqueda con IA.";
       }
+    }
+
+    function playFoundEvent() {
+      if (lastFoundEvent) {
+        const icon = getClassIcon(lastFoundEvent.object_class);
+        const time = formatTime(lastFoundEvent.start_time);
+        const dur = `${lastFoundEvent.duration_seconds}s`;
+        openVideoModal(lastFoundEvent.id, lastFoundEvent.object_class, time, dur);
+      }
+    }
+
+    function resetSearch() {
+      isSearchActive = false;
+      lastFoundEvent = null;
+      document.getElementById('searchInput').value = '';
+      document.getElementById('aiAnswerBanner').style.display = 'none';
+      document.getElementById('activeQueryIndicator').innerText = '';
+      document.getElementById('feedTitle').innerText = 'Registro de Eventos Detectados';
+      document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
+      const allChip = document.querySelector('.filter-chips .chip');
+      if (allChip) allChip.classList.add('active');
+      currentFilterClass = '';
+      loadEvents('');
     }
 
     function searchPreset(preset) {
@@ -802,10 +940,14 @@
     }
 
     function filterByChip(cls) {
+      isSearchActive = false;
       currentFilterClass = cls;
+      document.getElementById('aiAnswerBanner').style.display = 'none';
+      document.getElementById('searchInput').value = '';
       document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
       event.target.classList.add('active');
       document.getElementById('activeQueryIndicator').innerText = cls ? `Categoría: ${cls}` : '';
+      document.getElementById('feedTitle').innerText = 'Registro de Eventos Detectados';
       loadEvents(cls);
     }
 
@@ -839,14 +981,13 @@
       }
     }
 
-    // Inicialización y polling
+    // Inicialización y polling continuo
     updateStatus();
     loadEvents();
     setInterval(updateStatus, 3000);
     setInterval(() => {
-      // Si no hay búsqueda activa, actualizar feed automáticamente
-      const activeSearch = document.getElementById('searchInput').value.trim();
-      if (!activeSearch) {
+      // Si el usuario está viendo un resultado de búsqueda específico, congelar el feed
+      if (!isSearchActive) {
         loadEvents(currentFilterClass);
       }
     }, 4000);

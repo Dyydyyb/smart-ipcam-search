@@ -8,55 +8,12 @@ from sqlalchemy import select, and_, desc
 from core.config import settings
 from core.models import SecurityEvent
 
-SYSTEM_PROMPT = """Eres el motor de búsqueda inteligente de un sistema de videovigilancia.
-Tu función es convertir la consulta en lenguaje natural del usuario en un objeto JSON con los filtros de búsqueda.
-
-Las clases de objetos válidas son:
-['person', 'car', 'truck', 'bus', 'motorcycle', 'bicycle', 'dog', 'cat', 'backpack', 'tv', 'cell phone', 'laptop']
-
-Reglas:
-1. Traduce términos en español a las clases válidas (ej: "gente", "hombre", "mujer", "chico" -> "person"; "auto", "coche", "vehiculo" -> ["car", "truck", "motorcycle"]).
-2. Si el usuario menciona "última hora", "últimos 30 minutos", "hoy", etc., calcula 'hours_back'. Si no menciona tiempo, usa null.
-3. Responde ÚNICAMENTE con el objeto JSON válido, sin texto adicional ni explicaciones.
-
-Ejemplo de salida esperada:
-{
-  "classes": ["person"],
-  "hours_back": 2.0,
-  "min_duration": 0,
-  "summary": "Personas detectadas en las últimas 2 horas"
-}
-"""
-
 def parse_query_with_ollama(user_query: str) -> Dict[str, Any]:
-    """Envía la consulta del usuario a Ollama (Qwen 2.5) y extrae los filtros estructurados."""
-    try:
-        url = f"{settings.OLLAMA_HOST}/api/generate"
-        payload = {
-            "model": settings.OLLAMA_MODEL,
-            "prompt": f"{SYSTEM_PROMPT}\nConsulta del usuario: \"{user_query}\"\nJSON:",
-            "stream": False,
-            "format": "json"
-        }
-        res = requests.post(url, json=payload, timeout=12.0)
-        if res.status_code == 200:
-            data = res.json()
-            raw_response = data.get("response", "{}")
-            parsed = json.loads(raw_response)
-            logger.info(f"Filtro interpretado por Ollama: {parsed}")
-            return parsed
-    except Exception as e:
-        logger.warning(f"Ollama no respondió a tiempo o error de parsing: {e}. Usando fallback heurístico.")
-
-    # Fallback heurístico si Ollama tarda o no está disponible
-    return fallback_heuristic_parser(user_query)
-
-def fallback_heuristic_parser(query: str) -> Dict[str, Any]:
-    """Analizador por patrones regex como respaldo seguro e instantáneo."""
-    q = query.lower()
+    """Extrae clases y ventanas temporales de la consulta."""
+    q = user_query.lower()
     classes = []
     
-    if any(w in q for w in ["persona", "gente", "alguien", "hombre", "mujer", "chico", "chica", "ladron", "sujeto", "brazo", "mano", "movio", "movió", "cuerpo", "gesto"]):
+    if any(w in q for w in ["persona", "gente", "alguien", "hombre", "mujer", "chico", "chica", "ladron", "sujeto", "brazo", "mano", "movio", "movió", "cuerpo", "gesto", "movimiento"]):
         classes.append("person")
     if any(w in q for w in ["auto", "coche", "carro", "vehiculo", "vehículo"]):
         classes.append("car")
@@ -86,11 +43,79 @@ def fallback_heuristic_parser(query: str) -> Dict[str, Any]:
     return {
         "classes": classes,
         "hours_back": hours_back,
-        "summary": f"Filtro de búsqueda para: {query}"
+        "summary": f"Filtro de búsqueda para: {user_query}"
+    }
+
+def reason_and_pick_specific_event(user_query: str, candidate_events: List[SecurityEvent]) -> Dict[str, Any]:
+    """
+    Usa Ollama (Qwen 2.5) para razonar sobre los eventos candidatos y seleccionar
+    EXCLUSIVAMENTE el evento que responde a la pregunta específica del usuario.
+    """
+    if not candidate_events:
+        return {
+            "ai_answer": "No se encontraron grabaciones coincidentes en el historial.",
+            "matched_ids": []
+        }
+
+    # Construir resumen de eventos para el LLM
+    events_summary = []
+    for idx, e in enumerate(candidate_events[:15], 1):
+        t_str = e.start_time.strftime("%H:%M:%S") if e.start_time else "desconocida"
+        events_summary.append(
+            f"- Evento #{idx} [ID: {e.id}]: Clase: {e.object_class}, Hora: {t_str}, Duración: {e.duration_seconds}s, Confianza: {int(e.confidence * 100)}%"
+        )
+    events_text = "\n".join(events_summary)
+
+    prompt = f"""Eres el cerebro analista de seguridad de un sistema de cámaras IP inteligentes.
+El usuario realiza la siguiente consulta: "{user_query}"
+
+Aquí tienes los eventos grabados recientemente por la cámara:
+{events_text}
+
+Instrucciones estrictas:
+1. Responde a la pregunta del usuario con una frase clara y concisa indicando la HORA EXACTA y DURACIÓN del evento más relevante.
+2. Si el usuario pregunta por un momento o evento específico (ej: "¿En qué momento alguien movió un brazo?", "¿Cuándo pasó el auto?"), selecciona ÚNICAMENTE el ID del evento que mejor responde a su pregunta (NO selecciones todos).
+3. Responde únicamente en formato JSON válido con las claves: "respuesta_ia" y "evento_ids_coincidentes".
+
+Ejemplo de salida JSON:
+{{
+  "respuesta_ia": "Se detectó el movimiento a las 05:05:18 con una duración de 3.7 segundos.",
+  "evento_ids_coincidentes": ["{candidate_events[0].id}"]
+}}
+"""
+
+    try:
+        url = f"{settings.OLLAMA_HOST}/api/generate"
+        payload = {
+            "model": settings.OLLAMA_MODEL,
+            "prompt": prompt,
+            "stream": False,
+            "format": "json"
+        }
+        res = requests.post(url, json=payload, timeout=12.0)
+        if res.status_code == 200:
+            data = res.json()
+            parsed = json.loads(data.get("response", "{}"))
+            answer = parsed.get("respuesta_ia")
+            matched = parsed.get("evento_ids_coincidentes", [])
+            if answer and matched:
+                return {
+                    "ai_answer": answer,
+                    "matched_ids": matched
+                }
+    except Exception as e:
+        logger.warning(f"Error en razonamiento LLM: {e}")
+
+    # Fallback si el LLM falla: tomar el evento más reciente relevante
+    latest = candidate_events[0]
+    t_str = latest.start_time.strftime("%H:%M:%S") if latest.start_time else ""
+    return {
+        "ai_answer": f"Se detectó el evento más relevante a las {t_str} con una duración de {latest.duration_seconds}s.",
+        "matched_ids": [latest.id]
     }
 
 async def execute_smart_search(session, user_query: str) -> Dict[str, Any]:
-    """Ejecuta la búsqueda inteligente en la base de datos."""
+    """Ejecuta la búsqueda inteligente en la base de datos con razonamiento del LLM."""
     parsed_filter = parse_query_with_ollama(user_query)
     
     conditions = []
@@ -106,16 +131,48 @@ async def execute_smart_search(session, user_query: str) -> Dict[str, Any]:
         since_time = datetime.datetime.utcnow() - datetime.timedelta(hours=float(hours_back))
         conditions.append(SecurityEvent.start_time >= since_time)
 
-    stmt = select(SecurityEvent).order_by(desc(SecurityEvent.start_time)).limit(50)
+    stmt = select(SecurityEvent).order_by(desc(SecurityEvent.start_time)).limit(30)
     if conditions:
         stmt = stmt.where(and_(*conditions))
 
     result = await session.execute(stmt)
-    events = result.scalars().all()
+    candidate_events = result.scalars().all()
 
+    # Si es una consulta específica (pregunta por un momento, acción, o frase descriptiva)
+    q_lower = user_query.lower()
+    specific_keywords = [
+        "momento", "cuando", "cuándo", "hora", "minuto", "segundo", "tiempo",
+        "movio", "movió", "movimiento", "brazo", "mano", "paso", "pasó", 
+        "aparecio", "apareció", "entro", "entró", "salio", "salió",
+        "sujeto", "alguien", "quien", "quién", "cual", "cuál", "donde", "dónde",
+        "mostrame", "busca", "buscá", "ver", "en que"
+    ]
+    is_specific_query = any(w in q_lower for w in specific_keywords) or len(q_lower.split()) >= 3
+
+    if is_specific_query and candidate_events:
+        reasoning = reason_and_pick_specific_event(user_query, candidate_events)
+        matched_ids = set(reasoning.get("matched_ids", []))
+        
+        # Filtrar para mostrar EXCLUSIVAMENTE el evento que responde a la consulta
+        filtered_events = [e for e in candidate_events if e.id in matched_ids]
+        if not filtered_events:
+            filtered_events = candidate_events[:1]  # El más relevante
+        else:
+            filtered_events = filtered_events[:1]  # Únicamente 1 evento exacto
+
+        return {
+            "query": user_query,
+            "ai_answer": reasoning.get("ai_answer"),
+            "is_specific": True,
+            "total_results": len(filtered_events),
+            "results": [e.to_dict() for e in filtered_events]
+        }
+
+    # Búsqueda general
     return {
         "query": user_query,
-        "interpreted_filter": parsed_filter,
-        "total_results": len(events),
-        "results": [e.to_dict() for e in events]
+        "ai_answer": f"Se encontraron {len(candidate_events)} eventos que coinciden con tu criterio.",
+        "is_specific": False,
+        "total_results": len(candidate_events),
+        "results": [e.to_dict() for e in candidate_events]
     }
