@@ -38,7 +38,7 @@ def parse_query_with_ollama(user_query: str) -> Dict[str, Any]:
             "stream": False,
             "format": "json"
         }
-        res = requests.post(url, json=payload, timeout=6.0)
+        res = requests.post(url, json=payload, timeout=12.0)
         if res.status_code == 200:
             data = res.json()
             raw_response = data.get("response", "{}")
@@ -56,17 +56,17 @@ def fallback_heuristic_parser(query: str) -> Dict[str, Any]:
     q = query.lower()
     classes = []
     
-    if any(w in q for w in ["persona", "gente", "alguien", "hombre", "mujer", "chico", "chica", "ladron", "sujeto"]):
+    if any(w in q for w in ["persona", "gente", "alguien", "hombre", "mujer", "chico", "chica", "ladron", "sujeto", "brazo", "mano", "movio", "movió", "cuerpo", "gesto"]):
         classes.append("person")
-    if any(w in q for w in ["auto", "coche", "carro", "vehiculo"]):
+    if any(w in q for w in ["auto", "coche", "carro", "vehiculo", "vehículo"]):
         classes.append("car")
-    if any(w in q for w in ["camion", "camioneta", "furgon"]):
+    if any(w in q for w in ["camion", "camión", "camioneta", "furgon", "furgón"]):
         classes.append("truck")
     if any(w in q for w in ["moto", "motocicleta"]):
         classes.append("motorcycle")
     if any(w in q for w in ["bici", "bicicleta"]):
         classes.append("bicycle")
-    if any(w in q for w in ["perro", "perros"]):
+    if any(w in q for w in ["perro", "perros", "mascota"]):
         classes.append("dog")
     if any(w in q for w in ["gato", "gatos"]):
         classes.append("cat")

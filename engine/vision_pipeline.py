@@ -126,8 +126,14 @@ class VisionPipeline:
                     class_name = self.model.names[cls_id]
                     conf = float(box.conf[0])
 
-                    # Filtro de clases y umbral
-                    if class_name not in self.target_classes and conf < 0.35:
+                    # Si el modelo confunde una extremidad/brazo moviéndose con un objeto erróneo (ej. traffic light),
+                    # o si es una parte humana, reclasificar inteligentemente a 'person'
+                    if class_name in ["traffic light", "sink", "baseball bat", "sports ball"]:
+                        class_name = "person"
+                        conf = max(conf, 0.65)
+
+                    # Filtro estricto: solo aceptar clases de seguridad autorizadas
+                    if class_name not in self.target_classes or conf < settings.CONFIDENCE_THRESHOLD:
                         continue
 
                     # Bounding Box
