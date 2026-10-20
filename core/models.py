@@ -20,6 +20,10 @@ class SecurityEvent(Base):
     thumbnail_path = Column(String(255), nullable=True)
     clip_path = Column(String(255), nullable=True)
     
+    # Identificación multi-cámara
+    camera_id = Column(String(50), nullable=True, default="cam_1", index=True)
+    camera_name = Column(String(100), nullable=True, default="Cámara Poste Principal")
+
     # Detalle adicional: bounding box final, color aproximado, etc.
     metadata_info = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=datetime.now)
@@ -33,6 +37,8 @@ class SecurityEvent(Base):
             "start_time": self.start_time.isoformat() if self.start_time else None,
             "end_time": self.end_time.isoformat() if self.end_time else None,
             "duration_seconds": round(self.duration_seconds, 1),
+            "camera_id": self.camera_id or "cam_1",
+            "camera_name": self.camera_name or "Cámara Poste Principal",
             "thumbnail_url": f"/api/thumbnail/{self.id}" if self.thumbnail_path else None,
             "video_url": f"/api/video/{self.id}" if self.clip_path else None,
             "metadata": self.metadata_info or {}

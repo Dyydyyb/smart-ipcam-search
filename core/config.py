@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import Optional
 from pydantic_settings import BaseSettings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,12 +24,16 @@ class Settings(BaseSettings):
     TRACKING_BUFFER_SECONDS: float = 3.0  # Seconds without seeing object before closing event
     MIN_EVENT_DURATION_SECONDS: float = 0.5
 
+    # Production Cloud AI (Google Gemini Multimodal Vision)
+    GEMINI_API_KEY: Optional[str] = None
+    GEMINI_MODEL: str = "gemini-1.5-flash"
+
     # Storage paths
     STORAGE_DIR: Path = BASE_DIR / "storage"
     THUMBNAILS_DIR: Path = BASE_DIR / "storage" / "thumbnails"
     CLIPS_DIR: Path = BASE_DIR / "storage" / "clips"
 
-    # Ollama Local LLM
+    # Ollama Local LLM (Fallback de Respaldo)
     OLLAMA_HOST: str = "http://localhost:11434"
     OLLAMA_MODEL: str = "qwen2.5:3b"
 

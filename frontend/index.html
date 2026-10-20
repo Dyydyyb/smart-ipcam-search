@@ -1205,6 +1205,186 @@
       from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* GESTOR DE CÁMARAS Y SELECTOR MULTI-CÁMARA */
+    .camera-selector-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.3rem 0.65rem;
+      color: var(--text-main);
+      transition: border-color 0.15s ease;
+    }
+
+    .camera-selector-box:hover {
+      border-color: var(--border-accent);
+    }
+
+    .camera-select-dropdown {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-size: 0.78rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .camera-select-dropdown option {
+      background: var(--bg-surface);
+      color: var(--text-main);
+    }
+
+    .camera-modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      max-width: 960px;
+      width: 95vw;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn 0.15s ease;
+    }
+
+    .camera-modal-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
+
+    .camera-section-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .camera-list-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .camera-item-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      position: relative;
+      transition: border-color 0.15s ease;
+    }
+
+    .camera-item-card:hover {
+      border-color: var(--border-accent);
+    }
+
+    .camera-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .camera-item-name {
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--text-main);
+    }
+
+    .camera-item-loc {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .camera-item-detail {
+      font-size: 0.76rem;
+      color: var(--text-body);
+      background: var(--bg-base);
+      padding: 0.35rem 0.6rem;
+      border-radius: 5px;
+      font-family: monospace;
+      word-break: break-all;
+    }
+
+    .camera-form-box {
+      background: var(--bg-base);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .camera-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.85rem;
+    }
+
+    @media (max-width: 640px) {
+      .camera-form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-group label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-body);
+    }
+
+    .form-group input {
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.55rem 0.8rem;
+      color: var(--text-main);
+      font-size: 0.82rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .form-group input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .distribution-banner {
+      background: rgba(37, 99, 235, 0.08);
+      border: 1px solid rgba(37, 99, 235, 0.25);
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      gap: 0.85rem;
+      align-items: flex-start;
+      color: var(--text-body);
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
@@ -1231,9 +1411,24 @@
     </a>
 
     <div class="header-right">
+      <!-- SELECTOR DE CÁMARA ACTIVA -->
+      <div class="camera-selector-box" title="Filtrar eventos por cámara">
+        <svg class="v-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+        <select id="cameraSelect" class="camera-select-dropdown" onchange="onCameraSelectChange(this.value)">
+          <option value="all">Todas las Cámaras</option>
+          <option value="cam_1" selected>Cámara Poste Principal</option>
+        </select>
+      </div>
+
+      <!-- BOTÓN GESTOR DE CÁMARAS Y DISTRIBUCIÓN -->
+      <button class="btn-action" onclick="openCameraModal()" title="Gestor de Cámaras & Distribución en Producción">
+        <svg class="v-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        <span>Cámaras (<span id="camerasCountHeader">1</span>)</span>
+      </button>
+
       <div class="status-badge">
         <span class="status-indicator-dot"></span>
-        <span>Cámara En Vivo</span>
+        <span id="cameraOnlineStatusText">Cámara En Vivo</span>
       </div>
       <div class="status-badge" id="cameraResBadge">640x480 (15 FPS)</div>
       <div class="status-badge" id="eventsCountBadge">0 Eventos</div>
@@ -1256,7 +1451,7 @@
         <div class="live-hero-header">
           <div class="live-hero-title">
             <span class="status-indicator-dot"></span>
-            <span>Monitoreo Principal en Tiempo Real</span>
+            <span id="liveHeroCamTitle">Cámara Poste Principal &bull; En Tiempo Real</span>
             <span class="status-badge" style="padding:0.2rem 0.5rem; font-size:0.72rem;">YOLO11 Tracking</span>
           </div>
           <div>
@@ -1281,7 +1476,7 @@
               <span class="status-indicator-dot"></span>
               <span>RTSP ACTIVO &bull; GRABACIÓN CONTINUA</span>
             </div>
-            <div class="hud-pill" style="font-size:0.72rem;">
+            <div class="hud-pill" id="liveHudCamIp" style="font-size:0.72rem;">
               Imou Cruiser (Dahua OEM) &bull; IP: 192.168.100.209
             </div>
           </div>
@@ -1310,8 +1505,8 @@
           <svg class="v-icon-lg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
           <span>Búsqueda de Eventos en Lenguaje Natural con IA</span>
         </div>
-        <div class="status-badge" style="font-size:0.75rem;">
-          Motor LLM: Qwen 2.5 (3B Local)
+        <div class="status-badge" id="aiEngineBadge" style="font-size:0.75rem;">
+          Motor IA: Gemini 1.5 Flash (Visión Multimodal)
         </div>
       </div>
 
@@ -1606,11 +1801,114 @@
     </div>
   </div>
 
+  <!-- MODAL: GESTOR DE CÁMARAS Y DISTRIBUCIÓN -->
+  <div id="cameraModal" class="modal-overlay" onclick="closeCameraOnBackdrop(event)">
+    <div class="camera-modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-title">
+            <svg class="v-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+            <span>Gestor de Cámaras & Distribución Baddgroup</span>
+          </div>
+          <div class="modal-subtitle">Conecte y administre múltiples cámaras IP para procesamiento centralizado o distribuido con IA</div>
+        </div>
+
+        <button class="close-btn" onclick="closeCameraModal()" aria-label="Cerrar modal de cámaras">
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+
+      <div class="camera-modal-body">
+        <!-- 1. CÁMARAS REGISTRADAS -->
+        <div>
+          <div class="camera-section-title">
+            <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+            <span>Cámaras IP Activas en el Sistema</span>
+          </div>
+          <div id="cameraListGrid" class="camera-list-grid">
+            <!-- Renderizado dinámico -->
+          </div>
+        </div>
+
+        <!-- 2. REGISTRAR NUEVA CÁMARA -->
+        <div class="camera-form-box">
+          <div class="camera-section-title" style="margin-bottom:0.25rem;">
+            <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <span>Registrar Nueva Cámara IP (Dahua / Imou / Hikvision / Genérica)</span>
+          </div>
+          <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.75rem;">
+            Ingrese los datos de acceso de la cámara en su red local o URL RTSP directa.
+          </p>
+
+          <form id="addCameraForm" onsubmit="handleAddCamera(event)">
+            <div class="camera-form-grid">
+              <div class="form-group">
+                <label for="camName">Nombre Identificador</label>
+                <input type="text" id="camName" placeholder="Ej: Cámara Patio Trasero" required>
+              </div>
+              <div class="form-group">
+                <label for="camLocation">Ubicación / Sector</label>
+                <input type="text" id="camLocation" placeholder="Ej: Portón Ingreso / Garaje">
+              </div>
+              <div class="form-group">
+                <label for="camIp">Dirección IP o Host</label>
+                <input type="text" id="camIp" placeholder="Ej: 192.168.100.210" required>
+              </div>
+              <div class="form-group">
+                <label for="camPort">Puerto RTSP</label>
+                <input type="number" id="camPort" value="554" required>
+              </div>
+              <div class="form-group">
+                <label for="camUser">Usuario RTSP</label>
+                <input type="text" id="camUser" value="admin" required>
+              </div>
+              <div class="form-group">
+                <label for="camPassword">Contraseña / Safety Code</label>
+                <input type="password" id="camPassword" placeholder="Contraseña de la cámara">
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top:0.85rem;">
+              <label for="camRtspCustom">URL RTSP Personalizada (Opcional - sobrescribe la generación automática)</label>
+              <input type="text" id="camRtspCustom" placeholder="rtsp://usuario:clave@192.168.100.xxx:554/cam/realmonitor?channel=1&subtype=1">
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:0.65rem; margin-top:1.1rem;">
+              <button type="submit" class="btn-play-clip">
+                <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                <span>Registrar Cámara en Sistema</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 3. TOPOLOGÍA DE DISTRIBUCIÓN BADDGROUP -->
+        <div class="distribution-banner">
+          <div style="color:var(--accent-primary); flex-shrink:0; margin-top:2px;">
+            <svg class="v-icon-lg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          </div>
+          <div>
+            <strong style="color:var(--text-main); font-size:0.88rem; display:block; margin-bottom:4px;">
+              Plan de Despliegue en Producción & Escalabilidad Comercial
+            </strong>
+            <span>
+              1. <strong>Fase 1 (Prueba Personal 1 semana):</strong> Su cámara actual en el poste continuará grabando y detectando 24/7. Puede consultar eventos en tiempo real con Gemini Vision AI.<br>
+              2. <strong>Fase 2 (Escalado a 5+ Cámaras):</strong> Registre las nuevas cámaras directamente desde este panel o despliegue el paquete Docker en cada sede o servidor de cliente ejecutando <code>docker compose up -d</code>.
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATIONS -->
   <div id="toastContainer" class="toast-container"></div>
 
   <script>
     let currentFilterClass = '';
+    let currentCameraId = 'all';
+    let allCamerasList = [];
     let isSearchActive = false;
     let lastFoundEvent = null;
     let currentTheme = localStorage.getItem('smartcam_theme') || 'dark';
@@ -1657,6 +1955,179 @@
     updateHUDTime();
 
     // ==========================================
+    // GESTIÓN DE CÁMARAS Y MULTI-STREAMING
+    // ==========================================
+    async function loadCameras() {
+      try {
+        const res = await fetch('/api/cameras');
+        if (!res.ok) return;
+        allCamerasList = await res.json();
+
+        // Actualizar contador en header
+        const countEl = document.getElementById('camerasCountHeader');
+        if (countEl) countEl.innerText = allCamerasList.length;
+
+        // Actualizar dropdown selector de cámara
+        const select = document.getElementById('cameraSelect');
+        if (select) {
+          const prevVal = currentCameraId;
+          select.innerHTML = '<option value="all">Todas las Cámaras</option>' + 
+            allCamerasList.map(c => `<option value="${c.id}" ${c.id === prevVal ? 'selected' : ''}>${c.name} (${c.ip})</option>`).join('');
+        }
+
+        // Renderizar lista en modal
+        renderCameraListGrid();
+      } catch (err) {
+        console.error("Error cargando cámaras:", err);
+      }
+    }
+
+    function renderCameraListGrid() {
+      const grid = document.getElementById('cameraListGrid');
+      if (!grid) return;
+
+      if (allCamerasList.length === 0) {
+        grid.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">No hay cámaras registradas.</p>';
+        return;
+      }
+
+      grid.innerHTML = allCamerasList.map(c => {
+        const isPrimary = c.id === 'cam_1';
+        const isOnline = c.connected;
+        return `
+          <div class="camera-item-card">
+            <div class="camera-item-header">
+              <div>
+                <div class="camera-item-name">${c.name}</div>
+                <div class="camera-item-loc">${c.location || 'Sector General'}</div>
+              </div>
+              <span class="status-badge" style="font-size:0.7rem; padding:0.2rem 0.5rem;">
+                <span class="status-indicator-dot" style="background:${isOnline ? 'var(--accent-success)' : 'var(--text-muted)'};"></span>
+                <span>${isOnline ? 'En Línea' : 'Registrada'}</span>
+              </span>
+            </div>
+
+            <div class="camera-item-detail">
+              IP: ${c.ip}:${c.port} | Usuario: ${c.user}
+            </div>
+            <div class="camera-item-detail" style="font-size:0.7rem; color:var(--text-muted);" title="${c.rtsp_sub}">
+              RTSP: ${c.rtsp_sub ? c.rtsp_sub.replace(/:[^:]*@/, ':****@') : 'Predeterminado'}
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.4rem;">
+              <span style="font-size:0.7rem; color:var(--text-muted); font-weight:600;">ID: ${c.id}</span>
+              ${isPrimary ? `
+                <span class="status-badge" style="font-size:0.68rem; padding:0.2rem 0.4rem;">Principal (Poste)</span>
+              ` : `
+                <button class="btn-action-danger-subtle" style="padding:0.25rem 0.6rem; font-size:0.72rem;" onclick="handleDeleteCamera('${c.id}', '${c.name}')">
+                  <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                  <span>Eliminar</span>
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function onCameraSelectChange(val) {
+      currentCameraId = val;
+      const selectedCam = allCamerasList.find(c => c.id === val);
+      if (selectedCam) {
+        const titleEl = document.getElementById('liveHeroCamTitle');
+        if (titleEl) titleEl.innerHTML = `${selectedCam.name} &bull; En Tiempo Real`;
+        const hudEl = document.getElementById('liveHudCamIp');
+        if (hudEl) hudEl.innerHTML = `${selectedCam.name} &bull; IP: ${selectedCam.ip}`;
+      } else {
+        const titleEl = document.getElementById('liveHeroCamTitle');
+        if (titleEl) titleEl.innerHTML = `Todas las Cámaras &bull; En Tiempo Real`;
+      }
+      loadEvents(currentFilterClass);
+    }
+
+    function openCameraModal() {
+      const modal = document.getElementById('cameraModal');
+      if (modal) {
+        modal.classList.add('active');
+        loadCameras();
+      }
+    }
+
+    function closeCameraModal() {
+      const modal = document.getElementById('cameraModal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function closeCameraOnBackdrop(e) {
+      if (e.target.id === 'cameraModal') closeCameraModal();
+    }
+
+    async function handleAddCamera(e) {
+      e.preventDefault();
+      const name = document.getElementById('camName').value.trim();
+      const location = document.getElementById('camLocation').value.trim();
+      const ip = document.getElementById('camIp').value.trim();
+      const port = parseInt(document.getElementById('camPort').value) || 554;
+      const user = document.getElementById('camUser').value.trim();
+      const password = document.getElementById('camPassword').value;
+      const rtspCustom = document.getElementById('camRtspCustom').value.trim() || null;
+
+      try {
+        const res = await fetch('/api/cameras', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            location,
+            ip,
+            port,
+            user,
+            password,
+            rtsp_sub: rtspCustom,
+            rtsp_main: rtspCustom
+          })
+        });
+        if (res.ok) {
+          showToast(`Cámara "${name}" registrada con éxito`, "success");
+          document.getElementById('addCameraForm').reset();
+          document.getElementById('camPort').value = "554";
+          document.getElementById('camUser').value = "admin";
+          await loadCameras();
+        } else {
+          const err = await res.json();
+          showToast(err.detail || "Error al registrar la cámara", "danger");
+        }
+      } catch (err) {
+        console.error("Error registrando cámara:", err);
+        showToast("Error de conexión al registrar la cámara", "danger");
+      }
+    }
+
+    async function handleDeleteCamera(camId, camName) {
+      showConfirmModal(
+        `Eliminar Cámara: ${camName}`,
+        "Remover cámara del sistema",
+        `¿Deseas desvincular la cámara "${camName}" (${camId}) del sistema? Las grabaciones existentes seguirán en el historial.`,
+        "Eliminar Cámara",
+        async () => {
+          const res = await fetch(`/api/cameras/${camId}`, { method: 'DELETE' });
+          if (res.ok) {
+            showToast(`Cámara "${camName}" eliminada del sistema`, "success");
+            if (currentCameraId === camId) {
+              currentCameraId = 'all';
+              const select = document.getElementById('cameraSelect');
+              if (select) select.value = 'all';
+            }
+            await loadCameras();
+            loadEvents(currentFilterClass);
+          } else {
+            showToast("Error al eliminar la cámara", "danger");
+          }
+        }
+      );
+    }
+
+    // ==========================================
     // ESTADO Y CARGA DE EVENTOS
     // ==========================================
     async function updateStatus() {
@@ -1665,6 +2136,20 @@
         const data = await res.json();
         if (data.camera) {
           document.getElementById('cameraResBadge').innerText = `${data.camera.width}x${data.camera.height} (${data.camera.fps} FPS)`;
+          const liveText = document.getElementById('cameraOnlineStatusText');
+          if (liveText) {
+            liveText.innerText = data.camera.connected ? 'Cámara En Vivo' : 'Cámara Reconectando...';
+          }
+        }
+        if (data.ai_engine) {
+          const aiBadge = document.getElementById('aiEngineBadge');
+          if (aiBadge) {
+            aiBadge.innerText = `Motor IA: ${data.ai_engine.name}`;
+          }
+        }
+        if (data.cameras_count) {
+          const countEl = document.getElementById('camerasCountHeader');
+          if (countEl) countEl.innerText = data.cameras_count;
         }
         if (data.database) {
           const totalCount = data.database.total_events_saved;
@@ -1685,6 +2170,9 @@
         let url = '/api/events?limit=50';
         if (objectClass) {
           url += `&object_class=${encodeURIComponent(objectClass)}`;
+        }
+        if (currentCameraId && currentCameraId !== 'all') {
+          url += `&camera_id=${encodeURIComponent(currentCameraId)}`;
         }
         const res = await fetch(url);
         const events = await res.json();
@@ -2235,7 +2723,11 @@
 
     async function loadAllEventsGallery() {
       try {
-        const res = await fetch('/api/events?all=true');
+        let url = '/api/events?all=true';
+        if (currentCameraId && currentCameraId !== 'all') {
+          url += `&camera_id=${encodeURIComponent(currentCameraId)}`;
+        }
+        const res = await fetch(url);
         allGalleryEvents = await res.json();
         document.getElementById('galleryEventsCount').innerText = allGalleryEvents.length;
         const totalBadge = document.getElementById('totalEventsBadge');
@@ -2405,10 +2897,12 @@
         closeModal();
         closeGalleryModal();
         closeConfirmModal();
+        closeCameraModal();
       }
     });
 
-    // Polling continuo
+    // Inicialización y Polling continuo
+    loadCameras();
     updateStatus();
     loadEvents();
     setInterval(updateStatus, 3000);

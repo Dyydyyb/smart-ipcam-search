@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  baddgroup-vision-ai:
+    build: .
+    container_name: baddgroup-vision-ai
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - CAMERA_IP=${CAMERA_IP:-192.168.100.209}
+      - CAMERA_PORT=${CAMERA_PORT:-554}
+      - CAMERA_USER=${CAMERA_USER:-admin}
+      - CAMERA_PASSWORD=${CAMERA_PASSWORD:-}
+      - CAMERA_RTSP_SUB=${CAMERA_RTSP_SUB:-rtsp://admin:@192.168.100.209:554/cam/realmonitor?channel=1&subtype=1}
+      - CAMERA_RTSP_MAIN=${CAMERA_RTSP_MAIN:-rtsp://admin:@192.168.100.209:554/cam/realmonitor?channel=1&subtype=0}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-1.5-flash}
+      - OLLAMA_HOST=${OLLAMA_HOST:-http://host.docker.internal:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-qwen2.5:3b}
+      - DETECTION_FPS=${DETECTION_FPS:-5}
+    volumes:
+      - ./storage:/app/storage
+      - ./snapshots:/app/snapshots
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

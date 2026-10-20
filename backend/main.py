@@ -18,6 +18,7 @@ from loguru import logger
 from core.config import settings
 from core.database import init_db, get_db, AsyncSessionLocal
 from core.models import SecurityEvent
+from core.camera_manager import camera_manager
 from engine.stream_capture import RTSPStreamReader
 from engine.vision_pipeline import VisionPipeline
 from backend.nlp_search import execute_smart_search
@@ -69,6 +70,16 @@ class SearchRequest(BaseModel):
 class BatchDeleteRequest(BaseModel):
     event_ids: List[str]
 
+class AddCameraRequest(BaseModel):
+    name: str
+    location: Optional[str] = "General"
+    ip: str
+    port: int = 554
+    user: str = "admin"
+    password: str = ""
+    rtsp_sub: Optional[str] = None
+    rtsp_main: Optional[str] = None
+
 @app.get("/", response_class=HTMLResponse)
 async def serve_index():
     """Sirve la interfaz web principal."""
@@ -79,12 +90,19 @@ async def serve_index():
 
 @app.get("/api/status")
 async def get_system_status(db: AsyncSession = Depends(get_db)):
-    """Retorna el estado de la cámara, FPS de detección y conteo de eventos."""
+    """Retorna el estado de la cámara, motor de IA y conteo de eventos."""
     total_events_query = await db.execute(select(SecurityEvent))
     events_count = len(total_events_query.scalars().all())
 
+    cameras = camera_manager.get_all()
+    primary_cam = cameras[0] if cameras else {}
+
+    ai_mode = "Gemini 1.5 Flash (Visión Multimodal)" if bool(settings.GEMINI_API_KEY) else f"Qwen 2.5 ({settings.OLLAMA_MODEL} Local)"
+
     return {
         "camera": {
+            "id": primary_cam.get("id", "cam_1"),
+            "name": primary_cam.get("name", "Cámara Poste Principal"),
             "ip": settings.CAMERA_IP,
             "connected": stream_reader.connected,
             "width": stream_reader.width,
@@ -92,6 +110,13 @@ async def get_system_status(db: AsyncSession = Depends(get_db)):
             "fps": round(stream_reader.fps, 1),
             "detection_fps": settings.DETECTION_FPS
         },
+        "ai_engine": {
+            "name": ai_mode,
+            "provider": "gemini" if bool(settings.GEMINI_API_KEY) else "ollama",
+            "model": settings.GEMINI_MODEL if bool(settings.GEMINI_API_KEY) else settings.OLLAMA_MODEL,
+            "multimodal": bool(settings.GEMINI_API_KEY)
+        },
+        "cameras_count": len(cameras),
         "vision": {
             "model": settings.YOLO_MODEL_NAME,
             "active_tracks": len(vision_pipeline.active_tracks),
@@ -107,13 +132,16 @@ async def get_events(
     limit: int = 50,
     offset: int = 0,
     object_class: Optional[str] = None,
+    camera_id: Optional[str] = None,
     all: bool = False,
     db: AsyncSession = Depends(get_db)
 ):
-    """Lista los eventos registrados con filtros opcionales."""
+    """Lista los eventos registrados con filtros opcionales de clase y cámara."""
     stmt = select(SecurityEvent).order_by(desc(SecurityEvent.start_time))
     if object_class:
         stmt = stmt.where(SecurityEvent.object_class == object_class)
+    if camera_id and camera_id != "all":
+        stmt = stmt.where(SecurityEvent.camera_id == camera_id)
     if not all:
         stmt = stmt.limit(limit).offset(offset)
     
@@ -324,4 +352,42 @@ async def create_demo_event(db: AsyncSession = Depends(get_db)):
     db.add(ev)
     await db.commit()
     return {"status": "ok", "event_id": event_id, "event": ev.to_dict()}
+
+@app.get("/api/cameras")
+async def get_cameras():
+    """Retorna la lista de todas las cámaras IP configuradas."""
+    cams = camera_manager.get_all()
+    for c in cams:
+        if c.get("id") == "cam_1":
+            c["connected"] = stream_reader.connected
+        else:
+            c["connected"] = False
+    return cams
+
+@app.post("/api/cameras")
+async def add_camera(req: AddCameraRequest):
+    """Registra una nueva cámara IP en el sistema para distribución."""
+    if not req.name or not req.ip:
+        raise HTTPException(status_code=400, detail="El nombre y la dirección IP son requeridos")
+    new_cam = camera_manager.add(
+        name=req.name,
+        location=req.location or "General",
+        ip=req.ip,
+        port=req.port,
+        user=req.user,
+        password=req.password,
+        rtsp_sub=req.rtsp_sub,
+        rtsp_main=req.rtsp_main
+    )
+    return {"status": "ok", "camera": new_cam}
+
+@app.delete("/api/cameras/{cam_id}")
+async def delete_camera(cam_id: str):
+    """Elimina una cámara registrada."""
+    if cam_id == "cam_1" and len(camera_manager.get_all()) <= 1:
+        raise HTTPException(status_code=400, detail="No se puede eliminar la cámara principal predeterminada.")
+    success = camera_manager.delete(cam_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Cámara no encontrada")
+    return {"status": "ok", "deleted_id": cam_id}
 

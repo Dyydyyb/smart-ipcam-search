@@ -72,8 +72,10 @@ class VisionPipeline:
     - Infiere con YOLO11 y rastrea con ByteTrack.
     - Consolida eventos y genera clips y miniaturas.
     """
-    def __init__(self, stream_reader: RTSPStreamReader):
+    def __init__(self, stream_reader: RTSPStreamReader, camera_id: str = "cam_1", camera_name: str = "Cámara Poste Principal"):
         self.stream = stream_reader
+        self.camera_id = camera_id
+        self.camera_name = camera_name
         self.model: Optional[YOLO] = None
         self.running = False
         self.thread: Optional[threading.Thread] = None
@@ -242,6 +244,8 @@ class VisionPipeline:
             async with AsyncSessionLocal() as session:
                 ev = SecurityEvent(
                     id=event_id,
+                    camera_id=self.camera_id,
+                    camera_name=self.camera_name,
                     track_id=track_id,
                     object_class=object_class,
                     confidence=confidence,
@@ -254,7 +258,7 @@ class VisionPipeline:
                 )
                 session.add(ev)
                 await session.commit()
-                logger.info(f"Evento {event_id} registrado en base de datos con hora local {ev.start_time}.")
+                logger.info(f"Evento {event_id} ({self.camera_name}) registrado en base de datos con hora local {ev.start_time}.")
 
         asyncio.run(_async_insert())
 

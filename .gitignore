@@ -34,6 +34,10 @@ models/*.onnx
 *.db
 *.sqlite3
 postgres_data/
+storage/clips/
+storage/thumbnails/
+storage/smart_cam.db
+storage/models/
 
 # Environment and sensitive keys
 .env

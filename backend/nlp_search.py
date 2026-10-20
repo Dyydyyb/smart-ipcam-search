@@ -1,5 +1,7 @@
+import os
 import json
 import re
+import base64
 import datetime
 import requests
 from typing import List, Dict, Any, Optional
@@ -8,54 +10,108 @@ from sqlalchemy import select, and_, desc
 from core.config import settings
 from core.models import SecurityEvent
 
-def parse_query_with_ollama(user_query: str) -> Dict[str, Any]:
-    """Extrae clases y ventanas temporales de la consulta."""
-    q = user_query.lower()
-    classes = []
-    
-    if any(w in q for w in ["persona", "gente", "alguien", "hombre", "mujer", "chico", "chica", "ladron", "sujeto", "brazo", "mano", "movio", "movió", "cuerpo", "gesto", "movimiento"]):
-        classes.append("person")
-    if any(w in q for w in ["auto", "coche", "carro", "vehiculo", "vehículo"]):
-        classes.append("car")
-    if any(w in q for w in ["camion", "camión", "camioneta", "furgon", "furgón"]):
-        classes.append("truck")
-    if any(w in q for w in ["moto", "motocicleta"]):
-        classes.append("motorcycle")
-    if any(w in q for w in ["bici", "bicicleta"]):
-        classes.append("bicycle")
-    if any(w in q for w in ["perro", "perros", "mascota"]):
-        classes.append("dog")
-    if any(w in q for w in ["gato", "gatos"]):
-        classes.append("cat")
-    if any(w in q for w in ["tv", "tele", "pantalla", "televisor"]):
-        classes.append("tv")
+def reason_with_gemini_multimodal(user_query: str, candidate_events: List[SecurityEvent]) -> Optional[Dict[str, Any]]:
+    """
+    Motor de IA de Producción: Utiliza Google Gemini 1.5 Flash con comprensión multimodal de imágenes.
+    Examina directamente los fotogramas de video capturados para validar vestimenta, gestos y acciones con precisión humana.
+    """
+    if not settings.GEMINI_API_KEY:
+        return None
 
-    hours_back = None
-    if "ultima hora" in q or "última hora" in q or "1 hora" in q:
-        hours_back = 1.0
-    elif "ultimos 30" in q or "últimos 30" in q or "media hora" in q:
-        hours_back = 0.5
-    elif "ultimas 2" in q or "últimas 2" in q:
-        hours_back = 2.0
-    elif "hoy" in q:
-        hours_back = 24.0
+    try:
+        parts = [
+            {
+                "text": (
+                    "Eres el analista de seguridad de Baddgroup Vision AI, un sistema de videovigilancia inteligente.\n"
+                    f"El usuario busca: '{user_query}'\n\n"
+                    "A continuación se adjuntan las imágenes capturadas por las cámaras de seguridad correspondientes a los eventos detectados:\n"
+                )
+            }
+        ]
 
-    return {
-        "classes": classes,
-        "hours_back": hours_back,
-        "summary": f"Filtro de búsqueda para: {user_query}"
-    }
+        valid_events = []
+        for idx, ev in enumerate(candidate_events[:6], 1):
+            if ev.thumbnail_path and os.path.exists(ev.thumbnail_path):
+                try:
+                    with open(ev.thumbnail_path, "rb") as img_f:
+                        img_b64 = base64.b64encode(img_f.read()).decode("utf-8")
+                    
+                    t_str = ev.start_time.strftime("%H:%M:%S") if ev.start_time else "desconocida"
+                    d_str = ev.start_time.strftime("%d/%m") if ev.start_time else "hoy"
+                    
+                    parts.append({
+                        "text": f"Evento #{idx} - ID: {ev.id} | Cámara: {getattr(ev, 'camera_name', 'Principal')} | Hora: {t_str} ({d_str}) | Duración: {ev.duration_seconds}s"
+                    })
+                    parts.append({
+                        "inline_data": {
+                            "mime_type": "image/jpeg",
+                            "data": img_b64
+                        }
+                    })
+                    valid_events.append(ev)
+                except Exception as read_err:
+                    logger.warning(f"No se pudo leer thumbnail para Gemini: {read_err}")
 
-ABSURD_OR_UNSUPPORTED = [
-    "dinosaurio", "ovni", "ufo", "alien", "extraterrestre", "fantasma", "espiritu",
-    "dragon", "monstruo", "zombie", "vampiro", "leon", "tigre", "elefante", "jirafa",
-    "ballena", "tiburon", "submarino", "cohete", "nave espacial", "helicoptero", "tanque"
-]
+        if not valid_events:
+            return None
+
+        parts.append({
+            "text": (
+                "Instrucciones de análisis visual:\n"
+                "1. Examina las imágenes adjuntas y determina si alguna responde de manera certera a la consulta del usuario "
+                "(por ejemplo: movimientos de brazos, vestimenta clara/oscura, vehículos, personas, etc.).\n"
+                "2. Si la consulta busca personas o movimiento y en la imagen se observa una persona, confirma la coincidencia seleccionando el evento más representativo.\n"
+                "3. Si la consulta pide algo inexistente o absurdo (e.g. dinosaurios, ovnis, etc.), marca 'coincidencia_encontrada': false y 'evento_ids_coincidentes': [].\n"
+                "4. Responde ÚNICAMENTE en JSON con la siguiente estructura:\n"
+                "{\n"
+                '  "coincidencia_encontrada": true,\n'
+                '  "evento_ids_coincidentes": ["ID_DEL_EVENTO_EXACTO"],\n'
+                '  "respuesta_ia": "A las [HH:MM:SS] hs del [DD/MM] se visualizó a [descripción detallada de lo que viste en la imagen] tal como consultaste."\n'
+                "}\n"
+                "Si no coincide, 'evento_ids_coincidentes': [] y explica en 'respuesta_ia' que no se encontró en el metraje."
+            )
+        })
+
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{settings.GEMINI_MODEL}:generateContent?key={settings.GEMINI_API_KEY}"
+        headers = {"Content-Type": "application/json"}
+        payload = {
+            "contents": [{"parts": parts}],
+            "generationConfig": {
+                "temperature": 0.1,
+                "response_mime_type": "application/json"
+            }
+        }
+
+        resp = requests.post(url, headers=headers, json=payload, timeout=12.0)
+        if resp.status_code == 200:
+            result_json = resp.json()
+            candidates = result_json.get("candidates", [])
+            if candidates:
+                content_text = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                parsed = json.loads(content_text)
+                found = parsed.get("coincidencia_encontrada", False)
+                matched = parsed.get("evento_ids_coincidentes", [])
+                answer = parsed.get("respuesta_ia")
+                if answer:
+                    logger.info("Consulta resuelta con éxito por Gemini 1.5 Flash Vision en producción.")
+                    return {
+                        "found": found,
+                        "ai_answer": answer,
+                        "matched_ids": matched if found else [],
+                        "engine": f"Google {settings.GEMINI_MODEL} (Producción)"
+                    }
+        else:
+            logger.warning(f"Gemini API devolvió código {resp.status_code}: {resp.text[:200]}")
+    except Exception as e:
+        logger.warning(f"Excepción en Gemini Vision API: {e}. Usando fallback local.")
+
+    return None
 
 def reason_and_pick_specific_event(user_query: str, candidate_events: List[SecurityEvent]) -> Dict[str, Any]:
     """
-    Usa Ollama (Qwen 2.5) para razonar sobre los eventos candidatos y seleccionar
-    EXCLUSIVAMENTE el evento que responde a la pregunta específica del usuario.
+    Motor híbrido de razonamiento:
+    1. Intenta resolver con Gemini Multimodal en la nube si hay API Key configurada.
+    2. Si no, usa Ollama (Qwen 2.5) local como respaldo sin costo.
     """
     q_lower = user_query.lower()
     
@@ -73,6 +129,12 @@ def reason_and_pick_specific_event(user_query: str, candidate_events: List[Secur
             "ai_answer": f"No se encontraron grabaciones registradas para '{user_query}' en el rango de tiempo consultado.",
             "matched_ids": []
         }
+
+    # 1. MOTOR DE PRODUCCIÓN: Google Gemini 1.5 Flash Multimodal
+    if settings.GEMINI_API_KEY:
+        gemini_result = reason_with_gemini_multimodal(user_query, candidate_events)
+        if gemini_result is not None:
+            return gemini_result
 
     # Construir resumen de eventos para el LLM con fecha, hora local y metadatos visuales
     events_summary = []
