@@ -19,8 +19,17 @@ import socket
 import argparse
 from pathlib import Path
 
+# Configurar salida UTF-8 para evitar errores de codificación en Windows (cp1252)
+if sys.platform.startswith("win"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 # Configurar OpenCV para usar RTSP sobre TCP (evita paquetes perdidos y artefactos en Wi-Fi)
 os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;tcp"
+
 
 
 def check_tcp_port(ip: str, port: int = 554, timeout: float = 3.0) -> bool:
