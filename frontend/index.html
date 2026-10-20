@@ -4,34 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Baddgroup Vision AI | Plataforma de Videovigilancia Inteligente</title>
-  <meta name="description" content="Plataforma de videovigilancia inteligente y búsqueda en lenguaje natural desarrollada por Baddgroup.">
+  <meta name="description" content="Plataforma de videovigilancia inteligente y búsqueda en lenguaje natural por IA desarrollada por Baddgroup.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    /* VARIABLES DE TEMA - COLORES PROFESIONALES (SIN NEON) */
+    /* =========================================================
+       SISTEMA DE DISEÑO EMPRESARIAL BADDGROUP (SIN EMOJIS, SIN NEON)
+       ========================================================= */
     :root[data-theme="dark"] {
-      --bg-base: #0f172a;
-      --bg-surface: #1e293b;
-      --bg-card: #1e293b;
-      --bg-card-hover: #273549;
-      --border-color: #334155;
+      --bg-base: #0b1120;
+      --bg-surface: #131c31;
+      --bg-card: #18233c;
+      --bg-card-hover: #1f2e4d;
+      --border-color: #24324f;
       --border-accent: #2563eb;
       --accent-primary: #2563eb;
       --accent-primary-hover: #1d4ed8;
       --accent-secondary: #0f766e;
-      --accent-success: #059669;
-      --accent-danger: #dc2626;
+      --accent-secondary-hover: #115e59;
+      --accent-success: #10b981;
+      --accent-danger: #ef4444;
       --text-main: #f8fafc;
       --text-body: #94a3b8;
       --text-muted: #64748b;
-      --badge-bg: #334155;
-      --badge-text: #e2e8f0;
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-      --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
-      --live-bg: #000000;
-      --input-bg: #0f172a;
+      --badge-bg: #1e293b;
+      --badge-text: #cbd5e1;
+      --input-bg: #0b1120;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+      --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.6);
+      --live-viewport-bg: #020617;
     }
 
     :root[data-theme="light"] {
@@ -44,18 +47,19 @@
       --accent-primary: #2563eb;
       --accent-primary-hover: #1d4ed8;
       --accent-secondary: #0f766e;
+      --accent-secondary-hover: #115e59;
       --accent-success: #059669;
       --accent-danger: #dc2626;
       --text-main: #0f172a;
       --text-body: #334155;
       --text-muted: #64748b;
-      --badge-bg: #e2e8f0;
-      --badge-text: #1e293b;
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-      --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
-      --live-bg: #020617;
+      --badge-bg: #f1f5f9;
+      --badge-text: #334155;
       --input-bg: #ffffff;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.1);
+      --live-viewport-bg: #0f172a;
     }
 
     * {
@@ -72,7 +76,27 @@
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
-      transition: background-color 0.25s ease, color 0.25s ease;
+      transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* VECTOR ICONS */
+    .v-icon {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+
+    .v-icon-lg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .v-icon-sm {
+      width: 13px;
+      height: 13px;
     }
 
     /* HEADER */
@@ -98,8 +122,8 @@
     }
 
     .brand-logo-icon {
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -113,7 +137,7 @@
 
     .brand-name {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       font-weight: 800;
       letter-spacing: -0.025em;
       color: var(--text-main);
@@ -121,7 +145,7 @@
     }
 
     .brand-title {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -131,82 +155,74 @@
     .header-right {
       display: flex;
       align-items: center;
-      gap: 0.85rem;
+      gap: 0.75rem;
       flex-wrap: wrap;
     }
 
-    .badge {
+    .status-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.45rem;
-      padding: 0.4rem 0.8rem;
+      gap: 0.5rem;
+      padding: 0.38rem 0.75rem;
       border-radius: 6px;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 600;
       background: var(--badge-bg);
       border: 1px solid var(--border-color);
       color: var(--badge-text);
     }
 
-    .badge-live {
-      color: var(--accent-success);
-      border-color: rgba(5, 150, 105, 0.3);
-      background: rgba(5, 150, 105, 0.1);
-    }
-
-    .badge-live::before {
-      content: '';
-      width: 8px;
-      height: 8px;
+    .status-indicator-dot {
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: var(--accent-success);
     }
 
-    /* THEME TOGGLE BUTTON */
     .theme-toggle-btn {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 0.42rem 0.9rem;
-      border-radius: 8px;
-      font-size: 0.82rem;
+      padding: 0.42rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 0.45rem;
-      transition: all 0.2s ease;
-      box-shadow: var(--shadow-sm);
+      transition: all 0.15s ease;
     }
 
     .theme-toggle-btn:hover {
       background: var(--bg-card-hover);
-      border-color: var(--accent-primary);
+      border-color: var(--border-accent);
     }
 
     /* MAIN CONTAINER */
     main {
       flex: 1;
-      max-width: 1520px;
+      max-width: 1500px;
       width: 100%;
       margin: 0 auto;
-      padding: 1.75rem 2rem 3rem;
+      padding: 1.5rem 2rem 3rem;
       display: flex;
       flex-direction: column;
-      gap: 1.75rem;
+      gap: 1.5rem;
     }
 
     /* SECTION 1: LIVE STREAM PRINCIPAL Y GRANDE */
     .live-hero-card {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
-      border-radius: 14px;
+      border-radius: 12px;
       overflow: hidden;
       box-shadow: var(--shadow-md);
+      transition: border-color 0.2s ease;
     }
 
     .live-hero-header {
-      padding: 0.85rem 1.4rem;
+      padding: 0.75rem 1.25rem;
       background: var(--bg-surface);
       border-bottom: 1px solid var(--border-color);
       display: flex;
@@ -219,10 +235,10 @@
     .live-hero-title {
       display: flex;
       align-items: center;
-      gap: 0.65rem;
+      gap: 0.6rem;
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 700;
-      font-size: 1.05rem;
+      font-size: 1rem;
       color: var(--text-main);
     }
 
@@ -230,9 +246,9 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 0.42rem 0.9rem;
+      padding: 0.38rem 0.8rem;
       border-radius: 6px;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
@@ -243,14 +259,14 @@
 
     .btn-action:hover {
       background: var(--bg-card-hover);
-      border-color: var(--accent-primary);
+      border-color: var(--border-accent);
     }
 
     .live-video-viewport {
       width: 100%;
-      height: 520px;
+      height: 500px;
       max-height: 65vh;
-      background: var(--live-bg);
+      background: var(--live-viewport-bg);
       position: relative;
       display: flex;
       align-items: center;
@@ -260,7 +276,7 @@
 
     @media (max-width: 900px) {
       .live-video-viewport {
-        height: 340px;
+        height: 330px;
       }
     }
 
@@ -274,21 +290,21 @@
 
     .hud-overlay-top-left {
       position: absolute;
-      top: 1rem;
-      left: 1.25rem;
+      top: 0.85rem;
+      left: 1rem;
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
+      gap: 0.35rem;
       pointer-events: none;
       z-index: 10;
     }
 
     .hud-pill {
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 0.35rem 0.75rem;
-      border-radius: 6px;
-      font-size: 0.78rem;
+      background: rgba(11, 17, 32, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.3rem 0.65rem;
+      border-radius: 5px;
+      font-size: 0.75rem;
       font-weight: 600;
       color: #ffffff;
       display: inline-flex;
@@ -299,38 +315,38 @@
 
     .hud-overlay-bottom-right {
       position: absolute;
-      bottom: 1rem;
-      right: 1.25rem;
+      bottom: 0.85rem;
+      right: 1rem;
       display: flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.5rem;
       pointer-events: none;
       z-index: 10;
     }
 
     .live-hero-footer {
-      padding: 0.75rem 1.4rem;
+      padding: 0.65rem 1.25rem;
       background: var(--bg-surface);
       border-top: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
       flex-wrap: wrap;
       gap: 0.5rem;
     }
 
-    /* SECTION 2: SEARCH SECTION */
+    /* SECTION 2: BUSCADOR CON IA */
     .search-card {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
-      border-radius: 14px;
-      padding: 1.5rem 1.75rem;
+      border-radius: 12px;
+      padding: 1.35rem 1.6rem;
       box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
-      gap: 1.15rem;
+      gap: 1rem;
     }
 
     .search-title-wrap {
@@ -343,12 +359,12 @@
 
     .search-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.18rem;
+      font-size: 1.12rem;
       font-weight: 700;
       color: var(--text-main);
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.55rem;
     }
 
     .search-input-box {
@@ -357,26 +373,24 @@
       align-items: center;
     }
 
-    .search-input-box svg.search-icon {
+    .search-input-icon {
       position: absolute;
-      left: 1.25rem;
-      width: 20px;
-      height: 20px;
-      fill: var(--text-muted);
+      left: 1.15rem;
+      color: var(--text-muted);
     }
 
     .search-input {
       width: 100%;
-      padding: 1rem 1.25rem 1rem 3.25rem;
-      padding-right: 165px;
+      padding: 0.95rem 1.2rem 0.95rem 3.1rem;
+      padding-right: 155px;
       background: var(--input-bg);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
+      border-radius: 8px;
       color: var(--text-main);
-      font-size: 1rem;
+      font-size: 0.98rem;
       font-family: inherit;
       outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
     .search-input:focus {
@@ -386,17 +400,17 @@
 
     .search-btn {
       position: absolute;
-      right: 0.55rem;
+      right: 0.5rem;
       background: var(--accent-primary);
       color: #ffffff;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 700;
-      font-size: 0.88rem;
-      padding: 0.65rem 1.25rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 0.6rem 1.15rem;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 0.45rem;
       transition: background 0.15s ease;
@@ -409,36 +423,38 @@
     .filter-chips {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 0.45rem;
       align-items: center;
     }
 
     .chip-label {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
       margin-right: 0.25rem;
-      font-weight: 500;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .chip {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       color: var(--text-body);
-      padding: 0.4rem 0.85rem;
-      border-radius: 9999px;
-      font-size: 0.82rem;
+      padding: 0.38rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.15s ease;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.4rem;
     }
 
     .chip:hover {
       background: var(--bg-card-hover);
       color: var(--text-main);
-      border-color: var(--accent-primary);
+      border-color: var(--border-accent);
     }
 
     .chip.active {
@@ -448,18 +464,18 @@
       font-weight: 600;
     }
 
-    /* AI REPORT BANNER (REPORTE DETALLADO Y PROFESIONAL) */
+    /* REPORTE DE ANÁLISIS DE IA */
     .ai-report-banner {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
-      border-left: 5px solid var(--accent-primary);
-      border-radius: 12px;
-      padding: 1.4rem 1.6rem;
-      box-shadow: var(--shadow-md);
+      border-left: 4px solid var(--accent-primary);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow-sm);
       display: none;
       flex-direction: column;
-      gap: 0.85rem;
-      animation: fadeIn 0.25s ease;
+      gap: 0.75rem;
+      animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .ai-report-header {
@@ -471,18 +487,18 @@
     }
 
     .ai-report-title {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 700;
       color: var(--accent-primary);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       display: flex;
       align-items: center;
       gap: 0.45rem;
     }
 
     .ai-report-text {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 600;
       color: var(--text-main);
       line-height: 1.55;
@@ -490,7 +506,7 @@
 
     .ai-report-actions {
       display: flex;
-      gap: 0.75rem;
+      gap: 0.65rem;
       align-items: center;
       flex-wrap: wrap;
       margin-top: 0.35rem;
@@ -499,10 +515,10 @@
     .btn-play-clip {
       background: var(--accent-primary);
       color: #ffffff;
-      padding: 0.55rem 1.15rem;
+      padding: 0.5rem 1.1rem;
       border-radius: 6px;
       border: none;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
@@ -518,29 +534,29 @@
     .btn-play-continuous {
       background: var(--accent-secondary);
       color: #ffffff;
-      padding: 0.55rem 1.15rem;
+      padding: 0.5rem 1.1rem;
       border-radius: 6px;
       border: none;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
-      transition: opacity 0.15s ease;
+      transition: background 0.15s ease;
     }
 
     .btn-play-continuous:hover {
-      opacity: 0.9;
+      background: var(--accent-secondary-hover);
     }
 
     .btn-reset-search {
       background: transparent;
       border: 1px solid var(--border-color);
       color: var(--text-muted);
-      padding: 0.55rem 1rem;
+      padding: 0.5rem 0.95rem;
       border-radius: 6px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -555,7 +571,7 @@
     .slider-section {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.9rem;
     }
 
     .slider-header-wrap {
@@ -574,25 +590,27 @@
 
     .slider-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: var(--text-main);
-    }
-
-    .slider-nav-controls {
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
 
+    .slider-nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
     .slider-arrow-btn {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 6px;
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      font-size: 1.15rem;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -602,16 +620,16 @@
 
     .slider-arrow-btn:hover {
       background: var(--bg-card-hover);
-      border-color: var(--accent-primary);
+      border-color: var(--border-accent);
     }
 
     .recordings-slider {
       display: flex;
-      gap: 1.25rem;
+      gap: 1.15rem;
       overflow-x: auto;
       scroll-behavior: smooth;
       scroll-snap-type: x mandatory;
-      padding: 0.25rem 0.25rem 1rem;
+      padding: 0.25rem 0.25rem 0.85rem;
       scrollbar-width: thin;
       scrollbar-color: var(--border-color) var(--bg-surface);
     }
@@ -632,17 +650,17 @@
 
     /* TARJETA DE EVENTO */
     .event-card {
-      flex: 0 0 290px;
-      max-width: 310px;
-      min-width: 280px;
+      flex: 0 0 280px;
+      max-width: 300px;
+      min-width: 270px;
       scroll-snap-align: start;
-      background: var(--bg-surface);
+      background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 10px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.15s ease, box-shadow 0.15s ease;
       cursor: pointer;
       position: relative;
       box-shadow: var(--shadow-sm);
@@ -650,7 +668,7 @@
 
     .event-card:hover {
       transform: translateY(-3px);
-      border-color: var(--accent-primary);
+      border-color: var(--border-accent);
       box-shadow: var(--shadow-md);
     }
 
@@ -661,22 +679,25 @@
 
     .featured-badge {
       position: absolute;
-      top: 0.65rem;
-      left: 0.65rem;
+      top: 0.6rem;
+      left: 0.6rem;
       background: var(--accent-primary);
       color: #ffffff;
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 700;
-      font-size: 0.72rem;
-      padding: 0.28rem 0.6rem;
+      font-size: 0.7rem;
+      padding: 0.25rem 0.55rem;
       border-radius: 4px;
       z-index: 10;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
     }
 
     .thumb-wrapper {
       position: relative;
       width: 100%;
-      height: 175px;
+      height: 165px;
       background: #020617;
       overflow: hidden;
     }
@@ -695,7 +716,7 @@
     .thumb-play-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -708,8 +729,8 @@
     }
 
     .play-circle {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       background: var(--accent-primary);
       border-radius: 50%;
       display: flex;
@@ -718,8 +739,8 @@
     }
 
     .play-circle svg {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       fill: #ffffff;
       margin-left: 2px;
     }
@@ -728,7 +749,7 @@
       position: absolute;
       bottom: 0.5rem;
       right: 0.5rem;
-      background: rgba(15, 23, 42, 0.85);
+      background: rgba(11, 17, 32, 0.85);
       padding: 0.2rem 0.5rem;
       border-radius: 4px;
       font-size: 0.72rem;
@@ -737,10 +758,10 @@
     }
 
     .card-content {
-      padding: 0.85rem 1rem;
+      padding: 0.8rem 0.95rem;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.45rem;
     }
 
     .card-top {
@@ -752,36 +773,36 @@
     .class-tag {
       text-transform: capitalize;
       font-weight: 700;
-      font-size: 0.92rem;
-      display: flex;
+      font-size: 0.88rem;
+      display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.35rem;
       color: var(--text-main);
     }
 
     .conf-tag {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--accent-success);
-      background: rgba(5, 150, 105, 0.1);
-      border: 1px solid rgba(5, 150, 105, 0.2);
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
       padding: 0.15rem 0.45rem;
       border-radius: 4px;
       font-weight: 600;
     }
 
     .card-time {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: var(--text-muted);
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 0.35rem;
     }
 
     .card-desc-snippet {
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       color: var(--text-body);
       line-height: 1.4;
-      background: var(--bg-base);
+      background: var(--bg-surface);
       border: 1px solid var(--border-color);
       padding: 0.35rem 0.5rem;
       border-radius: 4px;
@@ -791,14 +812,14 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(8px);
+      background: rgba(11, 17, 32, 0.8);
+      backdrop-filter: blur(6px);
       z-index: 100;
       display: none;
       align-items: center;
       justify-content: center;
       padding: 1.5rem;
-      animation: fadeIn 0.2s ease;
+      animation: fadeIn 0.15s ease;
     }
 
     .modal-overlay.active {
@@ -809,7 +830,7 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: 12px;
-      max-width: 980px;
+      max-width: 960px;
       width: 100%;
       overflow: hidden;
       box-shadow: var(--shadow-lg);
@@ -818,7 +839,7 @@
     }
 
     .modal-header {
-      padding: 1rem 1.4rem;
+      padding: 0.9rem 1.4rem;
       background: var(--bg-surface);
       border-bottom: 1px solid var(--border-color);
       display: flex;
@@ -839,17 +860,20 @@
       font-size: 1.05rem;
       font-weight: 700;
       color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .modal-subtitle {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: var(--text-muted);
     }
 
     .modal-mode-tabs {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.35rem;
       background: var(--bg-base);
       padding: 0.25rem;
       border-radius: 6px;
@@ -862,10 +886,13 @@
       color: var(--text-muted);
       padding: 0.35rem 0.75rem;
       border-radius: 4px;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
     }
 
     .mode-tab.active {
@@ -880,7 +907,6 @@
       width: 32px;
       height: 32px;
       border-radius: 6px;
-      font-size: 1.2rem;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -889,14 +915,14 @@
     }
 
     .close-btn:hover {
-      background: rgba(220, 38, 38, 0.15);
+      background: rgba(239, 68, 68, 0.15);
       border-color: var(--accent-danger);
       color: var(--accent-danger);
     }
 
     .modal-video-container {
       width: 100%;
-      height: 520px;
+      height: 500px;
       background: #000;
       position: relative;
       display: flex;
@@ -906,7 +932,7 @@
 
     @media (max-width: 900px) {
       .modal-video-container {
-        height: 360px;
+        height: 340px;
       }
     }
 
@@ -917,7 +943,7 @@
     }
 
     .modal-footer {
-      padding: 0.85rem 1.4rem;
+      padding: 0.8rem 1.4rem;
       background: var(--bg-surface);
       border-top: 1px solid var(--border-color);
       display: flex;
@@ -938,7 +964,7 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-6px); }
+      from { opacity: 0; transform: translateY(-4px); }
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
@@ -949,9 +975,9 @@
   <header>
     <a href="#" class="brand-logo" aria-label="BADDGROUP - Inicio">
       <div class="brand-logo-icon">
-        <!-- Baddgroup Hexagonal Shield Icon (Colores Estándar) -->
+        <!-- Logo Baddgroup Isotipo Vectorial Limpio -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
-          <polygon points="50,4 92,26 92,74 50,96 8,74 8,26" fill="#1e293b" stroke="#334155" stroke-width="3"/>
+          <polygon points="50,4 92,26 92,74 50,96 8,74 8,26" fill="#1e293b" stroke="#3b82f6" stroke-width="2.5"/>
           <path d="M28 24 H48 C54.5 24 59 28 59 33.5 C59 37.5 56.5 41 52.5 42.5 C57.5 44 61 48 61 53.5 C61 60 55.5 64 48 64 H28 V24 Z" 
                 fill="none" stroke="#2563eb" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
           <path d="M28 44 H48" stroke="#2563eb" stroke-width="4.5" stroke-linecap="round"/>
@@ -962,18 +988,22 @@
       </div>
       <div class="brand-text">
         <span class="brand-name">BADDGROUP</span>
-        <span class="brand-title">VISION AI &bull; SEGURIDAD INTELIGENTE</span>
+        <span class="brand-title">VISION AI &bull; PLATAFORMA DE SEGURIDAD</span>
       </div>
     </a>
 
     <div class="header-right">
-      <div class="badge badge-live">Cámara Imou En Vivo</div>
-      <div class="badge" id="cameraResBadge">640x480 (15 FPS)</div>
-      <div class="badge" id="eventsCountBadge">0 Eventos</div>
+      <div class="status-badge">
+        <span class="status-indicator-dot"></span>
+        <span>Cámara En Vivo</span>
+      </div>
+      <div class="status-badge" id="cameraResBadge">640x480 (15 FPS)</div>
+      <div class="status-badge" id="eventsCountBadge">0 Eventos</div>
 
-      <!-- BOTON DE MODO CLARO / OSCURO -->
-      <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()">
-        <span id="themeIcon">☀️</span>
+      <!-- BOTON DE MODO CLARO / OSCURO (CON SVG) -->
+      <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Cambiar tema">
+        <svg id="themeIconSun" class="v-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg id="themeIconMoon" class="v-icon" style="display:none;" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span id="themeText">Modo Claro</span>
       </button>
     </div>
@@ -987,13 +1017,13 @@
       <div class="live-hero-card" id="liveCard">
         <div class="live-hero-header">
           <div class="live-hero-title">
-            <span style="color: var(--accent-success); font-size: 1.1rem;">●</span>
-            <span>Transmisión Principal en Vivo</span>
-            <span class="badge" style="font-size:0.75rem;">YOLO11 Tracking</span>
+            <span class="status-indicator-dot"></span>
+            <span>Monitoreo Principal en Tiempo Real</span>
+            <span class="status-badge" style="padding:0.2rem 0.5rem; font-size:0.72rem;">YOLO11 Tracking</span>
           </div>
           <div>
             <button class="btn-action" onclick="toggleLiveFullscreen()">
-              <svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+              <svg class="v-icon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
               <span>Pantalla Completa</span>
             </button>
           </div>
@@ -1004,16 +1034,17 @@
             id="liveStreamImg" 
             class="live-video-stream" 
             src="/api/live" 
-            alt="Transmisión en vivo con cajas de tracking IA"
-            onerror="this.src=''; this.alt='Conectando al stream RTSP de la cámara...';"
+            alt="Transmisión en vivo de cámara IP"
+            onerror="this.src=''; this.alt='Conectando al stream de la cámara...';"
           >
           
           <div class="hud-overlay-top-left">
             <div class="hud-pill">
-              <span style="color:var(--accent-success);">●</span> REC CONTINUO &bull; RTSP ACTIVO
+              <span class="status-indicator-dot"></span>
+              <span>RTSP ACTIVO &bull; GRABACIÓN CONTINUA</span>
             </div>
             <div class="hud-pill" style="font-size:0.72rem;">
-              Imou Cruiser (Dahua) &bull; IP: 192.168.100.209
+              Imou Cruiser (Dahua OEM) &bull; IP: 192.168.100.209
             </div>
           </div>
 
@@ -1022,82 +1053,104 @@
               --:--:--
             </div>
             <div class="hud-pill">
-              AMD DirectML
+              DirectML AMD GPU
             </div>
           </div>
         </div>
 
         <div class="live-hero-footer">
-          <span>Resolución de Monitoreo: 640x480 @ 15 FPS (Grabación Full 2K en Eventos)</span>
+          <span>Resolución: 640x480 @ 15 FPS (Grabación Nativa 2K en Eventos)</span>
           <span>Buffer Pre-roll: 3.0s H.264 &bull; Segmentación FastStart</span>
         </div>
       </div>
     </section>
 
-    <!-- 2. BÚSQUEDA EN LENGUAJE NATURAL -->
+    <!-- 2. BÚSQUEDA INTELIGENTE EN LENGUAJE NATURAL -->
     <section class="search-card">
       <div class="search-title-wrap">
         <div class="search-title">
-          <span>🔍</span>
-          <span>Búsqueda Inteligente de Eventos con IA</span>
+          <svg class="v-icon-lg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <span>Búsqueda de Eventos en Lenguaje Natural con IA</span>
         </div>
-        <div class="badge" style="font-size:0.75rem;">
-          Motor: Qwen 2.5 (3B Local)
+        <div class="status-badge" style="font-size:0.75rem;">
+          Motor LLM: Qwen 2.5 (3B Local)
         </div>
       </div>
 
       <form id="searchForm" class="search-input-box" onsubmit="handleSearch(event)">
-        <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <span class="search-input-icon">
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        </span>
         <input 
           id="searchInput" 
           type="text" 
           class="search-input" 
-          placeholder="Ej: 'en que momento alguien movio un brazo', 'cuando paso una persona', 'autos de hoy'..." 
+          placeholder="Escribe tu consulta: 'en que momento alguien movio un brazo', 'cuando paso un auto', 'personas de la ultima hora'..." 
           autocomplete="off"
         >
         <button type="submit" class="search-btn">
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/></svg>
           <span>Buscar con IA</span>
-          <svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/></svg>
         </button>
       </form>
 
-      <!-- CHIPS -->
+      <!-- FILTROS RÁPIDOS VECTORIALES -->
       <div class="filter-chips">
-        <span class="chip-label">Filtros rápidos:</span>
-        <button class="chip active" onclick="filterByChip('')">✨ Todos los eventos</button>
-        <button class="chip" onclick="searchPreset('en que momento alguien movio un brazo')">🦾 Movió un brazo</button>
-        <button class="chip" onclick="filterByChip('person')">👤 Personas</button>
-        <button class="chip" onclick="filterByChip('car')">🚗 Vehículos</button>
-        <button class="chip" onclick="searchPreset('personas de la última hora')">⏱️ Última hora</button>
-        <button class="chip" onclick="searchPreset('todo lo que pasó hoy')">📅 Hoy</button>
+        <span class="chip-label">Filtros:</span>
+        <button class="chip active" onclick="filterByChip('')">
+          <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm2 5h12v2H6zm3 5h6v2H9z"/></svg>
+          <span>Todos los eventos</span>
+        </button>
+        <button class="chip" onclick="searchPreset('en que momento alguien movio un brazo')">
+          <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
+          <span>Movimiento de brazos</span>
+        </button>
+        <button class="chip" onclick="filterByChip('person')">
+          <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          <span>Personas</span>
+        </button>
+        <button class="chip" onclick="filterByChip('car')">
+          <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
+          <span>Vehículos</span>
+        </button>
+        <button class="chip" onclick="searchPreset('personas de la última hora')">
+          <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+          <span>Última hora</span>
+        </button>
+        <button class="chip" onclick="searchPreset('todo lo que pasó hoy')">
+          <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+          <span>Hoy</span>
+        </button>
       </div>
     </section>
 
-    <!-- AI REPORT BANNER (DESCRIPCIÓN DE LA FILMACIÓN Y OPCIÓN DE GRABACIÓN COMPLETA) -->
+    <!-- AI REPORT BANNER (REPORTE DETALLADO Y EXACTO CON HORA LOCAL) -->
     <div id="aiReportBanner" class="ai-report-banner">
       <div class="ai-report-header">
         <div class="ai-report-title">
-          <span>📋</span>
-          <span>Reporte de Filmación Identificada por IA</span>
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+          <span>Reporte de Análisis de Grabación</span>
         </div>
-        <span class="badge badge-live">Evento Localizado</span>
+        <span class="status-badge" id="aiStatusBadge">Evento Identificado</span>
       </div>
       
-      <!-- DESCRIPCIÓN DETALLADA DEL SUCESO SOLICITADA POR EL USUARIO -->
+      <!-- DESCRIPCIÓN DETALLADA DE LA FILMACIÓN -->
       <div class="ai-report-text" id="aiReportText">
-        <!-- e.g. "A las 15hs del 20/10 se visualizó un sujeto con ropa blanca tal como pediste..." -->
+        <!-- Generado dinámicamente -->
       </div>
 
-      <!-- BOTONES DE REPRODUCCIÓN (CLIP AISLADO VS GRABACIÓN COMPLETA DESDE ESE EVENTO) -->
+      <!-- BOTONES DE REPRODUCCIÓN (CLIP AISLADO VS CONTINUO) -->
       <div class="ai-report-actions">
         <button id="btnPlayClip" class="btn-play-clip" onclick="playSingleClip()">
-          ▶ Ver clip del evento (<span id="btnClipDuration">0s</span>)
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <span>Ver clip del evento (<span id="btnClipDuration">0s</span>)</span>
         </button>
         <button id="btnPlayContinuous" class="btn-play-continuous" onclick="playContinuousFromEvent()">
-          🎥 Ver grabación completa a partir de este evento
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
+          <span>Ver grabación completa a partir de este evento</span>
         </button>
         <button class="btn-reset-search" onclick="resetSearch()">
-          ✕ Ver todas las grabaciones
+          <span>✕ Ver todas las grabaciones</span>
         </button>
       </div>
     </div>
@@ -1106,13 +1159,20 @@
     <section class="slider-section">
       <div class="slider-header-wrap">
         <div class="slider-title-box">
-          <h2 id="feedTitle" class="slider-title">Historial de Grabaciones</h2>
-          <span id="activeQueryIndicator" style="font-size: 0.85rem; color: var(--accent-primary); font-weight:600;"></span>
+          <h2 id="feedTitle" class="slider-title">
+            <svg class="v-icon" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+            <span>Registro de Grabaciones</span>
+          </h2>
+          <span id="activeQueryIndicator" style="font-size: 0.82rem; color: var(--accent-primary); font-weight:600;"></span>
         </div>
 
         <div class="slider-nav-controls">
-          <button class="slider-arrow-btn" onclick="scrollSlider(-1)" title="Anteriores">‹</button>
-          <button class="slider-arrow-btn" onclick="scrollSlider(1)" title="Siguientes">›</button>
+          <button class="slider-arrow-btn" onclick="scrollSlider(-1)" title="Anteriores" aria-label="Anteriores">
+            <svg class="v-icon" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+          </button>
+          <button class="slider-arrow-btn" onclick="scrollSlider(1)" title="Siguientes" aria-label="Siguientes">
+            <svg class="v-icon" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+          </button>
         </div>
       </div>
 
@@ -1130,17 +1190,28 @@
     <div class="modal-card">
       <div class="modal-header">
         <div class="modal-title-wrap">
-          <div class="modal-title" id="modalTitle">Reproducción de Video</div>
-          <div class="modal-subtitle" id="modalSubtitle">Cámara Imou Cruiser - Registro de Seguridad</div>
+          <div class="modal-title" id="modalTitle">
+            <svg class="v-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <span>Reproducción de Grabación</span>
+          </div>
+          <div class="modal-subtitle" id="modalSubtitle">Cámara Imou Cruiser &bull; Registro de Seguridad</div>
         </div>
 
         <!-- MODO TABS: CLIP AISLADO VS GRABACION CONTINUA -->
         <div class="modal-mode-tabs">
-          <button id="tabClipMode" class="mode-tab active" onclick="switchModalMode('clip')">Clip Aislado</button>
-          <button id="tabContinuousMode" class="mode-tab" onclick="switchModalMode('continuous')">Grabación Continua</button>
+          <button id="tabClipMode" class="mode-tab active" onclick="switchModalMode('clip')">
+            <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <span>Clip Aislado</span>
+          </button>
+          <button id="tabContinuousMode" class="mode-tab" onclick="switchModalMode('continuous')">
+            <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
+            <span>Grabación Continua</span>
+          </button>
         </div>
 
-        <button class="close-btn" onclick="closeModal()">&times;</button>
+        <button class="close-btn" onclick="closeModal()" aria-label="Cerrar modal">
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
       </div>
 
       <div class="modal-video-container">
@@ -1148,17 +1219,24 @@
       </div>
 
       <div class="modal-footer">
-        <span id="modalMeta" style="color:var(--text-muted); font-size:0.85rem;">Duración: 0s</span>
+        <span id="modalMeta" style="color:var(--text-muted); font-size:0.82rem;">Duración: 0s</span>
 
         <!-- CONTROLES MODO CONTINUO -->
         <div class="continuous-nav" id="continuousNav">
-          <button class="btn-action" style="padding:0.3rem 0.6rem; font-size:0.78rem;" onclick="prevContinuousClip()">⏮ Anterior</button>
-          <span id="continuousProgress" style="font-size:0.8rem; font-weight:600; color:var(--text-body);">Clip 1 de 1</span>
-          <button class="btn-action" style="padding:0.3rem 0.6rem; font-size:0.78rem;" onclick="nextContinuousClip()">Siguiente ⏭</button>
+          <button class="btn-action" style="padding:0.3rem 0.65rem; font-size:0.76rem;" onclick="prevContinuousClip()">
+            <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+            <span>Anterior</span>
+          </button>
+          <span id="continuousProgress" style="font-size:0.78rem; font-weight:600; color:var(--text-body);">Fragmento 1 de 1</span>
+          <button class="btn-action" style="padding:0.3rem 0.65rem; font-size:0.76rem;" onclick="nextContinuousClip()">
+            <span>Siguiente</span>
+            <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+          </button>
         </div>
 
         <a id="modalDownload" href="#" download class="btn-action" style="text-decoration:none;">
-          ⬇ Descargar MP4
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          <span>Descargar MP4</span>
         </a>
       </div>
     </div>
@@ -1173,22 +1251,25 @@
     // SECUENCIA DE GRABACIÓN CONTINUA
     let continuousPlaylist = [];
     let continuousCurrentIndex = 0;
-    let currentModalMode = 'clip'; // 'clip' | 'continuous'
+    let currentModalMode = 'clip';
 
     // ==========================================
-    // TEMA CLARO / OSCURO (SIN NEON)
+    // TEMA CLARO / OSCURO (TOTALMENTE PROFESIONAL)
     // ==========================================
     function applyTheme(theme) {
       currentTheme = theme;
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem('smartcam_theme', theme);
-      const icon = document.getElementById('themeIcon');
+      const sunIcon = document.getElementById('themeIconSun');
+      const moonIcon = document.getElementById('themeIconMoon');
       const text = document.getElementById('themeText');
       if (theme === 'light') {
-        icon.innerText = '🌙';
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'inline-block';
         text.innerText = 'Modo Oscuro';
       } else {
-        icon.innerText = '☀️';
+        sunIcon.style.display = 'inline-block';
+        moonIcon.style.display = 'none';
         text.innerText = 'Modo Claro';
       }
     }
@@ -1198,7 +1279,7 @@
     }
     applyTheme(currentTheme);
 
-    // Reloj digital en HUD
+    // Reloj digital en HUD sincronizado
     function updateHUDTime() {
       const now = new Date();
       const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -1227,7 +1308,7 @@
     }
 
     async function loadEvents(objectClass = '') {
-      if (isSearchActive) return; // Congelar si hay búsqueda activa
+      if (isSearchActive) return;
       try {
         let url = '/api/events?limit=50';
         if (objectClass) {
@@ -1245,12 +1326,12 @@
       const container = document.getElementById('eventsContainer');
       if (!events || events.length === 0) {
         container.innerHTML = `
-          <div class="empty-state" style="padding:2.5rem; text-align:center; width:100%; border:1px dashed var(--border-color); border-radius:10px;">
-            <p style="font-size:1.05rem; font-weight:600; color:var(--text-main);">
-              ${isSpecific ? 'No se encontró una grabación exacta para esta búsqueda' : 'Aún no hay eventos registrados'}
+          <div style="padding:2.5rem; text-align:center; width:100%; border:1px dashed var(--border-color); border-radius:10px; background:var(--bg-surface);">
+            <p style="font-size:1rem; font-weight:600; color:var(--text-main);">
+              ${isSpecific ? 'No se encontraron filmaciones correspondientes a esta consulta' : 'Aún no hay grabaciones registradas'}
             </p>
             <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.35rem;">
-              ${isSpecific ? 'Prueba con otra descripción o haz clic en "Ver todas las grabaciones".' : 'Pasa frente a la cámara o acerca un objeto para generar un evento automático.'}
+              ${isSpecific ? 'El sistema analizó las filmaciones y no registró el suceso consultado.' : 'El sistema registrará automáticamente cualquier movimiento detectado.'}
             </p>
             ${isSpecific ? '<button class="btn-reset-search" style="margin-top:1rem;" onclick="resetSearch()">✕ Ver todas las grabaciones</button>' : ''}
           </div>
@@ -1259,14 +1340,19 @@
       }
 
       container.innerHTML = events.map(ev => {
-        const icon = getClassIcon(ev.object_class);
+        const iconSvg = getClassIconSvg(ev.object_class);
         const timeFormatted = formatTime(ev.start_time);
         const durationFormatted = `${ev.duration_seconds}s`;
         const featuredClass = isSpecific ? 'featured-event' : '';
-        const badgeHtml = isSpecific ? '<div class="featured-badge">🎯 EVENTO ENCONTRADO</div>' : '';
+        const badgeHtml = isSpecific ? `
+          <div class="featured-badge">
+            <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <span>EVENTO AISLADO</span>
+          </div>
+        ` : '';
         const snippetHtml = specificDescription ? `
           <div class="card-desc-snippet">
-            <strong>Filmación:</strong> ${specificDescription}
+            ${specificDescription}
           </div>
         ` : '';
 
@@ -1280,15 +1366,15 @@
                   <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
               </div>
-              <div class="duration-tag">⏱ ${durationFormatted}</div>
+              <div class="duration-tag">${durationFormatted}</div>
             </div>
             <div class="card-content">
               <div class="card-top">
-                <div class="class-tag">${icon} ${ev.object_class}</div>
+                <div class="class-tag">${iconSvg} <span>${ev.object_class}</span></div>
                 <div class="conf-tag">${Math.round(ev.confidence * 100)}% conf</div>
               </div>
               <div class="card-time">
-                <svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
                 <span>${timeFormatted}</span>
               </div>
               ${snippetHtml}
@@ -1302,16 +1388,16 @@
 
     function scrollSlider(direction) {
       const container = document.getElementById('eventsContainer');
-      const scrollAmount = 320 * direction;
+      const scrollAmount = 300 * direction;
       container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
 
-    // Permitir scroll horizontal con rueda del mouse
+    // Scroll con rueda del mouse
     const sliderEl = document.getElementById('eventsContainer');
     sliderEl.addEventListener('wheel', (e) => {
       if (e.deltaY !== 0) {
         e.preventDefault();
-        sliderEl.scrollBy({ left: e.deltaY * 1.4, behavior: 'smooth' });
+        sliderEl.scrollBy({ left: e.deltaY * 1.3, behavior: 'smooth' });
       }
     });
 
@@ -1326,23 +1412,34 @@
       }
     }
 
-    function getClassIcon(cls) {
+    // ICONOS VECTORIALES LIMPIOS (SIN EMOJIS)
+    function getClassIconSvg(cls) {
       switch(cls) {
-        case 'person': return '👤';
-        case 'car': return '🚗';
-        case 'truck': return '🚚';
-        case 'bus': return '🚌';
-        case 'motorcycle': return '🏍️';
-        case 'bicycle': return '🚲';
-        case 'dog': return '🐕';
-        case 'cat': return '🐈';
-        case 'tv': return '📺';
-        default: return '📦';
+        case 'person': 
+          return `<svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+        case 'car':
+        case 'truck':
+        case 'bus':
+          return `<svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>`;
+        case 'motorcycle':
+        case 'bicycle':
+          return `<svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm14-8.5c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/></svg>`;
+        default:
+          return `<svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`;
       }
     }
 
+    // FORMATEO EXACTO DE HORA LOCAL
     function formatTime(isoStr) {
       if (!isoStr) return '';
+      // Separar componentes para garantizar formato local exacto
+      const parts = isoStr.split('T');
+      if (parts.length === 2) {
+        const timePart = parts[1].split('.')[0];
+        const datePart = parts[0].split('-');
+        const dateFormatted = `${datePart[2]}/${datePart[1]}/${datePart[0]}`;
+        return `${timePart} (${dateFormatted})`;
+      }
       const d = new Date(isoStr);
       return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' (' + d.toLocaleDateString() + ')';
     }
@@ -1358,9 +1455,9 @@
       isSearchActive = true;
       const banner = document.getElementById('aiReportBanner');
       banner.style.display = 'flex';
-      document.getElementById('aiReportText').innerHTML = `<span style="color:var(--text-muted); font-size:1rem;">Analizando grabaciones de seguridad con IA...</span>`;
-      document.getElementById('activeQueryIndicator').innerText = `Búsqueda activa: "${query}"`;
-      document.getElementById('feedTitle').innerText = 'Analizando eventos con IA...';
+      document.getElementById('aiReportText').innerHTML = `<span style="color:var(--text-muted); font-size:0.95rem;">Analizando grabaciones de seguridad con IA...</span>`;
+      document.getElementById('activeQueryIndicator').innerText = `Consulta: "${query}"`;
+      document.getElementById('feedTitle').innerText = 'Analizando filmaciones...';
 
       try {
         const res = await fetch('/api/search', {
@@ -1372,20 +1469,25 @@
         
         const results = data.results || [];
         if (data.is_specific) {
-          document.getElementById('feedTitle').innerText = `🎯 Grabación Coincidente (1 filmación aislada)`;
           if (data.ai_answer) {
             document.getElementById('aiReportText').innerText = data.ai_answer;
           }
           if (results.length > 0) {
             lastFoundEvent = results[0];
+            document.getElementById('feedTitle').innerText = `Grabación Localizada (1 filmación)`;
             document.getElementById('btnClipDuration').innerText = `${lastFoundEvent.duration_seconds}s`;
             document.getElementById('btnPlayClip').style.display = 'inline-flex';
             document.getElementById('btnPlayContinuous').style.display = 'inline-flex';
+            document.getElementById('aiStatusBadge').innerText = 'Evento Localizado';
+            renderEvents(results, true, data.ai_answer);
           } else {
+            // Petición absurda o sin coincidencias
+            document.getElementById('feedTitle').innerText = `Sin Coincidencias (0 filmaciones)`;
             document.getElementById('btnPlayClip').style.display = 'none';
             document.getElementById('btnPlayContinuous').style.display = 'none';
+            document.getElementById('aiStatusBadge').innerText = 'Sin Registros';
+            renderEvents([], true, data.ai_answer);
           }
-          renderEvents(results, true, data.ai_answer);
         } else {
           document.getElementById('feedTitle').innerText = `Resultados de Búsqueda (${results.length})`;
           if (data.ai_answer) {
@@ -1417,7 +1519,7 @@
       document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
       event.target.classList.add('active');
       document.getElementById('activeQueryIndicator').innerText = cls ? `Categoría: ${cls}` : '';
-      document.getElementById('feedTitle').innerText = 'Historial de Grabaciones';
+      document.getElementById('feedTitle').innerText = 'Registro de Grabaciones';
       loadEvents(cls);
     }
 
@@ -1427,7 +1529,7 @@
       document.getElementById('searchInput').value = '';
       document.getElementById('aiReportBanner').style.display = 'none';
       document.getElementById('activeQueryIndicator').innerText = '';
-      document.getElementById('feedTitle').innerText = 'Historial de Grabaciones';
+      document.getElementById('feedTitle').innerText = 'Registro de Grabaciones';
       document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
       const allChip = document.querySelector('.filter-chips .chip');
       if (allChip) allChip.classList.add('active');
@@ -1436,7 +1538,7 @@
     }
 
     // ==========================================
-    // REPRODUCCIÓN (CLIP INDIVIDUAL VS CONTINUA)
+    // REPRODUCCIÓN (CLIP INDIVIDUAL VS CONTINUO)
     // ==========================================
     function playSingleClip() {
       if (lastFoundEvent) {
@@ -1480,9 +1582,11 @@
 
         playContinuousCurrent();
       } else {
-        // Modo clip aislado
         document.getElementById('continuousNav').classList.remove('active');
-        title.innerHTML = `${getClassIcon(cls)} Evento: ${cls} - ${time}`;
+        title.innerHTML = `
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <span>Evento: ${cls} - ${time}</span>
+        `;
         meta.innerText = `Duración del clip: ${duration}`;
         video.src = `/api/video/${eventId}`;
         download.href = `/api/video/${eventId}`;
@@ -1504,16 +1608,18 @@
       nav.classList.add('active');
       const ev = continuousPlaylist[continuousCurrentIndex];
       const timeFormatted = formatTime(ev.start_time);
-      const icon = getClassIcon(ev.object_class);
 
-      title.innerHTML = `🎥 Grabación Continua &bull; ${icon} ${ev.object_class} (${timeFormatted})`;
+      title.innerHTML = `
+        <svg class="v-icon" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
+        <span>Grabación Continua &bull; ${ev.object_class} (${timeFormatted})</span>
+      `;
       meta.innerText = `Fragmento ${continuousCurrentIndex + 1} de ${continuousPlaylist.length} (Duración: ${ev.duration_seconds}s)`;
       progress.innerText = `Clip ${continuousCurrentIndex + 1}/${continuousPlaylist.length}`;
 
       video.src = `/api/video/${ev.id}`;
       download.href = `/api/video/${ev.id}`;
 
-      // Reproducción automática secuencial: cuando termine este clip, avanzar al siguiente
+      // Reproducción secuencial automática
       video.onended = () => {
         if (continuousCurrentIndex < continuousPlaylist.length - 1) {
           continuousCurrentIndex++;

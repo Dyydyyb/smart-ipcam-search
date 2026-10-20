@@ -187,7 +187,8 @@ async def get_events_from_moment(event_id: str, db: AsyncSession = Depends(get_d
     )
     sub_res = await db.execute(subsequent_stmt)
     events = sub_res.scalars().all()
-    return [e.to_dict() for e in events]
+    ordered = [start_event] + [e for e in events if e.id != start_event.id]
+    return [e.to_dict() for e in ordered]
 
 @app.post("/api/create_demo_event")
 async def create_demo_event(db: AsyncSession = Depends(get_db)):
@@ -211,7 +212,7 @@ async def create_demo_event(db: AsyncSession = Depends(get_db)):
     clip_frames = [frame.copy() for _ in range(30)]
     clip_path = save_video_clip(clip_frames, event_id, fps=15.0)
 
-    now = datetime.datetime.utcnow()
+    now = datetime.datetime.now()
     ev = SecurityEvent(
         id=event_id,
         track_id=101,

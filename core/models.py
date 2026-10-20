@@ -13,8 +13,8 @@ class SecurityEvent(Base):
     object_class = Column(String(50), nullable=False, index=True)
     confidence = Column(Float, nullable=False)
     
-    start_time = Column(DateTime, nullable=False, index=True, default=datetime.utcnow)
-    end_time = Column(DateTime, nullable=False, default=datetime.utcnow)
+    start_time = Column(DateTime, nullable=False, index=True, default=datetime.now)
+    end_time = Column(DateTime, nullable=False, default=datetime.now)
     duration_seconds = Column(Float, nullable=False, default=0.0)
 
     thumbnail_path = Column(String(255), nullable=True)
@@ -22,7 +22,7 @@ class SecurityEvent(Base):
     
     # Detalle adicional: bounding box final, color aproximado, etc.
     metadata_info = Column(JSON, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
 
     def to_dict(self):
         return {

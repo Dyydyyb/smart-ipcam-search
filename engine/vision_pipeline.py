@@ -2,7 +2,7 @@ import time
 import uuid
 import asyncio
 import threading
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 import cv2
 import numpy as np
 from loguru import logger
@@ -36,6 +36,33 @@ class TrackedObject:
             self.max_confidence = confidence
             self.best_bbox = bbox
             self.best_frame = frame.copy()
+
+    def analyze_appearance(self) -> Dict[str, Any]:
+        """Analiza la apariencia y características visuales del objeto para búsquedas detalladas."""
+        x1, y1, x2, y2 = self.best_bbox
+        h, w = self.best_frame.shape[:2]
+        bx1, by1, bx2, by2 = max(0, x1), max(0, y1), min(w, x2), min(h, y2)
+        
+        appearance = "vestimenta estándar"
+        if by2 > by1 + 20 and bx2 > bx1 + 20 and self.object_class == "person":
+            crop = self.best_frame[by1 + int((by2-by1)*0.25):by1 + int((by2-by1)*0.75), bx1:bx2]
+            if crop.size > 0:
+                gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+                brightness = float(np.mean(gray))
+                if brightness > 130:
+                    appearance = "ropa clara / blanca"
+                elif brightness < 80:
+                    appearance = "ropa oscura / negra"
+                else:
+                    appearance = "ropa de tono neutro"
+
+        dur = self.last_seen - self.start_time
+        movement_desc = "movimiento de extremidades / brazos" if dur >= 1.2 else "movimiento breve"
+
+        return {
+            "appearance": appearance,
+            "activity": movement_desc
+        }
 
 
 class VisionPipeline:
@@ -184,7 +211,8 @@ class VisionPipeline:
         """Guarda el evento consolidado en disco y base de datos de forma asíncrona."""
         event_id = str(uuid.uuid4())
         duration = round(track.last_seen - track.start_time, 1)
-        logger.success(f"Evento cerrado: {track.object_class} (ID #{track.track_id}) - Duración: {duration}s")
+        visual_info = track.analyze_appearance()
+        logger.success(f"Evento cerrado: {track.object_class} (ID #{track.track_id}) - Duración: {duration}s - {visual_info}")
 
         # 1. Guardar Thumbnail
         thumb_path = save_thumbnail(track.best_frame, event_id, track.best_bbox)
@@ -195,16 +223,20 @@ class VisionPipeline:
         # 3. Guardar en Base de Datos en un hilo secundario
         threading.Thread(
             target=self._save_to_db,
-            args=(event_id, track.track_id, track.object_class, track.max_confidence, track.start_time, track.last_seen, duration, thumb_path, clip_path),
+            args=(event_id, track.track_id, track.object_class, track.max_confidence, track.start_time, track.last_seen, duration, thumb_path, clip_path, visual_info),
             daemon=True
         ).start()
 
         self.total_events_detected += 1
 
-    def _save_to_db(self, event_id: str, track_id: int, object_class: str, confidence: float, start_t: float, end_t: float, duration: float, thumb: str, clip: str):
-        """Inserta el registro en la base de datos."""
+    def _save_to_db(self, event_id: str, track_id: int, object_class: str, confidence: float, start_t: float, end_t: float, duration: float, thumb: str, clip: str, visual_info: Optional[Dict[str, Any]] = None):
+        """Inserta el registro en la base de datos con hora local precisa."""
         import datetime
         from core.database import AsyncSessionLocal
+
+        meta = {"class": object_class, "max_conf": confidence}
+        if visual_info:
+            meta.update(visual_info)
 
         async def _async_insert():
             async with AsyncSessionLocal() as session:
@@ -213,16 +245,16 @@ class VisionPipeline:
                     track_id=track_id,
                     object_class=object_class,
                     confidence=confidence,
-                    start_time=datetime.datetime.utcfromtimestamp(start_t),
-                    end_time=datetime.datetime.utcfromtimestamp(end_t),
+                    start_time=datetime.datetime.fromtimestamp(start_t),
+                    end_time=datetime.datetime.fromtimestamp(end_t),
                     duration_seconds=duration,
                     thumbnail_path=thumb,
                     clip_path=clip,
-                    metadata_info={"class": object_class, "max_conf": confidence}
+                    metadata_info=meta
                 )
                 session.add(ev)
                 await session.commit()
-                logger.info(f"Evento {event_id} registrado en base de datos.")
+                logger.info(f"Evento {event_id} registrado en base de datos con hora local {ev.start_time}.")
 
         asyncio.run(_async_insert())
 
