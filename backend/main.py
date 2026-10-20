@@ -169,6 +169,26 @@ async def get_video(event_id: str, db: AsyncSession = Depends(get_db)):
         
     return FileResponse(event.clip_path, media_type="video/mp4")
 
+@app.get("/api/events/from_moment/{event_id}")
+async def get_events_from_moment(event_id: str, db: AsyncSession = Depends(get_db)):
+    """Obtiene el evento indicado y todos los eventos cronológicamente posteriores para reproducción continua."""
+    stmt = select(SecurityEvent).where(SecurityEvent.id == event_id)
+    result = await db.execute(stmt)
+    start_event = result.scalar_one_or_none()
+    
+    if not start_event:
+        raise HTTPException(status_code=404, detail="Evento no encontrado")
+        
+    subsequent_stmt = (
+        select(SecurityEvent)
+        .where(SecurityEvent.start_time >= start_event.start_time)
+        .order_by(SecurityEvent.start_time.asc())
+        .limit(30)
+    )
+    sub_res = await db.execute(subsequent_stmt)
+    events = sub_res.scalars().all()
+    return [e.to_dict() for e in events]
+
 @app.post("/api/create_demo_event")
 async def create_demo_event(db: AsyncSession = Depends(get_db)):
     """Crea un evento de demostración inmediato usando el snapshot capturado para probar la UI."""

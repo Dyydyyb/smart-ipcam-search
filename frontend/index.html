@@ -1,31 +1,61 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baddgroup Vision AI | Plataforma Inteligente de Cámaras IP</title>
-  <meta name="description" content="Plataforma de videovigilancia inteligente y búsqueda en lenguaje natural por IA local desarrollada por Baddgroup.">
+  <title>Baddgroup Vision AI | Plataforma de Videovigilancia Inteligente</title>
+  <meta name="description" content="Plataforma de videovigilancia inteligente y búsqueda en lenguaje natural desarrollada por Baddgroup.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg-dark-base: #070a12;
-      --bg-dark-surface: #0e1526;
-      --bg-card: rgba(15, 23, 42, 0.75);
-      --bg-card-hover: rgba(26, 38, 66, 0.9);
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-glow: rgba(56, 189, 248, 0.45);
-      --accent-cyan: #38bdf8;
-      --accent-sky: #0ea5e9;
-      --accent-emerald: #10b981;
-      --accent-purple: #a78bfa;
+    /* VARIABLES DE TEMA - COLORES PROFESIONALES (SIN NEON) */
+    :root[data-theme="dark"] {
+      --bg-base: #0f172a;
+      --bg-surface: #1e293b;
+      --bg-card: #1e293b;
+      --bg-card-hover: #273549;
+      --border-color: #334155;
+      --border-accent: #2563eb;
+      --accent-primary: #2563eb;
+      --accent-primary-hover: #1d4ed8;
+      --accent-secondary: #0f766e;
+      --accent-success: #059669;
+      --accent-danger: #dc2626;
       --text-main: #f8fafc;
       --text-body: #94a3b8;
       --text-muted: #64748b;
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
+      --badge-bg: #334155;
+      --badge-text: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+      --live-bg: #000000;
+      --input-bg: #0f172a;
+    }
+
+    :root[data-theme="light"] {
+      --bg-base: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --border-color: #e2e8f0;
+      --border-accent: #2563eb;
+      --accent-primary: #2563eb;
+      --accent-primary-hover: #1d4ed8;
+      --accent-secondary: #0f766e;
+      --accent-success: #059669;
+      --accent-danger: #dc2626;
+      --text-main: #0f172a;
+      --text-body: #334155;
+      --text-muted: #64748b;
+      --badge-bg: #e2e8f0;
+      --badge-text: #1e293b;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+      --live-bg: #020617;
+      --input-bg: #ffffff;
     }
 
     * {
@@ -35,25 +65,20 @@
     }
 
     body {
-      background-color: var(--bg-dark-base);
+      background-color: var(--bg-base);
       color: var(--text-main);
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
-      background-image: 
-        radial-gradient(circle at 10% 8%, rgba(56, 189, 248, 0.08) 0%, transparent 45%),
-        radial-gradient(circle at 90% 25%, rgba(16, 185, 129, 0.06) 0%, transparent 45%),
-        radial-gradient(circle at 50% 90%, rgba(167, 139, 250, 0.05) 0%, transparent 50%);
-      background-attachment: fixed;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
 
-    /* HEADER BADDGROUP */
+    /* HEADER */
     header {
-      background: rgba(11, 15, 25, 0.88);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
       z-index: 50;
@@ -61,31 +86,24 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      box-shadow: var(--shadow-sm);
     }
 
     .brand-logo {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       text-decoration: none;
       flex-shrink: 0;
     }
 
     .brand-logo-icon {
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      transition: transform 0.2s ease, filter 0.2s ease;
-      filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.5));
-    }
-
-    .brand-logo:hover .brand-logo-icon {
-      transform: scale(1.05) rotate(2deg);
-      filter: drop-shadow(0 0 22px rgba(56, 189, 248, 0.75));
     }
 
     .brand-text {
@@ -95,34 +113,25 @@
 
     .brand-name {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.35rem;
+      font-size: 1.3rem;
       font-weight: 800;
       letter-spacing: -0.025em;
-      background: linear-gradient(90deg, #ffffff 30%, #38bdf8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--text-main);
       line-height: 1.15;
     }
 
     .brand-title {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #94a3b8;
-      display: flex;
-      align-items: center;
-      gap: 5px;
+      color: var(--text-muted);
     }
 
-    .brand-title span {
-      color: var(--accent-cyan);
-    }
-
-    .header-badges {
+    .header-right {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.85rem;
       flex-wrap: wrap;
     }
 
@@ -130,19 +139,19 @@
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
-      padding: 0.38rem 0.8rem;
-      border-radius: 9999px;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
       font-size: 0.78rem;
       font-weight: 600;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-body);
+      background: var(--badge-bg);
+      border: 1px solid var(--border-color);
+      color: var(--badge-text);
     }
 
     .badge-live {
-      color: var(--accent-emerald);
-      border-color: rgba(16, 185, 129, 0.35);
-      background: rgba(16, 185, 129, 0.1);
+      color: var(--accent-success);
+      border-color: rgba(5, 150, 105, 0.3);
+      background: rgba(5, 150, 105, 0.1);
     }
 
     .badge-live::before {
@@ -150,60 +159,56 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--accent-emerald);
-      box-shadow: 0 0 10px var(--accent-emerald);
-      animation: pulse 1.8s infinite;
+      background: var(--accent-success);
     }
 
-    .badge-model {
-      color: var(--accent-cyan);
-      border-color: rgba(56, 189, 248, 0.3);
-      background: rgba(56, 189, 248, 0.08);
+    /* THEME TOGGLE BUTTON */
+    .theme-toggle-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.42rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.85); }
+    .theme-toggle-btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-primary);
     }
 
     /* MAIN CONTAINER */
     main {
       flex: 1;
-      max-width: 1540px;
+      max-width: 1520px;
       width: 100%;
       margin: 0 auto;
-      padding: 1.5rem 2rem 3rem;
+      padding: 1.75rem 2rem 3rem;
       display: flex;
       flex-direction: column;
       gap: 1.75rem;
     }
 
     /* SECTION 1: LIVE STREAM PRINCIPAL Y GRANDE */
-    .live-hero-section {
-      display: flex;
-      flex-direction: column;
-      gap: 0.85rem;
-    }
-
     .live-hero-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(24px);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      border-radius: var(--radius-lg);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
       overflow: hidden;
-      position: relative;
-      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.65), 0 0 25px rgba(56, 189, 248, 0.12);
-      transition: border-color 0.3s ease;
-    }
-
-    .live-hero-card:hover {
-      border-color: rgba(56, 189, 248, 0.45);
+      box-shadow: var(--shadow-md);
     }
 
     .live-hero-header {
       padding: 0.85rem 1.4rem;
-      background: rgba(10, 15, 28, 0.94);
-      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -218,35 +223,34 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 700;
       font-size: 1.05rem;
-      color: #fff;
+      color: var(--text-main);
     }
 
-    .hud-btn {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border-subtle);
+    .btn-action {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 0.4rem 0.85rem;
-      border-radius: var(--radius-sm);
-      font-size: 0.8rem;
+      padding: 0.42rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 0.45rem;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
     }
 
-    .hud-btn:hover {
-      background: rgba(56, 189, 248, 0.15);
-      border-color: var(--accent-cyan);
-      color: #fff;
+    .btn-action:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-primary);
     }
 
     .live-video-viewport {
       width: 100%;
       height: 520px;
       max-height: 65vh;
-      background: #020617;
+      background: var(--live-bg);
       position: relative;
       display: flex;
       align-items: center;
@@ -256,7 +260,7 @@
 
     @media (max-width: 900px) {
       .live-video-viewport {
-        height: 360px;
+        height: 340px;
       }
     }
 
@@ -268,7 +272,6 @@
       display: block;
     }
 
-    /* HUD OVERLAYS */
     .hud-overlay-top-left {
       position: absolute;
       top: 1rem;
@@ -281,14 +284,13 @@
     }
 
     .hud-pill {
-      background: rgba(8, 12, 22, 0.8);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       padding: 0.35rem 0.75rem;
       border-radius: 6px;
       font-size: 0.78rem;
       font-weight: 600;
-      color: #f1f5f9;
+      color: #ffffff;
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
@@ -308,8 +310,8 @@
 
     .live-hero-footer {
       padding: 0.75rem 1.4rem;
-      background: rgba(10, 15, 28, 0.94);
-      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -319,18 +321,16 @@
       gap: 0.5rem;
     }
 
-    /* SECTION 2: SEARCH HERO CON IA */
-    .search-hero {
-      background: var(--bg-card);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 1.6rem 2rem;
-      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
+    /* SECTION 2: SEARCH SECTION */
+    .search-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem 1.75rem;
+      box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
       gap: 1.15rem;
-      position: relative;
     }
 
     .search-title-wrap {
@@ -343,12 +343,12 @@
 
     .search-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.25rem;
+      font-size: 1.18rem;
       font-weight: 700;
-      color: #fff;
+      color: var(--text-main);
       display: flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.5rem;
     }
 
     .search-input-box {
@@ -360,61 +360,56 @@
     .search-input-box svg.search-icon {
       position: absolute;
       left: 1.25rem;
-      width: 22px;
-      height: 22px;
-      fill: var(--accent-cyan);
+      width: 20px;
+      height: 20px;
+      fill: var(--text-muted);
     }
 
     .search-input {
       width: 100%;
-      padding: 1.1rem 1.25rem 1.1rem 3.4rem;
-      padding-right: 180px;
-      background: rgba(8, 12, 22, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: var(--radius-md);
-      color: #fff;
-      font-size: 1.05rem;
+      padding: 1rem 1.25rem 1rem 3.25rem;
+      padding-right: 165px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-main);
+      font-size: 1rem;
       font-family: inherit;
       outline: none;
-      transition: all 0.25s ease;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .search-input:focus {
-      border-color: var(--accent-cyan);
-      box-shadow: 0 0 25px rgba(56, 189, 248, 0.25);
-      background: rgba(10, 16, 30, 0.95);
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
     }
 
     .search-btn {
       position: absolute;
-      right: 0.65rem;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-emerald));
-      color: #020617;
+      right: 0.55rem;
+      background: var(--accent-primary);
+      color: #ffffff;
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 700;
-      font-size: 0.92rem;
-      padding: 0.75rem 1.45rem;
+      font-size: 0.88rem;
+      padding: 0.65rem 1.25rem;
       border: none;
-      border-radius: var(--radius-sm);
+      border-radius: 6px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+      gap: 0.45rem;
+      transition: background 0.15s ease;
     }
 
     .search-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
-      filter: brightness(1.08);
+      background: var(--accent-primary-hover);
     }
 
-    /* QUICK FILTER CHIPS */
     .filter-chips {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.55rem;
+      gap: 0.5rem;
       align-items: center;
     }
 
@@ -426,86 +421,141 @@
     }
 
     .chip {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-main);
-      padding: 0.42rem 0.9rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-body);
+      padding: 0.4rem 0.85rem;
       border-radius: 9999px;
       font-size: 0.82rem;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       display: flex;
       align-items: center;
       gap: 0.35rem;
     }
 
     .chip:hover {
-      background: rgba(56, 189, 248, 0.1);
-      border-color: rgba(56, 189, 248, 0.4);
-      color: #fff;
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+      border-color: var(--accent-primary);
     }
 
     .chip.active {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(16, 185, 129, 0.2));
-      border-color: var(--accent-cyan);
-      color: #fff;
+      background: var(--accent-primary);
+      border-color: var(--accent-primary);
+      color: #ffffff;
       font-weight: 600;
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
     }
 
-    /* AI ANSWER BANNER */
-    .ai-answer-banner {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(16, 185, 129, 0.1));
-      border: 1.5px solid var(--accent-cyan);
-      border-radius: var(--radius-md);
-      padding: 1.25rem 1.6rem;
-      box-shadow: 0 0 35px rgba(56, 189, 248, 0.25);
+    /* AI REPORT BANNER (REPORTE DETALLADO Y PROFESIONAL) */
+    .ai-report-banner {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-left: 5px solid var(--accent-primary);
+      border-radius: 12px;
+      padding: 1.4rem 1.6rem;
+      box-shadow: var(--shadow-md);
       display: none;
       flex-direction: column;
-      gap: 0.75rem;
-      animation: fadeIn 0.3s ease;
+      gap: 0.85rem;
+      animation: fadeIn 0.25s ease;
     }
 
-    .ai-answer-header {
+    .ai-report-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .ai-report-title {
       font-size: 0.85rem;
       font-weight: 700;
-      color: var(--accent-cyan);
+      color: var(--accent-primary);
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
     }
 
-    .ai-answer-body {
-      font-size: 1.18rem;
+    .ai-report-text {
+      font-size: 1.15rem;
       font-weight: 600;
-      color: #fff;
-      line-height: 1.5;
+      color: var(--text-main);
+      line-height: 1.55;
     }
 
-    .reset-search-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--border-subtle);
-      color: #fff;
-      padding: 0.45rem 1rem;
-      border-radius: var(--radius-sm);
+    .ai-report-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 0.35rem;
+    }
+
+    .btn-play-clip {
+      background: var(--accent-primary);
+      color: #ffffff;
+      padding: 0.55rem 1.15rem;
+      border-radius: 6px;
+      border: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: background 0.15s ease;
+    }
+
+    .btn-play-clip:hover {
+      background: var(--accent-primary-hover);
+    }
+
+    .btn-play-continuous {
+      background: var(--accent-secondary);
+      color: #ffffff;
+      padding: 0.55rem 1.15rem;
+      border-radius: 6px;
+      border: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: opacity 0.15s ease;
+    }
+
+    .btn-play-continuous:hover {
+      opacity: 0.9;
+    }
+
+    .btn-reset-search {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.55rem 1rem;
+      border-radius: 6px;
       font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s ease;
     }
 
-    .reset-search-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
+    .btn-reset-search:hover {
+      color: var(--text-main);
+      background: var(--bg-card-hover);
     }
 
-    /* SECTION 3: REEL / SLIDER HORIZONTAL DE GRABACIONES */
+    /* SLIDER HORIZONTAL DE GRABACIONES */
     .slider-section {
       display: flex;
       flex-direction: column;
-      gap: 1.15rem;
+      gap: 1rem;
     }
 
     .slider-header-wrap {
@@ -524,116 +574,103 @@
 
     .slider-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 700;
-      color: #fff;
+      color: var(--text-main);
     }
 
     .slider-nav-controls {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.5rem;
     }
 
     .slider-arrow-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-subtle);
-      color: #fff;
-      font-size: 1.2rem;
+      width: 38px;
+      height: 38px;
+      border-radius: 6px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 1.15rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
     }
 
     .slider-arrow-btn:hover {
-      background: var(--accent-cyan);
-      color: #020617;
-      border-color: var(--accent-cyan);
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
-      transform: scale(1.06);
-    }
-
-    /* CONTENEDOR SLIDER HORIZONTAL */
-    .recordings-slider-container {
-      position: relative;
-      width: 100%;
+      background: var(--bg-card-hover);
+      border-color: var(--accent-primary);
     }
 
     .recordings-slider {
       display: flex;
-      gap: 1.35rem;
+      gap: 1.25rem;
       overflow-x: auto;
       scroll-behavior: smooth;
       scroll-snap-type: x mandatory;
-      padding: 0.5rem 0.25rem 1.4rem;
+      padding: 0.25rem 0.25rem 1rem;
       scrollbar-width: thin;
-      scrollbar-color: rgba(56, 189, 248, 0.4) rgba(15, 23, 42, 0.5);
+      scrollbar-color: var(--border-color) var(--bg-surface);
     }
 
     .recordings-slider::-webkit-scrollbar {
-      height: 7px;
+      height: 6px;
     }
 
     .recordings-slider::-webkit-scrollbar-track {
-      background: rgba(15, 23, 42, 0.5);
-      border-radius: 9999px;
+      background: var(--bg-surface);
+      border-radius: 4px;
     }
 
     .recordings-slider::-webkit-scrollbar-thumb {
-      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-emerald));
-      border-radius: 9999px;
+      background: var(--border-color);
+      border-radius: 4px;
     }
 
-    /* CARD INDIVIDUAL EN SLIDER */
+    /* TARJETA DE EVENTO */
     .event-card {
       flex: 0 0 290px;
       max-width: 310px;
       min-width: 280px;
       scroll-snap-align: start;
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: all 0.25s ease;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
       cursor: pointer;
       position: relative;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      box-shadow: var(--shadow-sm);
     }
 
     .event-card:hover {
-      transform: translateY(-5px);
-      border-color: var(--border-glow);
-      background: var(--bg-card-hover);
-      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.2);
+      transform: translateY(-3px);
+      border-color: var(--accent-primary);
+      box-shadow: var(--shadow-md);
     }
 
     .event-card.featured-event {
-      border: 2px solid var(--accent-cyan);
-      box-shadow: 0 0 35px rgba(56, 189, 248, 0.4), 0 12px 35px rgba(0, 0, 0, 0.7);
-      transform: scale(1.02);
+      border: 2px solid var(--accent-primary);
+      box-shadow: var(--shadow-md);
     }
 
     .featured-badge {
       position: absolute;
       top: 0.65rem;
       left: 0.65rem;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-emerald));
-      color: #020617;
+      background: var(--accent-primary);
+      color: #ffffff;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 800;
+      font-weight: 700;
       font-size: 0.72rem;
-      letter-spacing: 0.04em;
-      padding: 0.3rem 0.65rem;
-      border-radius: 6px;
+      padding: 0.28rem 0.6rem;
+      border-radius: 4px;
       z-index: 10;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
     }
 
     .thumb-wrapper {
@@ -648,17 +685,17 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.3s ease;
+      transition: transform 0.25s ease;
     }
 
     .event-card:hover .thumb-img {
-      transform: scale(1.06);
+      transform: scale(1.04);
     }
 
     .thumb-play-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.35);
+      background: rgba(0, 0, 0, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -671,42 +708,39 @@
     }
 
     .play-circle {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-emerald));
+      width: 44px;
+      height: 44px;
+      background: var(--accent-primary);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 25px rgba(56, 189, 248, 0.7);
     }
 
     .play-circle svg {
-      width: 20px;
-      height: 20px;
-      fill: #020617;
-      margin-left: 3px;
+      width: 18px;
+      height: 18px;
+      fill: #ffffff;
+      margin-left: 2px;
     }
 
     .duration-tag {
       position: absolute;
-      bottom: 0.6rem;
-      right: 0.6rem;
-      background: rgba(8, 12, 22, 0.85);
-      backdrop-filter: blur(6px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 0.25rem 0.55rem;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: #fff;
+      bottom: 0.5rem;
+      right: 0.5rem;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #ffffff;
     }
 
     .card-content {
-      padding: 0.95rem 1.15rem;
+      padding: 0.85rem 1rem;
       display: flex;
       flex-direction: column;
-      gap: 0.55rem;
+      gap: 0.5rem;
     }
 
     .card-top {
@@ -722,60 +756,49 @@
       display: flex;
       align-items: center;
       gap: 0.4rem;
-      color: #fff;
+      color: var(--text-main);
     }
 
     .conf-tag {
       font-size: 0.75rem;
-      color: var(--accent-emerald);
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.25);
-      padding: 0.2rem 0.5rem;
-      border-radius: 6px;
-      font-weight: 700;
+      color: var(--accent-success);
+      background: rgba(5, 150, 105, 0.1);
+      border: 1px solid rgba(5, 150, 105, 0.2);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      font-weight: 600;
     }
 
     .card-time {
       font-size: 0.78rem;
-      color: var(--text-body);
+      color: var(--text-muted);
       display: flex;
       align-items: center;
       gap: 0.35rem;
     }
 
-    .empty-state {
-      width: 100%;
-      padding: 3rem 2rem;
-      text-align: center;
-      background: var(--bg-card);
-      border: 1px dashed var(--border-subtle);
-      border-radius: var(--radius-md);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
+    .card-desc-snippet {
+      font-size: 0.75rem;
+      color: var(--text-body);
+      line-height: 1.4;
+      background: var(--bg-base);
+      border: 1px solid var(--border-color);
+      padding: 0.35rem 0.5rem;
+      border-radius: 4px;
     }
 
-    .empty-state svg {
-      width: 48px;
-      height: 48px;
-      fill: var(--text-muted);
-      margin-bottom: 0.85rem;
-    }
-
-    /* VIDEO MODAL */
+    /* VIDEO MODAL (CON MODO CONTINUO) */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(2, 6, 23, 0.85);
-      backdrop-filter: blur(16px);
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(8px);
       z-index: 100;
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
-      animation: fadeIn 0.25s ease;
+      padding: 1.5rem;
+      animation: fadeIn 0.2s ease;
     }
 
     .modal-overlay.active {
@@ -783,60 +806,108 @@
     }
 
     .modal-card {
-      background: #0b1120;
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: var(--radius-lg);
-      max-width: 960px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      max-width: 980px;
       width: 100%;
       overflow: hidden;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.2);
+      box-shadow: var(--shadow-lg);
       display: flex;
       flex-direction: column;
     }
 
     .modal-header {
-      padding: 1.15rem 1.5rem;
-      background: rgba(15, 23, 42, 0.9);
-      border-bottom: 1px solid var(--border-subtle);
+      padding: 1rem 1.4rem;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .modal-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
     }
 
     .modal-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      color: #fff;
+      color: var(--text-main);
+    }
+
+    .modal-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .modal-mode-tabs {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--bg-base);
+      padding: 0.25rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    .mode-tab {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.35rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .mode-tab.active {
+      background: var(--accent-primary);
+      color: #ffffff;
     }
 
     .close-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: none;
-      color: #fff;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      font-size: 1.3rem;
+      background: var(--bg-base);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      font-size: 1.2rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s;
+      transition: all 0.15s;
     }
 
     .close-btn:hover {
-      background: rgba(239, 68, 68, 0.3);
-      color: #ef4444;
+      background: rgba(220, 38, 38, 0.15);
+      border-color: var(--accent-danger);
+      color: var(--accent-danger);
     }
 
     .modal-video-container {
       width: 100%;
       height: 520px;
       background: #000;
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    @media (max-width: 900px) {
+      .modal-video-container {
+        height: 360px;
+      }
     }
 
     .modal-video-container video {
@@ -846,73 +917,65 @@
     }
 
     .modal-footer {
-      padding: 1rem 1.5rem;
-      background: rgba(15, 23, 42, 0.9);
-      border-top: 1px solid var(--border-subtle);
+      padding: 0.85rem 1.4rem;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .continuous-nav {
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .continuous-nav.active {
+      display: flex;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-8px); }
+      from { opacity: 0; transform: translateY(-6px); }
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
 
-  <!-- HEADER BADDGROUP -->
+  <!-- HEADER -->
   <header>
     <a href="#" class="brand-logo" aria-label="BADDGROUP - Inicio">
       <div class="brand-logo-icon">
-        <!-- Exact Baddgroup Hexagonal High-Tech Obsidian Shield SVG Logo -->
+        <!-- Baddgroup Hexagonal Shield Icon (Colores Estándar) -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
-          <defs>
-            <linearGradient id="bgGradMain" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#38BDF8"/>
-              <stop offset="50%" stop-color="#0EA5E9"/>
-              <stop offset="100%" stop-color="#10B981"/>
-            </linearGradient>
-            <linearGradient id="bgGradAccent" x1="100%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#10B981"/>
-              <stop offset="100%" stop-color="#34D399"/>
-            </linearGradient>
-            <linearGradient id="bgDarkBase" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#0F172A"/>
-              <stop offset="100%" stop-color="#020617"/>
-            </linearGradient>
-            <filter id="bgGlow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur"/>
-              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-            </filter>
-          </defs>
-          <polygon points="50,4 92,26 92,74 50,96 8,74 8,26" fill="url(#bgDarkBase)" stroke="rgba(56, 189, 248, 0.5)" stroke-width="2.5"/>
-          <polygon points="50,10 86,29 86,71 50,90 14,71 14,29" fill="none" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1.2"/>
+          <polygon points="50,4 92,26 92,74 50,96 8,74 8,26" fill="#1e293b" stroke="#334155" stroke-width="3"/>
           <path d="M28 24 H48 C54.5 24 59 28 59 33.5 C59 37.5 56.5 41 52.5 42.5 C57.5 44 61 48 61 53.5 C61 60 55.5 64 48 64 H28 V24 Z" 
-                fill="none" stroke="url(#bgGradMain)" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
-          <path d="M28 44 H48" stroke="url(#bgGradMain)" stroke-width="4.5" stroke-linecap="round"/>
+                fill="none" stroke="#2563eb" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+          <path d="M28 44 H48" stroke="#2563eb" stroke-width="4.5" stroke-linecap="round"/>
           <path d="M72 40 V62 C72 68 66 73 58 73 H46" 
-                fill="none" stroke="url(#bgGradAccent)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M58 58 H72" stroke="url(#bgGradAccent)" stroke-width="4" stroke-linecap="round"/>
-          <circle cx="50" cy="14" r="3.5" fill="#38BDF8" filter="url(#bgGlow)"/>
-          <circle cx="72" cy="40" r="3" fill="#10B981" filter="url(#bgGlow)"/>
-          <circle cx="28" cy="24" r="3" fill="#38BDF8"/>
-          <circle cx="28" cy="64" r="3" fill="#10B981"/>
+                fill="none" stroke="#059669" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M58 58 H72" stroke="#059669" stroke-width="4" stroke-linecap="round"/>
         </svg>
       </div>
       <div class="brand-text">
         <span class="brand-name">BADDGROUP</span>
-        <span class="brand-title">VISION AI <span>&bull;</span> SECURITY TECH</span>
+        <span class="brand-title">VISION AI &bull; SEGURIDAD INTELIGENTE</span>
       </div>
     </a>
 
-    <div class="header-badges">
+    <div class="header-right">
       <div class="badge badge-live">Cámara Imou En Vivo</div>
-      <div class="badge" id="cameraResBadge">2304x1296 (2K @ 15 FPS)</div>
-      <div class="badge badge-model">⚡ YOLO11 + ByteTrack</div>
-      <div class="badge badge-model">🧠 Qwen 2.5 (Ollama)</div>
+      <div class="badge" id="cameraResBadge">640x480 (15 FPS)</div>
       <div class="badge" id="eventsCountBadge">0 Eventos</div>
+
+      <!-- BOTON DE MODO CLARO / OSCURO -->
+      <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()">
+        <span id="themeIcon">☀️</span>
+        <span id="themeText">Modo Claro</span>
+      </button>
     </div>
   </header>
 
@@ -920,16 +983,16 @@
   <main>
 
     <!-- 1. LIVE CAMERA HERO (GRANDE Y PRINCIPAL) -->
-    <section class="live-hero-section">
+    <section>
       <div class="live-hero-card" id="liveCard">
         <div class="live-hero-header">
           <div class="live-hero-title">
-            <span style="color: var(--accent-emerald); font-size: 1.2rem;">●</span>
-            <span>Transmisión Principal en Vivo con Detección Neuronal</span>
-            <span class="badge badge-live" style="margin-left: 0.5rem;">YOLO11 ON</span>
+            <span style="color: var(--accent-success); font-size: 1.1rem;">●</span>
+            <span>Transmisión Principal en Vivo</span>
+            <span class="badge" style="font-size:0.75rem;">YOLO11 Tracking</span>
           </div>
-          <div class="live-hud-controls">
-            <button class="hud-btn" onclick="toggleLiveFullscreen()">
+          <div>
+            <button class="btn-action" onclick="toggleLiveFullscreen()">
               <svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
               <span>Pantalla Completa</span>
             </button>
@@ -945,13 +1008,12 @@
             onerror="this.src=''; this.alt='Conectando al stream RTSP de la cámara...';"
           >
           
-          <!-- HUD OVERLAYS -->
           <div class="hud-overlay-top-left">
             <div class="hud-pill">
-              <span style="color:var(--accent-emerald);">●</span> REC CONTINUO &bull; RTSP ACTIVO
+              <span style="color:var(--accent-success);">●</span> REC CONTINUO &bull; RTSP ACTIVO
             </div>
-            <div class="hud-pill" style="font-size:0.72rem; color:var(--text-body);">
-              CÁMARA: Imou Cruiser (Dahua OEM) &bull; IP: 192.168.100.209
+            <div class="hud-pill" style="font-size:0.72rem;">
+              Imou Cruiser (Dahua) &bull; IP: 192.168.100.209
             </div>
           </div>
 
@@ -959,28 +1021,28 @@
             <div class="hud-pill" id="liveTimeBadge">
               --:--:--
             </div>
-            <div class="hud-pill" style="color:var(--accent-cyan);">
-              DirectML AMD Radeon RX 7600
+            <div class="hud-pill">
+              AMD DirectML
             </div>
           </div>
         </div>
 
         <div class="live-hero-footer">
-          <span>Resolución Nativa: 2304x1296 (2K Substream IA: 640x480 @ 15 FPS)</span>
+          <span>Resolución de Monitoreo: 640x480 @ 15 FPS (Grabación Full 2K en Eventos)</span>
           <span>Buffer Pre-roll: 3.0s H.264 &bull; Segmentación FastStart</span>
         </div>
       </div>
     </section>
 
-    <!-- 2. BÚSQUEDA EN LENGUAJE NATURAL CON IA -->
-    <section class="search-hero">
+    <!-- 2. BÚSQUEDA EN LENGUAJE NATURAL -->
+    <section class="search-card">
       <div class="search-title-wrap">
         <div class="search-title">
           <span>🔍</span>
-          <span>Búsqueda Inteligente en Lenguaje Natural</span>
+          <span>Búsqueda Inteligente de Eventos con IA</span>
         </div>
-        <div class="badge badge-model">
-          🧠 Motor LLM: Qwen 2.5 (3B Local)
+        <div class="badge" style="font-size:0.75rem;">
+          Motor: Qwen 2.5 (3B Local)
         </div>
       </div>
 
@@ -990,18 +1052,18 @@
           id="searchInput" 
           type="text" 
           class="search-input" 
-          placeholder="Ej: 'en que momento alguien movio un brazo', 'cuando paso un auto', 'personas de la ultima hora'..." 
+          placeholder="Ej: 'en que momento alguien movio un brazo', 'cuando paso una persona', 'autos de hoy'..." 
           autocomplete="off"
         >
         <button type="submit" class="search-btn">
           <span>Buscar con IA</span>
-          <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/></svg>
+          <svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/></svg>
         </button>
       </form>
 
-      <!-- QUICK CHIPS -->
+      <!-- CHIPS -->
       <div class="filter-chips">
-        <span class="chip-label">Sugerencias rápidas:</span>
+        <span class="chip-label">Filtros rápidos:</span>
         <button class="chip active" onclick="filterByChip('')">✨ Todos los eventos</button>
         <button class="chip" onclick="searchPreset('en que momento alguien movio un brazo')">🦾 Movió un brazo</button>
         <button class="chip" onclick="filterByChip('person')">👤 Personas</button>
@@ -1011,31 +1073,41 @@
       </div>
     </section>
 
-    <!-- AI ANSWER BANNER -->
-    <div id="aiAnswerBanner" class="ai-answer-banner">
-      <div class="ai-answer-header">
-        <span>✨ Análisis de Inteligencia Artificial (Qwen 2.5 Local)</span>
-        <span id="aiConfidenceBadge" class="badge badge-live">Momento Identificado</span>
+    <!-- AI REPORT BANNER (DESCRIPCIÓN DE LA FILMACIÓN Y OPCIÓN DE GRABACIÓN COMPLETA) -->
+    <div id="aiReportBanner" class="ai-report-banner">
+      <div class="ai-report-header">
+        <div class="ai-report-title">
+          <span>📋</span>
+          <span>Reporte de Filmación Identificada por IA</span>
+        </div>
+        <span class="badge badge-live">Evento Localizado</span>
       </div>
-      <div class="ai-answer-body" id="aiAnswerText">
-        <!-- Texto de respuesta del LLM -->
+      
+      <!-- DESCRIPCIÓN DETALLADA DEL SUCESO SOLICITADA POR EL USUARIO -->
+      <div class="ai-report-text" id="aiReportText">
+        <!-- e.g. "A las 15hs del 20/10 se visualizó un sujeto con ropa blanca tal como pediste..." -->
       </div>
-      <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap: wrap; margin-top:0.4rem;">
-        <button id="btnPlayFoundEvent" class="search-btn" style="position:static; padding: 0.5rem 1.1rem; font-size: 0.85rem;" onclick="playFoundEvent()">
-          ▶ Ver video de este momento
+
+      <!-- BOTONES DE REPRODUCCIÓN (CLIP AISLADO VS GRABACIÓN COMPLETA DESDE ESE EVENTO) -->
+      <div class="ai-report-actions">
+        <button id="btnPlayClip" class="btn-play-clip" onclick="playSingleClip()">
+          ▶ Ver clip del evento (<span id="btnClipDuration">0s</span>)
         </button>
-        <button class="reset-search-btn" onclick="resetSearch()">
+        <button id="btnPlayContinuous" class="btn-play-continuous" onclick="playContinuousFromEvent()">
+          🎥 Ver grabación completa a partir de este evento
+        </button>
+        <button class="btn-reset-search" onclick="resetSearch()">
           ✕ Ver todas las grabaciones
         </button>
       </div>
     </div>
 
-    <!-- 3. SLIDER HORIZONTAL DE GRABACIONES / EVENTOS -->
+    <!-- 3. SLIDER HORIZONTAL DE GRABACIONES -->
     <section class="slider-section">
       <div class="slider-header-wrap">
         <div class="slider-title-box">
-          <h2 id="feedTitle" class="slider-title">Registro de Eventos Grabados</h2>
-          <span id="activeQueryIndicator" style="font-size: 0.85rem; color: var(--accent-cyan); font-weight:600;"></span>
+          <h2 id="feedTitle" class="slider-title">Historial de Grabaciones</h2>
+          <span id="activeQueryIndicator" style="font-size: 0.85rem; color: var(--accent-primary); font-weight:600;"></span>
         </div>
 
         <div class="slider-nav-controls">
@@ -1046,27 +1118,47 @@
 
       <div class="recordings-slider-container">
         <div id="eventsContainer" class="recordings-slider">
-          <!-- Tarjetas horizontales generadas dinámicamente -->
+          <!-- Grabaciones generadas dinámicamente -->
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- VIDEO MODAL -->
+  <!-- VIDEO MODAL (CON MODO CONTINUO Y SECUENCIA CRONOLÓGICA) -->
   <div id="videoModal" class="modal-overlay" onclick="closeModalOnBackdrop(event)">
     <div class="modal-card">
       <div class="modal-header">
-        <div class="modal-title" id="modalTitle">Reproducción del Evento</div>
+        <div class="modal-title-wrap">
+          <div class="modal-title" id="modalTitle">Reproducción de Video</div>
+          <div class="modal-subtitle" id="modalSubtitle">Cámara Imou Cruiser - Registro de Seguridad</div>
+        </div>
+
+        <!-- MODO TABS: CLIP AISLADO VS GRABACION CONTINUA -->
+        <div class="modal-mode-tabs">
+          <button id="tabClipMode" class="mode-tab active" onclick="switchModalMode('clip')">Clip Aislado</button>
+          <button id="tabContinuousMode" class="mode-tab" onclick="switchModalMode('continuous')">Grabación Continua</button>
+        </div>
+
         <button class="close-btn" onclick="closeModal()">&times;</button>
       </div>
+
       <div class="modal-video-container">
         <video id="modalVideo" controls autoplay playsinline></video>
       </div>
+
       <div class="modal-footer">
         <span id="modalMeta" style="color:var(--text-muted); font-size:0.85rem;">Duración: 0s</span>
-        <a id="modalDownload" href="#" download class="chip" style="color:var(--accent-cyan); text-decoration:none;">
-          ⬇ Descargar Clip MP4
+
+        <!-- CONTROLES MODO CONTINUO -->
+        <div class="continuous-nav" id="continuousNav">
+          <button class="btn-action" style="padding:0.3rem 0.6rem; font-size:0.78rem;" onclick="prevContinuousClip()">⏮ Anterior</button>
+          <span id="continuousProgress" style="font-size:0.8rem; font-weight:600; color:var(--text-body);">Clip 1 de 1</span>
+          <button class="btn-action" style="padding:0.3rem 0.6rem; font-size:0.78rem;" onclick="nextContinuousClip()">Siguiente ⏭</button>
+        </div>
+
+        <a id="modalDownload" href="#" download class="btn-action" style="text-decoration:none;">
+          ⬇ Descargar MP4
         </a>
       </div>
     </div>
@@ -1076,8 +1168,37 @@
     let currentFilterClass = '';
     let isSearchActive = false;
     let lastFoundEvent = null;
+    let currentTheme = localStorage.getItem('smartcam_theme') || 'dark';
 
-    // Actualizar reloj digital en HUD en vivo
+    // SECUENCIA DE GRABACIÓN CONTINUA
+    let continuousPlaylist = [];
+    let continuousCurrentIndex = 0;
+    let currentModalMode = 'clip'; // 'clip' | 'continuous'
+
+    // ==========================================
+    // TEMA CLARO / OSCURO (SIN NEON)
+    // ==========================================
+    function applyTheme(theme) {
+      currentTheme = theme;
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('smartcam_theme', theme);
+      const icon = document.getElementById('themeIcon');
+      const text = document.getElementById('themeText');
+      if (theme === 'light') {
+        icon.innerText = '🌙';
+        text.innerText = 'Modo Oscuro';
+      } else {
+        icon.innerText = '☀️';
+        text.innerText = 'Modo Claro';
+      }
+    }
+
+    function toggleTheme() {
+      applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    }
+    applyTheme(currentTheme);
+
+    // Reloj digital en HUD
     function updateHUDTime() {
       const now = new Date();
       const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -1087,6 +1208,9 @@
     setInterval(updateHUDTime, 1000);
     updateHUDTime();
 
+    // ==========================================
+    // ESTADO Y CARGA DE EVENTOS
+    // ==========================================
     async function updateStatus() {
       try {
         const res = await fetch('/api/status');
@@ -1103,7 +1227,7 @@
     }
 
     async function loadEvents(objectClass = '') {
-      if (isSearchActive) return; // Congelar si hay búsqueda activa para no borrar el resultado del usuario
+      if (isSearchActive) return; // Congelar si hay búsqueda activa
       try {
         let url = '/api/events?limit=50';
         if (objectClass) {
@@ -1117,17 +1241,18 @@
       }
     }
 
-    function renderEvents(events, isSpecific = false) {
+    function renderEvents(events, isSpecific = false, specificDescription = '') {
       const container = document.getElementById('eventsContainer');
       if (!events || events.length === 0) {
         container.innerHTML = `
-          <div class="empty-state">
-            <svg viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z"/></svg>
-            <h3 style="color:#fff; margin-bottom:0.35rem;">${isSpecific ? 'No se encontró una grabación exacta para esta búsqueda' : 'Aún no hay eventos registrados'}</h3>
-            <p style="font-size:0.88rem;">
+          <div class="empty-state" style="padding:2.5rem; text-align:center; width:100%; border:1px dashed var(--border-color); border-radius:10px;">
+            <p style="font-size:1.05rem; font-weight:600; color:var(--text-main);">
+              ${isSpecific ? 'No se encontró una grabación exacta para esta búsqueda' : 'Aún no hay eventos registrados'}
+            </p>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.35rem;">
               ${isSpecific ? 'Prueba con otra descripción o haz clic en "Ver todas las grabaciones".' : 'Pasa frente a la cámara o acerca un objeto para generar un evento automático.'}
             </p>
-            ${isSpecific ? '<button class="reset-search-btn" style="margin-top:1rem;" onclick="resetSearch()">✕ Ver todas las grabaciones</button>' : ''}
+            ${isSpecific ? '<button class="btn-reset-search" style="margin-top:1rem;" onclick="resetSearch()">✕ Ver todas las grabaciones</button>' : ''}
           </div>
         `;
         return;
@@ -1138,7 +1263,12 @@
         const timeFormatted = formatTime(ev.start_time);
         const durationFormatted = `${ev.duration_seconds}s`;
         const featuredClass = isSpecific ? 'featured-event' : '';
-        const badgeHtml = isSpecific ? '<div class="featured-badge">🎯 MOMENTO EXACTO</div>' : '';
+        const badgeHtml = isSpecific ? '<div class="featured-badge">🎯 EVENTO ENCONTRADO</div>' : '';
+        const snippetHtml = specificDescription ? `
+          <div class="card-desc-snippet">
+            <strong>Filmación:</strong> ${specificDescription}
+          </div>
+        ` : '';
 
         return `
           <div class="event-card ${featuredClass}" onclick="openVideoModal('${ev.id}', '${ev.object_class}', '${timeFormatted}', '${durationFormatted}')">
@@ -1161,12 +1291,12 @@
                 <svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
                 <span>${timeFormatted}</span>
               </div>
+              ${snippetHtml}
             </div>
           </div>
         `;
       }).join('');
 
-      // Desplazar el slider al inicio suavemente
       container.scrollTo({ left: 0, behavior: 'smooth' });
     }
 
@@ -1176,12 +1306,12 @@
       container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
 
-    // Permitir scroll horizontal con la rueda del ratón
+    // Permitir scroll horizontal con rueda del mouse
     const sliderEl = document.getElementById('eventsContainer');
     sliderEl.addEventListener('wheel', (e) => {
       if (e.deltaY !== 0) {
         e.preventDefault();
-        sliderEl.scrollBy({ left: e.deltaY * 1.5, behavior: 'smooth' });
+        sliderEl.scrollBy({ left: e.deltaY * 1.4, behavior: 'smooth' });
       }
     });
 
@@ -1189,7 +1319,7 @@
       const liveCard = document.getElementById('liveCard');
       if (!document.fullscreenElement) {
         liveCard.requestFullscreen().catch(err => {
-          console.error("Error al activar pantalla completa:", err);
+          console.error("Error fullscreen:", err);
         });
       } else {
         document.exitFullscreen();
@@ -1217,17 +1347,20 @@
       return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' (' + d.toLocaleDateString() + ')';
     }
 
+    // ==========================================
+    // BÚSQUEDA INTELIGENTE CON IA
+    // ==========================================
     async function handleSearch(e) {
       e.preventDefault();
       const query = document.getElementById('searchInput').value.trim();
       if (!query) return;
 
       isSearchActive = true;
-      const banner = document.getElementById('aiAnswerBanner');
+      const banner = document.getElementById('aiReportBanner');
       banner.style.display = 'flex';
-      document.getElementById('aiAnswerText').innerHTML = `<span style="color:var(--text-muted); font-size:0.95rem;">🧠 Baddgroup IA: Analizando grabaciones y razonando momento exacto...</span>`;
+      document.getElementById('aiReportText').innerHTML = `<span style="color:var(--text-muted); font-size:1rem;">Analizando grabaciones de seguridad con IA...</span>`;
       document.getElementById('activeQueryIndicator').innerText = `Búsqueda activa: "${query}"`;
-      document.getElementById('feedTitle').innerText = 'Analizando grabaciones con IA...';
+      document.getElementById('feedTitle').innerText = 'Analizando eventos con IA...';
 
       try {
         const res = await fetch('/api/search', {
@@ -1239,56 +1372,36 @@
         
         const results = data.results || [];
         if (data.is_specific) {
-          document.getElementById('feedTitle').innerText = `🎯 Momento Encontrado (${results.length} grabación aislada)`;
+          document.getElementById('feedTitle').innerText = `🎯 Grabación Coincidente (1 filmación aislada)`;
           if (data.ai_answer) {
-            document.getElementById('aiAnswerText').innerText = data.ai_answer;
+            document.getElementById('aiReportText').innerText = data.ai_answer;
           }
           if (results.length > 0) {
             lastFoundEvent = results[0];
-            document.getElementById('btnPlayFoundEvent').style.display = 'inline-flex';
+            document.getElementById('btnClipDuration').innerText = `${lastFoundEvent.duration_seconds}s`;
+            document.getElementById('btnPlayClip').style.display = 'inline-flex';
+            document.getElementById('btnPlayContinuous').style.display = 'inline-flex';
           } else {
-            document.getElementById('btnPlayFoundEvent').style.display = 'none';
+            document.getElementById('btnPlayClip').style.display = 'none';
+            document.getElementById('btnPlayContinuous').style.display = 'none';
           }
-          renderEvents(results, true);
+          renderEvents(results, true, data.ai_answer);
         } else {
           document.getElementById('feedTitle').innerText = `Resultados de Búsqueda (${results.length})`;
           if (data.ai_answer) {
-            document.getElementById('aiAnswerText').innerText = data.ai_answer;
+            document.getElementById('aiReportText').innerText = data.ai_answer;
           }
-          document.getElementById('btnPlayFoundEvent').style.display = 'none';
+          document.getElementById('btnPlayClip').style.display = 'none';
+          document.getElementById('btnPlayContinuous').style.display = 'none';
           renderEvents(results, false);
         }
 
-        // Scroll suave al banner de respuesta
         banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
       } catch (err) {
         console.error("Error en búsqueda:", err);
-        document.getElementById('aiAnswerText').innerText = "Hubo un error al procesar la búsqueda con IA.";
+        document.getElementById('aiReportText').innerText = "Hubo un error al procesar la búsqueda con IA.";
       }
-    }
-
-    function playFoundEvent() {
-      if (lastFoundEvent) {
-        const icon = getClassIcon(lastFoundEvent.object_class);
-        const time = formatTime(lastFoundEvent.start_time);
-        const dur = `${lastFoundEvent.duration_seconds}s`;
-        openVideoModal(lastFoundEvent.id, lastFoundEvent.object_class, time, dur);
-      }
-    }
-
-    function resetSearch() {
-      isSearchActive = false;
-      lastFoundEvent = null;
-      document.getElementById('searchInput').value = '';
-      document.getElementById('aiAnswerBanner').style.display = 'none';
-      document.getElementById('activeQueryIndicator').innerText = '';
-      document.getElementById('feedTitle').innerText = 'Registro de Eventos Grabados';
-      document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
-      const allChip = document.querySelector('.filter-chips .chip');
-      if (allChip) allChip.classList.add('active');
-      currentFilterClass = '';
-      loadEvents('');
     }
 
     function searchPreset(preset) {
@@ -1299,29 +1412,151 @@
     function filterByChip(cls) {
       isSearchActive = false;
       currentFilterClass = cls;
-      document.getElementById('aiAnswerBanner').style.display = 'none';
+      document.getElementById('aiReportBanner').style.display = 'none';
       document.getElementById('searchInput').value = '';
       document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
       event.target.classList.add('active');
       document.getElementById('activeQueryIndicator').innerText = cls ? `Categoría: ${cls}` : '';
-      document.getElementById('feedTitle').innerText = 'Registro de Eventos Grabados';
+      document.getElementById('feedTitle').innerText = 'Historial de Grabaciones';
       loadEvents(cls);
     }
 
-    function openVideoModal(eventId, cls, time, duration) {
+    function resetSearch() {
+      isSearchActive = false;
+      lastFoundEvent = null;
+      document.getElementById('searchInput').value = '';
+      document.getElementById('aiReportBanner').style.display = 'none';
+      document.getElementById('activeQueryIndicator').innerText = '';
+      document.getElementById('feedTitle').innerText = 'Historial de Grabaciones';
+      document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
+      const allChip = document.querySelector('.filter-chips .chip');
+      if (allChip) allChip.classList.add('active');
+      currentFilterClass = '';
+      loadEvents('');
+    }
+
+    // ==========================================
+    // REPRODUCCIÓN (CLIP INDIVIDUAL VS CONTINUA)
+    // ==========================================
+    function playSingleClip() {
+      if (lastFoundEvent) {
+        const time = formatTime(lastFoundEvent.start_time);
+        const dur = `${lastFoundEvent.duration_seconds}s`;
+        openVideoModal(lastFoundEvent.id, lastFoundEvent.object_class, time, dur, 'clip');
+      }
+    }
+
+    async function playContinuousFromEvent() {
+      if (lastFoundEvent) {
+        const time = formatTime(lastFoundEvent.start_time);
+        const dur = `${lastFoundEvent.duration_seconds}s`;
+        await openVideoModal(lastFoundEvent.id, lastFoundEvent.object_class, time, dur, 'continuous');
+      }
+    }
+
+    async function openVideoModal(eventId, cls, time, duration, mode = 'clip') {
       const modal = document.getElementById('videoModal');
       const video = document.getElementById('modalVideo');
       const title = document.getElementById('modalTitle');
       const meta = document.getElementById('modalMeta');
       const download = document.getElementById('modalDownload');
 
-      title.innerHTML = `${getClassIcon(cls)} Evento: ${cls} - ${time}`;
-      meta.innerText = `Duración del clip: ${duration}`;
-      video.src = `/api/video/${eventId}`;
-      download.href = `/api/video/${eventId}`;
-      
+      currentModalMode = mode;
+      updateModalTabsUI();
+
+      if (mode === 'continuous') {
+        try {
+          const res = await fetch(`/api/events/from_moment/${eventId}`);
+          continuousPlaylist = await res.json();
+          continuousCurrentIndex = 0;
+          if (!continuousPlaylist || continuousPlaylist.length === 0) {
+            continuousPlaylist = [{ id: eventId, object_class: cls, start_time: '', duration_seconds: duration }];
+          }
+        } catch (e) {
+          console.error("Error cargando secuencia continua:", e);
+          continuousPlaylist = [{ id: eventId, object_class: cls, start_time: '', duration_seconds: duration }];
+          continuousCurrentIndex = 0;
+        }
+
+        playContinuousCurrent();
+      } else {
+        // Modo clip aislado
+        document.getElementById('continuousNav').classList.remove('active');
+        title.innerHTML = `${getClassIcon(cls)} Evento: ${cls} - ${time}`;
+        meta.innerText = `Duración del clip: ${duration}`;
+        video.src = `/api/video/${eventId}`;
+        download.href = `/api/video/${eventId}`;
+        video.onended = null;
+        video.play();
+      }
+
       modal.classList.add('active');
+    }
+
+    function playContinuousCurrent() {
+      const video = document.getElementById('modalVideo');
+      const title = document.getElementById('modalTitle');
+      const meta = document.getElementById('modalMeta');
+      const download = document.getElementById('modalDownload');
+      const nav = document.getElementById('continuousNav');
+      const progress = document.getElementById('continuousProgress');
+
+      nav.classList.add('active');
+      const ev = continuousPlaylist[continuousCurrentIndex];
+      const timeFormatted = formatTime(ev.start_time);
+      const icon = getClassIcon(ev.object_class);
+
+      title.innerHTML = `🎥 Grabación Continua &bull; ${icon} ${ev.object_class} (${timeFormatted})`;
+      meta.innerText = `Fragmento ${continuousCurrentIndex + 1} de ${continuousPlaylist.length} (Duración: ${ev.duration_seconds}s)`;
+      progress.innerText = `Clip ${continuousCurrentIndex + 1}/${continuousPlaylist.length}`;
+
+      video.src = `/api/video/${ev.id}`;
+      download.href = `/api/video/${ev.id}`;
+
+      // Reproducción automática secuencial: cuando termine este clip, avanzar al siguiente
+      video.onended = () => {
+        if (continuousCurrentIndex < continuousPlaylist.length - 1) {
+          continuousCurrentIndex++;
+          playContinuousCurrent();
+        }
+      };
+
       video.play();
+    }
+
+    function nextContinuousClip() {
+      if (continuousCurrentIndex < continuousPlaylist.length - 1) {
+        continuousCurrentIndex++;
+        playContinuousCurrent();
+      }
+    }
+
+    function prevContinuousClip() {
+      if (continuousCurrentIndex > 0) {
+        continuousCurrentIndex--;
+        playContinuousCurrent();
+      }
+    }
+
+    function switchModalMode(newMode) {
+      currentModalMode = newMode;
+      updateModalTabsUI();
+      if (newMode === 'continuous') {
+        const evId = lastFoundEvent ? lastFoundEvent.id : (continuousPlaylist[0] ? continuousPlaylist[0].id : '');
+        if (evId) {
+          openVideoModal(evId, 'person', '', '', 'continuous');
+        }
+      } else {
+        const ev = continuousPlaylist[continuousCurrentIndex] || lastFoundEvent;
+        if (ev) {
+          openVideoModal(ev.id, ev.object_class, formatTime(ev.start_time), `${ev.duration_seconds}s`, 'clip');
+        }
+      }
+    }
+
+    function updateModalTabsUI() {
+      document.getElementById('tabClipMode').classList.toggle('active', currentModalMode === 'clip');
+      document.getElementById('tabContinuousMode').classList.toggle('active', currentModalMode === 'continuous');
     }
 
     function closeModal() {
@@ -1329,6 +1564,7 @@
       const video = document.getElementById('modalVideo');
       video.pause();
       video.src = '';
+      video.onended = null;
       modal.classList.remove('active');
     }
 
@@ -1338,12 +1574,11 @@
       }
     }
 
-    // Cerrar modal con tecla Escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeModal();
     });
 
-    // Inicialización y polling continuo
+    // Polling continuo
     updateStatus();
     loadEvents();
     setInterval(updateStatus, 3000);

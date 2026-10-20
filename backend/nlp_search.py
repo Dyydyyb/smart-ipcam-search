@@ -57,12 +57,13 @@ def reason_and_pick_specific_event(user_query: str, candidate_events: List[Secur
             "matched_ids": []
         }
 
-    # Construir resumen de eventos para el LLM
+    # Construir resumen de eventos para el LLM con fecha y hora completa
     events_summary = []
     for idx, e in enumerate(candidate_events[:15], 1):
         t_str = e.start_time.strftime("%H:%M:%S") if e.start_time else "desconocida"
+        d_str = e.start_time.strftime("%d/%m") if e.start_time else "hoy"
         events_summary.append(
-            f"- Evento #{idx} [ID: {e.id}]: Clase: {e.object_class}, Hora: {t_str}, Duración: {e.duration_seconds}s, Confianza: {int(e.confidence * 100)}%"
+            f"- Evento #{idx} [ID: {e.id}]: Clase: {e.object_class}, Hora: {t_str} hs del {d_str}, Duración: {e.duration_seconds}s, Confianza: {int(e.confidence * 100)}%"
         )
     events_text = "\n".join(events_summary)
 
@@ -73,13 +74,14 @@ Aquí tienes los eventos grabados recientemente por la cámara:
 {events_text}
 
 Instrucciones estrictas:
-1. Responde a la pregunta del usuario con una frase clara y concisa indicando la HORA EXACTA y DURACIÓN del evento más relevante.
-2. Si el usuario pregunta por un momento o evento específico (ej: "¿En qué momento alguien movió un brazo?", "¿Cuándo pasó el auto?"), selecciona ÚNICAMENTE el ID del evento que mejor responde a su pregunta (NO selecciones todos).
+1. Selecciona ÚNICAMENTE el ID del evento que mejor responde a la consulta del usuario (no selecciones varios).
+2. Redacta una descripción clara, concisa y profesional del suceso filmado para el usuario, siguiendo exactamente este estilo de reporte:
+   "A las [HH:MM] hs del [DD/MM] se visualizó [sujeto / persona / vehículo / movimiento] frente a la cámara (duración [duración]s) tal como solicitaste en tu consulta."
 3. Responde únicamente en formato JSON válido con las claves: "respuesta_ia" y "evento_ids_coincidentes".
 
 Ejemplo de salida JSON:
 {{
-  "respuesta_ia": "Se detectó el movimiento a las 05:05:18 con una duración de 3.7 segundos.",
+  "respuesta_ia": "A las 05:13 hs del 20/10 se visualizó a un sujeto realizando movimiento frente a la cámara (duración 7.4s) tal como solicitaste.",
   "evento_ids_coincidentes": ["{candidate_events[0].id}"]
 }}
 """
@@ -106,11 +108,12 @@ Ejemplo de salida JSON:
     except Exception as e:
         logger.warning(f"Error en razonamiento LLM: {e}")
 
-    # Fallback si el LLM falla: tomar el evento más reciente relevante
+    # Fallback formal si el LLM tarda o falla
     latest = candidate_events[0]
-    t_str = latest.start_time.strftime("%H:%M:%S") if latest.start_time else ""
+    t_str = latest.start_time.strftime("%H:%M") if latest.start_time else "00:00"
+    d_str = latest.start_time.strftime("%d/%m") if latest.start_time else "hoy"
     return {
-        "ai_answer": f"Se detectó el evento más relevante a las {t_str} con una duración de {latest.duration_seconds}s.",
+        "ai_answer": f"A las {t_str} hs del {d_str} se visualizó la presencia y movimiento de {latest.object_class} (duración {latest.duration_seconds}s) tal como consultaste.",
         "matched_ids": [latest.id]
     }
 
