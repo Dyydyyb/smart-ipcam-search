@@ -11,6 +11,50 @@ from core.config import settings
 from core.models import SecurityEvent
 from core.camera_manager import camera_manager
 
+ABSURD_OR_UNSUPPORTED = [
+    "dinosaurio", "ovni", "ufo", "alien", "extraterrestre", "fantasma", "espiritu",
+    "dragon", "monstruo", "zombie", "vampiro", "leon", "tigre", "elefante", "jirafa",
+    "ballena", "tiburon", "submarino", "cohete", "nave espacial", "helicoptero", "tanque"
+]
+
+def parse_query_with_ollama(user_query: str) -> Dict[str, Any]:
+    """Extrae clases y ventanas temporales de la consulta."""
+    q = user_query.lower()
+    classes = []
+    
+    if any(w in q for w in ["persona", "gente", "alguien", "hombre", "mujer", "chico", "chica", "ladron", "sujeto", "brazo", "mano", "movio", "movió", "cuerpo", "gesto", "movimiento"]):
+        classes.append("person")
+    if any(w in q for w in ["auto", "coche", "carro", "vehiculo", "vehículo"]):
+        classes.append("car")
+    if any(w in q for w in ["camion", "camión", "camioneta", "furgon", "furgón"]):
+        classes.append("truck")
+    if any(w in q for w in ["moto", "motocicleta"]):
+        classes.append("motorcycle")
+    if any(w in q for w in ["bici", "bicicleta"]):
+        classes.append("bicycle")
+    if any(w in q for w in ["perro", "perros", "mascota"]):
+        classes.append("dog")
+    if any(w in q for w in ["gato", "gatos"]):
+        classes.append("cat")
+    if any(w in q for w in ["tv", "tele", "pantalla", "televisor"]):
+        classes.append("tv")
+
+    hours_back = None
+    if "ultima hora" in q or "última hora" in q or "1 hora" in q:
+        hours_back = 1.0
+    elif "ultimos 30" in q or "últimos 30" in q or "media hora" in q:
+        hours_back = 0.5
+    elif "ultimas 2" in q or "últimas 2" in q:
+        hours_back = 2.0
+    elif "hoy" in q:
+        hours_back = 24.0
+
+    return {
+        "classes": classes,
+        "hours_back": hours_back,
+        "summary": f"Filtro de búsqueda para: {user_query}"
+    }
+
 def reason_with_gemini_multimodal(user_query: str, candidate_events: List[SecurityEvent]) -> Optional[Dict[str, Any]]:
     """
     Motor de IA de Producción: Utiliza Google Gemini 1.5 Flash con comprensión multimodal de imágenes.
