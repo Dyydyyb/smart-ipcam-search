@@ -9,6 +9,7 @@ from loguru import logger
 from sqlalchemy import select, and_, desc
 from core.config import settings
 from core.models import SecurityEvent
+from core.camera_manager import camera_manager
 
 def reason_with_gemini_multimodal(user_query: str, candidate_events: List[SecurityEvent]) -> Optional[Dict[str, Any]]:
     """
@@ -107,26 +108,29 @@ def reason_with_gemini_multimodal(user_query: str, candidate_events: List[Securi
 
     return None
 
-def reason_and_pick_specific_event(user_query: str, candidate_events: List[SecurityEvent]) -> Dict[str, Any]:
+def reason_and_pick_specific_event(user_query: str, candidate_events: List[SecurityEvent], camera_id: Optional[str] = None) -> Dict[str, Any]:
     """
-    Motor híbrido de razonamiento:
+    Motor híbrido de razonamiento para una cámara específica:
     1. Intenta resolver con Gemini Multimodal en la nube si hay API Key configurada.
     2. Si no, usa Ollama (Qwen 2.5) local como respaldo sin costo.
     """
     q_lower = user_query.lower()
     
+    cam_info = camera_manager.get(camera_id) if camera_id else None
+    cam_name = cam_info.get("name", "Cámara Seleccionada") if cam_info else "Cámara Seleccionada"
+    
     # Detección inmediata de peticiones absurdas o imposibles
     if any(w in q_lower for w in ABSURD_OR_UNSUPPORTED):
         return {
             "found": False,
-            "ai_answer": f"No se registró ningún evento relacionado con '{user_query}' en el historial de video. El sistema de videovigilancia únicamente monitorea y registra actividad habitual y personas.",
+            "ai_answer": f"No se registró ningún evento relacionado con '{user_query}' en la cámara '{cam_name}'. El sistema de videovigilancia únicamente monitorea y registra actividad habitual y personas.",
             "matched_ids": []
         }
 
     if not candidate_events:
         return {
             "found": False,
-            "ai_answer": f"No se encontraron grabaciones registradas para '{user_query}' en el rango de tiempo consultado.",
+            "ai_answer": f"No se encontraron grabaciones registradas para '{user_query}' en la cámara '{cam_name}'.",
             "matched_ids": []
         }
 
@@ -150,9 +154,9 @@ def reason_and_pick_specific_event(user_query: str, candidate_events: List[Secur
     events_text = "\n".join(events_summary)
 
     prompt = f"""Eres el cerebro analista de seguridad de un sistema de videovigilancia inteligente.
-El usuario realiza la siguiente consulta: "{user_query}"
+El usuario realiza la siguiente consulta: "{user_query}" en la cámara: "{cam_name}".
 
-Grabaciones registradas por la cámara:
+Grabaciones registradas por la cámara "{cam_name}":
 {events_text}
 
 Instrucciones de análisis crítico:
@@ -161,11 +165,11 @@ Instrucciones de análisis crítico:
    - SÍ COINCIDE: Debes seleccionar el evento más reciente y relevante de la lista.
    - "coincidencia_encontrada": true
    - "evento_ids_coincidentes": ["ID_DEL_EVENTO"]
-   - "respuesta_ia": "A las [HH:MM] hs del [DD/MM] se visualizó a una persona realizando movimiento frente a la cámara (duración [duración]s) tal como solicitaste."
+   - "respuesta_ia": "A las [HH:MM] hs del [DD/MM] se visualizó en {cam_name} a una persona realizando movimiento frente a la cámara (duración [duración]s) tal como solicitaste."
 3. Si la consulta pide algo ABSURDO, FICTICIO o que NO existe en el metraje (ej: dinosaurios, ovnis, vehículos si no hay vehículos, armas, etc.):
    - "coincidencia_encontrada": false
    - "evento_ids_coincidentes": []
-   - "respuesta_ia": "No se registró ningún evento relacionado con '{user_query}' en el historial de video."
+   - "respuesta_ia": "No se registró ningún evento relacionado con '{user_query}' en la cámara '{cam_name}'."
 4. Responde ÚNICAMENTE en formato JSON con las claves: "coincidencia_encontrada", "respuesta_ia" y "evento_ids_coincidentes".
 """
 
@@ -199,15 +203,19 @@ Instrucciones de análisis crítico:
     d_str = latest.start_time.strftime("%d/%m") if latest.start_time else "hoy"
     return {
         "found": True,
-        "ai_answer": f"A las {t_str} hs del {d_str} se visualizó la presencia y movimiento de {latest.object_class} (duración {latest.duration_seconds}s) tal como consultaste.",
+        "ai_answer": f"A las {t_str} hs del {d_str} se visualizó en {cam_name} la presencia y movimiento de {latest.object_class} (duración {latest.duration_seconds}s) tal como consultaste.",
         "matched_ids": [latest.id]
     }
 
-async def execute_smart_search(session, user_query: str) -> Dict[str, Any]:
-    """Ejecuta la búsqueda inteligente en la base de datos con razonamiento del LLM."""
+async def execute_smart_search(session, user_query: str, camera_id: Optional[str] = None) -> Dict[str, Any]:
+    """Ejecuta la búsqueda inteligente en la base de datos con razonamiento del LLM para una cámara específica."""
     parsed_filter = parse_query_with_ollama(user_query)
     
     conditions = []
+    
+    # Filtro de cámara específico obligatorio (no se permite mezclar cámaras en IA)
+    if camera_id and camera_id.lower() not in ("all", "todas"):
+        conditions.append(SecurityEvent.camera_id == camera_id)
     
     # Filtro de clases
     classes = parsed_filter.get("classes", [])
@@ -227,6 +235,9 @@ async def execute_smart_search(session, user_query: str) -> Dict[str, Any]:
     result = await session.execute(stmt)
     candidate_events = result.scalars().all()
 
+    cam_info = camera_manager.get(camera_id) if camera_id else None
+    cam_name = cam_info.get("name", "Cámara Seleccionada") if cam_info else "Cámara Seleccionada"
+
     # Si es una consulta específica (pregunta por un momento, acción, o frase descriptiva)
     q_lower = user_query.lower()
     specific_keywords = [
@@ -240,7 +251,7 @@ async def execute_smart_search(session, user_query: str) -> Dict[str, Any]:
     is_specific_query = any(w in q_lower for w in specific_keywords) or len(q_lower.split()) >= 3
 
     if is_specific_query and candidate_events:
-        reasoning = reason_and_pick_specific_event(user_query, candidate_events)
+        reasoning = reason_and_pick_specific_event(user_query, candidate_events, camera_id=camera_id)
         is_found = reasoning.get("found", True)
         matched_ids = set(reasoning.get("matched_ids", []))
         
@@ -248,7 +259,9 @@ async def execute_smart_search(session, user_query: str) -> Dict[str, Any]:
         if not is_found or not matched_ids:
             return {
                 "query": user_query,
-                "ai_answer": reasoning.get("ai_answer", f"No se registraron filmaciones correspondientes a '{user_query}'."),
+                "camera_id": camera_id,
+                "camera_name": cam_name,
+                "ai_answer": reasoning.get("ai_answer", f"No se registraron filmaciones correspondientes a '{user_query}' en {cam_name}."),
                 "is_specific": True,
                 "total_results": 0,
                 "results": []
@@ -263,6 +276,8 @@ async def execute_smart_search(session, user_query: str) -> Dict[str, Any]:
 
         return {
             "query": user_query,
+            "camera_id": camera_id,
+            "camera_name": cam_name,
             "ai_answer": reasoning.get("ai_answer"),
             "is_specific": True,
             "total_results": len(filtered_events),
@@ -272,7 +287,9 @@ async def execute_smart_search(session, user_query: str) -> Dict[str, Any]:
     # Búsqueda general
     return {
         "query": user_query,
-        "ai_answer": f"Se encontraron {len(candidate_events)} eventos que coinciden con tu criterio.",
+        "camera_id": camera_id,
+        "camera_name": cam_name,
+        "ai_answer": f"Se encontraron {len(candidate_events)} eventos en {cam_name} que coinciden con tu criterio.",
         "is_specific": False,
         "total_results": len(candidate_events),
         "results": [e.to_dict() for e in candidate_events]

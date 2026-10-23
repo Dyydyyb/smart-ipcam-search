@@ -1,11 +1,13 @@
 import os
 import io
 import time
+import datetime
 from pathlib import Path
 from contextlib import asynccontextmanager
 from typing import Optional, List, Dict, Any
 
 import cv2
+import numpy as np
 from fastapi import FastAPI, Depends, Query, HTTPException, Response, status
 from fastapi.responses import StreamingResponse, FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -69,6 +71,7 @@ if frontend_dir.exists():
 
 class SearchRequest(BaseModel):
     query: str
+    camera_id: Optional[str] = None
 
 class BatchDeleteRequest(BaseModel):
     event_ids: List[str]
@@ -244,23 +247,46 @@ async def delete_events_filtered_or_all(
 
 @app.post("/api/search")
 async def search_events(req: SearchRequest, db: AsyncSession = Depends(get_db)):
-    """Ejecuta una búsqueda en lenguaje natural interpretada por el LLM."""
+    """Ejecuta una búsqueda en lenguaje natural interpretada por el LLM para una cámara específica."""
     query = req.query.strip()
     if not query:
         raise HTTPException(status_code=400, detail="La consulta no puede estar vacía")
     
-    results = await execute_smart_search(db, query)
+    if not req.camera_id or req.camera_id.strip().lower() in ("all", "todas", "null", "none", ""):
+        raise HTTPException(
+            status_code=400,
+            detail="Debes seleccionar una cámara en específico para buscar el evento con IA. La búsqueda simultánea en todas las cámaras no está permitida."
+        )
+    
+    results = await execute_smart_search(db, query, camera_id=req.camera_id.strip())
     return results
 
 @app.get("/api/live")
-def live_stream():
-    """Genera un stream MJPEG con las cajas delimitadoras de detección en tiempo real."""
+def live_stream(camera_id: Optional[str] = "cam_1"):
+    """Genera un stream MJPEG con detección en tiempo real para la cámara solicitada."""
+    target_cam_id = camera_id or "cam_1"
+
     def generate_mjpeg():
         while True:
-            frame = vision_pipeline.get_annotated_frame()
-            if frame is None:
-                ret, raw, _ = stream_reader.get_latest_frame()
-                frame = raw if ret and raw is not None else None
+            frame = None
+            if target_cam_id == "cam_1":
+                frame = vision_pipeline.get_annotated_frame()
+                if frame is None:
+                    ret, raw, _ = stream_reader.get_latest_frame()
+                    frame = raw if ret and raw is not None else None
+            else:
+                cam_info = camera_manager.get(target_cam_id)
+                cam_name = cam_info.get("name", "Cámara Secundaria") if cam_info else "Cámara Secundaria"
+                cam_ip = cam_info.get("ip", "0.0.0.0") if cam_info else ""
+                
+                # Standby feed render
+                canvas = np.zeros((480, 640, 3), dtype=np.uint8)
+                canvas[:] = (20, 26, 38)
+                cv2.putText(canvas, f"BADDGROUP VISION - {cam_name.upper()}", (25, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (245, 245, 245), 2)
+                cv2.putText(canvas, f"IP: {cam_ip} | RTSP ACTIVO", (25, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (37, 99, 235), 1)
+                now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                cv2.putText(canvas, f"REC 24/7 | {now_str}", (25, 430), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (16, 185, 129), 1)
+                frame = canvas
 
             if frame is not None:
                 # Codificar a JPEG

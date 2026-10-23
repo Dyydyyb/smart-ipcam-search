@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -335,6 +335,267 @@
       color: var(--text-muted);
       flex-wrap: wrap;
       gap: 0.5rem;
+    }
+
+    /* =========================================================
+       MULTI-CÁMARA SPLIT GRID (MOSAICO EN SIMULTÁNEO)
+       ========================================================= */
+    .mosaic-grid {
+      display: grid;
+      gap: 14px;
+      padding: 14px;
+      background: var(--live-viewport-bg);
+      min-height: 460px;
+    }
+
+    .mosaic-grid.grid-1 {
+      grid-template-columns: 1fr;
+    }
+
+    .mosaic-grid.grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .mosaic-grid.grid-3,
+    .mosaic-grid.grid-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .mosaic-grid.grid-5,
+    .mosaic-grid.grid-6 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (max-width: 960px) {
+      .mosaic-grid.grid-2,
+      .mosaic-grid.grid-3,
+      .mosaic-grid.grid-4,
+      .mosaic-grid.grid-5,
+      .mosaic-grid.grid-6 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mosaic-cam-tile {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mosaic-cam-tile:hover {
+      border-color: var(--border-accent);
+      box-shadow: var(--shadow-md);
+    }
+
+    .mosaic-tile-top {
+      padding: 0.6rem 0.85rem;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+    }
+
+    .mosaic-tile-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mosaic-tile-viewport {
+      width: 100%;
+      height: 280px;
+      background: #020617;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (max-width: 960px) {
+      .mosaic-tile-viewport {
+        height: 220px;
+      }
+    }
+
+    .mosaic-tile-stream {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #000;
+      display: block;
+    }
+
+    .mosaic-hud-top-left {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.6rem;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .mosaic-hud-bottom-right {
+      position: absolute;
+      bottom: 0.5rem;
+      right: 0.6rem;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .mosaic-hud-pill {
+      background: rgba(11, 17, 32, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.22rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .mosaic-tile-bottom {
+      padding: 0.5rem 0.85rem;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mosaic-btn-zoom {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.35rem 0.7rem;
+      border-radius: 5px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s ease;
+    }
+
+    .mosaic-btn-zoom:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-accent);
+    }
+
+    .mosaic-btn-ai-search {
+      background: var(--accent-primary);
+      border: 1px solid var(--accent-primary);
+      color: #ffffff;
+      padding: 0.35rem 0.7rem;
+      border-radius: 5px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s ease;
+    }
+
+    .mosaic-btn-ai-search:hover {
+      background: var(--accent-primary-hover);
+    }
+
+    /* =========================================================
+       SELECTOR OBLIGATORIO DE CÁMARA PARA BÚSQUEDA IA
+       ========================================================= */
+    .ai-search-cam-selector-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.85rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .ai-search-cam-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .ai-search-cam-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .required-badge {
+      background: rgba(220, 38, 38, 0.12);
+      color: var(--accent-danger);
+      border: 1px solid rgba(220, 38, 38, 0.25);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .ai-camera-dropdown {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.65rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .ai-camera-dropdown:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .pulse-error {
+      border-color: var(--accent-danger) !important;
+      box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.25) !important;
+      animation: pulseAnim 0.3s ease 2;
+    }
+
+    @keyframes pulseAnim {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.01); }
+      100% { transform: scale(1); }
+    }
+
+    .ai-search-cam-rule {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      line-height: 1.35;
     }
 
     /* SECTION 2: BUSCADOR CON IA */
@@ -1415,8 +1676,8 @@
       <div class="camera-selector-box" title="Filtrar eventos por cámara">
         <svg class="v-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
         <select id="cameraSelect" class="camera-select-dropdown" onchange="onCameraSelectChange(this.value)">
-          <option value="all">Todas las Cámaras</option>
-          <option value="cam_1" selected>Cámara Poste Principal</option>
+          <option value="all" selected>Todas las Cámaras (Mosaico)</option>
+          <option value="cam_1">Cámara Poste Principal</option>
         </select>
       </div>
 
@@ -1435,9 +1696,9 @@
 
       <!-- BOTON DE MODO CLARO / OSCURO (CON SVG) -->
       <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Cambiar tema">
-        <svg id="themeIconSun" class="v-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        <svg id="themeIconMoon" class="v-icon" style="display:none;" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span id="themeText">Modo Claro</span>
+        <svg id="themeIconSun" class="v-icon" style="display:none;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg id="themeIconMoon" class="v-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="themeText">Modo Oscuro</span>
       </button>
     </div>
   </header>
@@ -1445,8 +1706,35 @@
   <!-- MAIN -->
   <main>
 
-    <!-- 1. LIVE CAMERA HERO (GRANDE Y PRINCIPAL) -->
+    <!-- 1. LIVE CAMERA HERO (SOPORTE DE MOSAICO MULTI-CÁMARA SIMULTÁNEO Y VISTA INDIVIDUAL) -->
     <section>
+      <!-- CONTENEDOR MOSAICO MULTI-CÁMARA (SE ACTIVA SI HAY > 1 CÁMARA Y SELECCIONA 'all') -->
+      <div class="live-hero-card" id="liveMosaicCard" style="display:none;">
+        <div class="live-hero-header">
+          <div class="live-hero-title">
+            <span class="status-indicator-dot"></span>
+            <span id="liveMosaicTitle">Mosaico Multi-Cámara &bull; Vista Simultánea en Tiempo Real</span>
+            <span class="status-badge" id="mosaicCamCountBadge" style="padding:0.2rem 0.5rem; font-size:0.72rem;">0 Cámaras</span>
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <button class="btn-action" onclick="toggleMosaicFullscreen()">
+              <svg class="v-icon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+              <span>Pantalla Completa Mosaico</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="mosaic-grid" id="mosaicGridContainer">
+          <!-- Celdas de cámaras generadas dinámicamente -->
+        </div>
+
+        <div class="live-hero-footer">
+          <span>Transmisión simultánea dividida &bull; Monitoreo 24/7 Baddgroup Vision</span>
+          <span>Buffer Pre-roll H.264 &bull; Detección YOLO11 Multi-Stream Activa</span>
+        </div>
+      </div>
+
+      <!-- CONTENEDOR CÁMARA INDIVIDUAL ENFOCADA -->
       <div class="live-hero-card" id="liveCard">
         <div class="live-hero-header">
           <div class="live-hero-title">
@@ -1454,7 +1742,11 @@
             <span id="liveHeroCamTitle">Cámara Poste Principal &bull; En Tiempo Real</span>
             <span class="status-badge" style="padding:0.2rem 0.5rem; font-size:0.72rem;">YOLO11 Tracking</span>
           </div>
-          <div>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <button id="btnBackToMosaic" class="btn-action" style="display:none;" onclick="showMosaicView()" title="Volver a la vista de todas las cámaras en simultáneo">
+              <svg class="v-icon" viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
+              <span>Ver Mosaico (Todas)</span>
+            </button>
             <button class="btn-action" onclick="toggleLiveFullscreen()">
               <svg class="v-icon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
               <span>Pantalla Completa</span>
@@ -1507,6 +1799,24 @@
         </div>
         <div class="status-badge" id="aiEngineBadge" style="font-size:0.75rem;">
           Motor IA: Gemini 1.5 Flash (Visión Multimodal)
+        </div>
+      </div>
+
+      <!-- SELECTOR OBLIGATORIO DE CÁMARA PARA BÚSQUEDA IA -->
+      <div class="ai-search-cam-selector-box">
+        <div class="ai-search-cam-label-row">
+          <div class="ai-search-cam-title">
+            <svg class="v-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+            <span>Selecciona la Cámara a Analizar con IA:</span>
+          </div>
+          <span class="required-badge">Obligatorio</span>
+        </div>
+        <select id="aiCameraSelect" class="ai-camera-dropdown" onchange="onAICameraSelectChange(this.value)">
+          <option value="" disabled selected>Elige una cámara en específico para consultar con IA...</option>
+        </select>
+        <div class="ai-search-cam-rule">
+          <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          <span>Para garantizar precisión pericial y evitar confusiones entre zonas, la IA analiza una cámara específica a la vez.</span>
         </div>
       </div>
 
@@ -1930,7 +2240,7 @@
     let allCamerasList = [];
     let isSearchActive = false;
     let lastFoundEvent = null;
-    let currentTheme = localStorage.getItem('smartcam_theme') || 'dark';
+    let currentTheme = localStorage.getItem('smartcam_theme') || 'light';
 
     // SECUENCIA DE GRABACIÓN CONTINUA
     let continuousPlaylist = [];
@@ -1963,12 +2273,15 @@
     }
     applyTheme(currentTheme);
 
-    // Reloj digital en HUD sincronizado
+    // Reloj digital en HUD sincronizado en todas las pantallas
     function updateHUDTime() {
       const now = new Date();
       const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       const badge = document.getElementById('liveTimeBadge');
       if (badge) badge.innerText = `HORA LOCAL: ${timeStr}`;
+      document.querySelectorAll('.live-sync-time').forEach(el => {
+        el.innerText = timeStr;
+      });
     }
     setInterval(updateHUDTime, 1000);
     updateHUDTime();
@@ -1986,19 +2299,179 @@
         const countEl = document.getElementById('camerasCountHeader');
         if (countEl) countEl.innerText = allCamerasList.length;
 
-        // Actualizar dropdown selector de cámara
+        // Actualizar dropdown selector de cámara en header
         const select = document.getElementById('cameraSelect');
         if (select) {
           const prevVal = currentCameraId;
-          select.innerHTML = '<option value="all">Todas las Cámaras</option>' + 
+          select.innerHTML = '<option value="all">Todas las Cámaras (Mosaico)</option>' + 
             allCamerasList.map(c => `<option value="${c.id}" ${c.id === prevVal ? 'selected' : ''}>${c.name} (${c.ip})</option>`).join('');
+          select.value = prevVal;
         }
+
+        // Actualizar selector OBLIGATORIO de cámara para búsqueda IA
+        const aiSelect = document.getElementById('aiCameraSelect');
+        if (aiSelect) {
+          const prevVal = aiSelect.value;
+          let html = '<option value="" disabled ' + (!prevVal ? 'selected' : '') + '>Elige una cámara en específico para consultar con IA...</option>';
+          allCamerasList.forEach(c => {
+            const isSel = c.id === prevVal || (allCamerasList.length === 1 && c.id === 'cam_1' && !prevVal);
+            html += `<option value="${c.id}" ${isSel ? 'selected' : ''}>${c.name} - ${c.location || 'Sector General'} (${c.ip})</option>`;
+          });
+          aiSelect.innerHTML = html;
+          if (allCamerasList.length === 1 && !prevVal) {
+            aiSelect.value = 'cam_1';
+            onAICameraSelectChange('cam_1');
+          }
+        }
+
+        // Renderizar o actualizar vista de pantallas (Mosaico vs Individual)
+        renderCameraViewMode();
 
         // Renderizar lista en modal
         renderCameraListGrid();
       } catch (err) {
         console.error("Error cargando cámaras:", err);
       }
+    }
+
+    function renderCameraViewMode() {
+      const mosaicCard = document.getElementById('liveMosaicCard');
+      const singleCard = document.getElementById('liveCard');
+      const btnBack = document.getElementById('btnBackToMosaic');
+
+      if (allCamerasList.length > 1 && currentCameraId === 'all') {
+        // Mosaico simultáneo de todas las cámaras
+        if (mosaicCard) mosaicCard.style.display = 'block';
+        if (singleCard) singleCard.style.display = 'none';
+        if (btnBack) btnBack.style.display = 'none';
+        renderMosaicGrid();
+      } else {
+        // Vista enfocada individual
+        if (mosaicCard) mosaicCard.style.display = 'none';
+        if (singleCard) singleCard.style.display = 'block';
+        if (btnBack) btnBack.style.display = allCamerasList.length > 1 ? 'inline-flex' : 'none';
+
+        const activeCam = allCamerasList.find(c => c.id === currentCameraId) || allCamerasList[0];
+        if (activeCam) {
+          const titleEl = document.getElementById('liveHeroCamTitle');
+          if (titleEl) titleEl.innerHTML = `${activeCam.name} &bull; En Tiempo Real`;
+          const hudEl = document.getElementById('liveHudCamIp');
+          if (hudEl) hudEl.innerHTML = `${activeCam.name} &bull; IP: ${activeCam.ip}`;
+          const streamImg = document.getElementById('liveStreamImg');
+          if (streamImg) streamImg.src = `/api/live?camera_id=${activeCam.id}`;
+        }
+      }
+    }
+
+    function renderMosaicGrid() {
+      const container = document.getElementById('mosaicGridContainer');
+      if (!container) return;
+
+      const count = allCamerasList.length;
+      const badge = document.getElementById('mosaicCamCountBadge');
+      if (badge) badge.innerText = `${count} Cámaras en Simultáneo`;
+
+      container.className = `mosaic-grid grid-${Math.min(count, 6)}`;
+      container.innerHTML = allCamerasList.map(c => {
+        const isOnline = c.connected !== false;
+        return `
+          <div class="mosaic-cam-tile" id="tile_${c.id}">
+            <div class="mosaic-tile-top">
+              <div class="mosaic-tile-title" title="${c.name}">
+                <span class="status-indicator-dot" style="background:${isOnline ? 'var(--accent-success)' : 'var(--text-muted)'};"></span>
+                <span>${c.name}</span>
+              </div>
+              <span class="status-badge" style="font-size:0.68rem; padding:0.18rem 0.45rem;">${c.location || 'General'}</span>
+            </div>
+            
+            <div class="mosaic-tile-viewport">
+              <img 
+                class="mosaic-tile-stream" 
+                src="/api/live?camera_id=${c.id}" 
+                alt="${c.name}"
+                onerror="this.src=''; this.alt='Conectando al stream...';"
+              >
+              <div class="mosaic-hud-top-left">
+                <span class="mosaic-hud-pill">
+                  <span class="status-indicator-dot" style="background:${isOnline ? 'var(--accent-success)' : 'var(--text-muted)'};"></span>
+                  <span>${isOnline ? 'EN VIVO' : 'RECONECTANDO'} &bull; ${c.ip}</span>
+                </span>
+              </div>
+              <div class="mosaic-hud-bottom-right">
+                <span class="mosaic-hud-pill live-sync-time">--:--:--</span>
+              </div>
+            </div>
+
+            <div class="mosaic-tile-bottom">
+              <button class="mosaic-btn-zoom" onclick="focusSingleCamera('${c.id}')" title="Maximizar esta cámara en pantalla principal">
+                <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                <span>Ampliar</span>
+              </button>
+              <button class="mosaic-btn-ai-search" onclick="selectCameraForAISearch('${c.id}')" title="Buscar eventos con IA en esta cámara">
+                <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <span>Buscar con IA</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      updateHUDTime();
+    }
+
+    function focusSingleCamera(camId) {
+      currentCameraId = camId;
+      const select = document.getElementById('cameraSelect');
+      if (select) select.value = camId;
+      renderCameraViewMode();
+      document.getElementById('liveCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function showMosaicView() {
+      currentCameraId = 'all';
+      const select = document.getElementById('cameraSelect');
+      if (select) select.value = 'all';
+      renderCameraViewMode();
+      document.getElementById('liveMosaicCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function toggleMosaicFullscreen() {
+      const card = document.getElementById('liveMosaicCard');
+      if (!document.fullscreenElement) {
+        if (card.requestFullscreen) card.requestFullscreen();
+        else if (card.webkitRequestFullscreen) card.webkitRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    function selectCameraForAISearch(camId) {
+      const aiSelect = document.getElementById('aiCameraSelect');
+      if (aiSelect) {
+        aiSelect.value = camId;
+        onAICameraSelectChange(camId);
+        const searchCard = document.querySelector('.search-card');
+        if (searchCard) {
+          searchCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        const input = document.getElementById('searchInput');
+        if (input) input.focus();
+        const cam = allCamerasList.find(c => c.id === camId);
+        showToast(`Cámara "${cam ? cam.name : camId}" seleccionada para análisis de IA`, "success");
+      }
+    }
+
+    function onAICameraSelectChange(camId) {
+      const cam = allCamerasList.find(c => c.id === camId);
+      const input = document.getElementById('searchInput');
+      if (cam && input) {
+        input.placeholder = `Escribe tu consulta para ${cam.name}: 'en que momento alguien movio un brazo', 'cuando paso un auto'...'`;
+      }
+    }
+
+    function onCameraSelectChange(val) {
+      currentCameraId = val;
+      renderCameraViewMode();
+      loadEvents(currentFilterClass);
     }
 
     function renderCameraListGrid() {
@@ -2358,28 +2831,49 @@
     }
 
     // ==========================================
-    // BÚSQUEDA INTELIGENTE CON IA
+    // BÚSQUEDA INTELIGENTE CON IA (POR CÁMARA OBLIGATORIA)
     // ==========================================
     async function handleSearch(e) {
       e.preventDefault();
       const query = document.getElementById('searchInput').value.trim();
       if (!query) return;
 
+      const aiSelect = document.getElementById('aiCameraSelect');
+      const selectedCamId = aiSelect ? aiSelect.value : '';
+      if (!selectedCamId || selectedCamId === 'all') {
+        showToast("Debes seleccionar una cámara en específico para buscar el evento con IA. No es posible buscar en todas las cámaras en simultáneo.", "danger");
+        if (aiSelect) {
+          aiSelect.focus();
+          aiSelect.classList.add('pulse-error');
+          setTimeout(() => aiSelect.classList.remove('pulse-error'), 1800);
+        }
+        return;
+      }
+
       isSearchActive = true;
       const banner = document.getElementById('aiReportBanner');
       banner.style.display = 'flex';
-      document.getElementById('aiReportText').innerHTML = `<span style="color:var(--text-muted); font-size:0.95rem;">Analizando grabaciones de seguridad con IA...</span>`;
-      document.getElementById('activeQueryIndicator').innerText = `Consulta: "${query}"`;
-      document.getElementById('feedTitle').innerText = 'Analizando filmaciones...';
+      
+      const camObj = allCamerasList.find(c => c.id === selectedCamId);
+      const camNameStr = camObj ? camObj.name : 'Cámara seleccionada';
+
+      document.getElementById('aiReportText').innerHTML = `<span style="color:var(--text-muted); font-size:0.95rem;">Analizando filmaciones de <strong>${camNameStr}</strong> con IA...</span>`;
+      document.getElementById('activeQueryIndicator').innerText = `Consulta en ${camNameStr}: "${query}"`;
+      document.getElementById('feedTitle').innerText = `Analizando grabaciones de ${camNameStr}...`;
 
       try {
         const res = await fetch('/api/search', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: query })
+          body: JSON.stringify({ query: query, camera_id: selectedCamId })
         });
         const data = await res.json();
         
+        if (!res.ok) {
+          document.getElementById('aiReportText').innerText = data.detail || "Error en el análisis de IA.";
+          return;
+        }
+
         const results = data.results || [];
         if (data.is_specific) {
           if (data.ai_answer) {
@@ -2387,7 +2881,7 @@
           }
           if (results.length > 0) {
             lastFoundEvent = results[0];
-            document.getElementById('feedTitle').innerText = `Grabación Localizada (1 filmación)`;
+            document.getElementById('feedTitle').innerText = `Grabación Localizada en ${camNameStr} (1 filmación)`;
             document.getElementById('btnClipDuration').innerText = `${lastFoundEvent.duration_seconds}s`;
             document.getElementById('btnPlayClip').style.display = 'inline-flex';
             document.getElementById('btnPlayContinuous').style.display = 'inline-flex';
@@ -2395,14 +2889,14 @@
             renderEvents(results, true, data.ai_answer);
           } else {
             // Petición absurda o sin coincidencias
-            document.getElementById('feedTitle').innerText = `Sin Coincidencias (0 filmaciones)`;
+            document.getElementById('feedTitle').innerText = `Sin Coincidencias en ${camNameStr} (0 filmaciones)`;
             document.getElementById('btnPlayClip').style.display = 'none';
             document.getElementById('btnPlayContinuous').style.display = 'none';
             document.getElementById('aiStatusBadge').innerText = 'Sin Registros';
             renderEvents([], true, data.ai_answer);
           }
         } else {
-          document.getElementById('feedTitle').innerText = `Resultados de Búsqueda (${results.length})`;
+          document.getElementById('feedTitle').innerText = `Resultados en ${camNameStr} (${results.length})`;
           if (data.ai_answer) {
             document.getElementById('aiReportText').innerText = data.ai_answer;
           }
@@ -2420,6 +2914,17 @@
     }
 
     function searchPreset(preset) {
+      const aiSelect = document.getElementById('aiCameraSelect');
+      if (aiSelect && (!aiSelect.value || aiSelect.value === 'all')) {
+        if (allCamerasList.length > 0) {
+          aiSelect.value = allCamerasList[0].id;
+          onAICameraSelectChange(allCamerasList[0].id);
+        } else {
+          showToast("Debes seleccionar una cámara en específico para buscar con IA.", "danger");
+          aiSelect.focus();
+          return;
+        }
+      }
       document.getElementById('searchInput').value = preset;
       document.getElementById('searchForm').dispatchEvent(new Event('submit'));
     }
