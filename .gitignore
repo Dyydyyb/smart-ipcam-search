@@ -38,6 +38,8 @@ storage/clips/
 storage/thumbnails/
 storage/smart_cam.db
 storage/models/
+storage/*.log
+*.log
 
 # Environment and sensitive keys
 .env

@@ -28,10 +28,13 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: Optional[str] = None
     GEMINI_MODEL: str = "gemini-1.5-flash"
 
-    # Storage paths
+    # Storage paths & 24/7 Retention Policies
     STORAGE_DIR: Path = BASE_DIR / "storage"
     THUMBNAILS_DIR: Path = BASE_DIR / "storage" / "thumbnails"
     CLIPS_DIR: Path = BASE_DIR / "storage" / "clips"
+    RETENTION_DAYS: int = 14
+    MAX_STORAGE_GB: float = 40.0
+    AUTO_CLEANUP_INTERVAL_MINUTES: int = 60
 
     # Ollama Local LLM (Fallback de Respaldo)
     OLLAMA_HOST: str = "http://localhost:11434"

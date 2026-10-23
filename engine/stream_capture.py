@@ -7,8 +7,8 @@ import cv2
 import numpy as np
 from loguru import logger
 
-# Configurar transporte TCP para evitar pérdida de paquetes y corrupción de video
-os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;tcp"
+# Configurar transporte TCP y timeout de 5 segundos para reconexión infalible 24/7
+os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;tcp|stimeout;5000000"
 
 class RTSPStreamReader:
     """
@@ -98,6 +98,12 @@ class RTSPStreamReader:
             if not ret or frame is None:
                 logger.warning(f"[{self.name}] Pérdida de señal o fin de stream. Reconectando...")
                 self.connected = False
+                if self.cap:
+                    try:
+                        self.cap.release()
+                    except Exception:
+                        pass
+                    self.cap = None
                 time.sleep(1.0)
                 continue
 

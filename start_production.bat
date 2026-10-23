@@ -9,15 +9,15 @@ echo.
 cd /d "%~dp0"
 
 if exist ".venv\Scripts\python.exe" (
-    echo [OK] Entorno virtual detectado. Iniciando aplicacion...
+    echo [OK] Entorno virtual detectado. Iniciando supervisor 24/7...
     start http://localhost:8000
-    .venv\Scripts\python.exe run_server.py
+    .venv\Scripts\python.exe service_watchdog.py
 ) else (
     echo [INFO] Buscando Python en el sistema...
     python --version >nul 2>&1
     if %errorlevel% equ 0 (
         start http://localhost:8000
-        python run_server.py
+        python service_watchdog.py
     ) else (
         echo [ERROR] No se detecto instalacion de Python.
         echo Por favor instale Python 3.12 o utilice Docker:

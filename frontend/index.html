@@ -1882,7 +1882,26 @@
           </form>
         </div>
 
-        <!-- 3. TOPOLOGÍA DE DISTRIBUCIÓN BADDGROUP -->
+        <!-- 3. RETENCIÓN Y ALMACENAMIENTO 24/7 -->
+        <div style="background:var(--bg-base); border:1px solid var(--border-color); border-radius:10px; padding:1.25rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+            <div>
+              <div class="camera-section-title" style="margin-bottom:0.25rem;">
+                <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/></svg>
+                <span>Retención & Almacenamiento Continuo 24/7</span>
+              </div>
+              <p style="font-size:0.78rem; color:var(--text-muted); line-height:1.4;">
+                Uso en Disco: <strong id="storageUsageText" style="color:var(--text-main);">-- GB / 40 GB</strong> &bull; Retención: <strong>14 días</strong> &bull; Espacio Libre: <span id="storageFreeText">-- GB</span>
+              </p>
+            </div>
+            <button type="button" class="btn-action" onclick="runManualStorageCleanup()">
+              <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M15 4V3H9v1H4v2h1v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6h1V4h-5zm2 15H7V6h10v13z"/></svg>
+              <span>Optimizar Espacio Ahora</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. TOPOLOGÍA DE DISTRIBUCIÓN BADDGROUP -->
         <div class="distribution-banner">
           <div style="color:var(--accent-primary); flex-shrink:0; margin-top:2px;">
             <svg class="v-icon-lg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
@@ -2050,6 +2069,37 @@
       if (modal) {
         modal.classList.add('active');
         loadCameras();
+        loadStorageStats();
+      }
+    }
+
+    async function loadStorageStats() {
+      try {
+        const res = await fetch('/api/storage');
+        if (!res.ok) return;
+        const data = await res.json();
+        const usageEl = document.getElementById('storageUsageText');
+        const freeEl = document.getElementById('storageFreeText');
+        if (usageEl) usageEl.innerText = `${data.app_storage_used_gb} GB / ${data.app_storage_limit_gb} GB`;
+        if (freeEl) freeEl.innerText = `${data.system_disk_free_gb} GB`;
+      } catch (err) {
+        console.error("Error cargando estadísticas de almacenamiento:", err);
+      }
+    }
+
+    async function runManualStorageCleanup() {
+      try {
+        showToast("Optimizando y liberando espacio en disco...", "success");
+        const res = await fetch('/api/storage/cleanup', { method: 'POST' });
+        const data = await res.json();
+        if (data.status === 'ok') {
+          showToast(`Mantenimiento completado: ${data.result.deleted_count} grabaciones purgadas (${data.result.freed_mb} MB liberados)`, "success");
+          loadStorageStats();
+          loadEvents(currentFilterClass);
+          updateStatus();
+        }
+      } catch (err) {
+        showToast("Error ejecutando limpieza de almacenamiento", "danger");
       }
     }
 

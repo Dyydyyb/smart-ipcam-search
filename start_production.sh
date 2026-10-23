@@ -18,11 +18,11 @@ if [ "$1" == "--docker" ]; then
 fi
 
 if [ -f ".venv/bin/python" ]; then
-    echo "[OK] Entorno virtual detectado (.venv)."
-    .venv/bin/python run_server.py
+    echo "[OK] Entorno virtual detectado (.venv). Iniciando supervisor 24/7..."
+    .venv/bin/python service_watchdog.py
 elif command -v python3 &>/dev/null; then
     echo "[OK] Ejecutando con python3 del sistema..."
-    python3 run_server.py
+    python3 service_watchdog.py
 else
     echo "[INFO] Python no encontrado en PATH, ejecutando con Docker..."
     docker compose up -d

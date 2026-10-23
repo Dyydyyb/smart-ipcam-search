@@ -21,6 +21,7 @@ from core.models import SecurityEvent
 from core.camera_manager import camera_manager
 from engine.stream_capture import RTSPStreamReader
 from engine.vision_pipeline import VisionPipeline
+from engine.storage_manager import storage_manager
 from backend.nlp_search import execute_smart_search
 
 # Instancias globales de los motores
@@ -33,14 +34,16 @@ async def lifespan(app: FastAPI):
     logger.info("Iniciando Smart IP Cam Search Platform...")
     await init_db()
     
-    # Iniciar captura de stream y visión artificial
+    # Iniciar captura de stream, visión artificial y retención de disco 24/7
     stream_reader.start()
     vision_pipeline.start()
+    storage_manager.start()
     
     yield
     
     # Detener workers al apagar
-    logger.info("Deteniendo workers de captura y visión...")
+    logger.info("Deteniendo workers de captura, visión y retención...")
+    storage_manager.stop()
     vision_pipeline.stop()
     stream_reader.stop()
 
@@ -390,4 +393,16 @@ async def delete_camera(cam_id: str):
     if not success:
         raise HTTPException(status_code=404, detail="Cámara no encontrada")
     return {"status": "ok", "deleted_id": cam_id}
+
+@app.get("/api/storage")
+async def get_storage_stats():
+    """Retorna métricas de uso de disco y políticas de retención 24/7."""
+    return storage_manager.get_storage_stats()
+
+@app.post("/api/storage/cleanup")
+async def trigger_storage_cleanup():
+    """Ejecuta purga manual preventiva de grabaciones vencidas o exceso de GB."""
+    result = await storage_manager.run_retention_cleanup()
+    return {"status": "ok", "result": result}
+
 

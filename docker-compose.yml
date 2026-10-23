@@ -4,7 +4,7 @@ services:
   baddgroup-vision-ai:
     build: .
     container_name: baddgroup-vision-ai
-    restart: unless-stopped
+    restart: always
     ports:
       - "8000:8000"
     environment:
