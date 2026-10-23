@@ -14,6 +14,7 @@ WORKDIR /app
 # Instalar dependencias de Python
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir greenlet
 
 # Copiar el código fuente de la plataforma
 COPY . .
