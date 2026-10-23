@@ -1,16 +1,6 @@
 version: '3.8'
 
 services:
-  mediamtx:
-    image: bluenviron/mediamtx:latest
-    container_name: baddgroup-mediamtx
-    restart: always
-    ports:
-      - "1935:1935"   # RTMP Receptor (Cámaras transmiten aquí)
-      - "8554:8554"   # RTSP Gateway
-      - "8888:8888"   # HLS Web Streaming
-      - "8889:8889"   # WebRTC Ultra Baja Latencia
-
   baddgroup-vision-ai:
     build: .
     container_name: baddgroup-vision-ai
@@ -22,8 +12,8 @@ services:
       - CAMERA_PORT=${CAMERA_PORT:-554}
       - CAMERA_USER=${CAMERA_USER:-admin}
       - CAMERA_PASSWORD=${CAMERA_PASSWORD:-}
-      - CAMERA_RTSP_SUB=${CAMERA_RTSP_SUB:-rtsp://mediamtx:8554/live/cam_prueba}
-      - CAMERA_RTSP_MAIN=${CAMERA_RTSP_MAIN:-rtsp://mediamtx:8554/live/cam_prueba}
+      - CAMERA_RTSP_SUB=${CAMERA_RTSP_SUB:-rtsp://host.docker.internal:8554/live/cam_prueba}
+      - CAMERA_RTSP_MAIN=${CAMERA_RTSP_MAIN:-rtsp://host.docker.internal:8554/live/cam_prueba}
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}
       - GEMINI_MODEL=${GEMINI_MODEL:-gemini-1.5-flash}
       - OLLAMA_HOST=${OLLAMA_HOST:-http://host.docker.internal:11434}
@@ -32,7 +22,5 @@ services:
     volumes:
       - ./storage:/app/storage
       - ./snapshots:/app/snapshots
-    depends_on:
-      - mediamtx
     extra_hosts:
       - "host.docker.internal:host-gateway"
