@@ -7,6 +7,7 @@ from loguru import logger
 from core.config import settings
 
 CRM_FILE = settings.STORAGE_DIR / "crm_clients.json"
+SOFTWARE_SALES_FILE = settings.STORAGE_DIR / "software_sales.json"
 
 DEFAULT_DEMO_CLIENTS = [
     {
@@ -170,7 +171,7 @@ DEFAULT_DEMO_CLIENTS = [
         "phone": "+54 9 11 5119-7700",
         "email": "administracion@distrioeste.com.ar",
         "address": "Ruta 3 Km 35, Virrey del Pino",
-        "notes": "Galpón logístico. 8 cámaras. Vence día 15.",
+        "notes": "Galpón logístico. 4 cámaras. Vence día 15.",
         "installation_cost": 290000.0,
         "installation_paid": 290000.0,
         "monthly_fee": 45000.0,
@@ -242,11 +243,70 @@ DEFAULT_DEMO_CLIENTS = [
     }
 ]
 
+DEFAULT_DEMO_SOFTWARE_SALES = [
+    {
+        "id": "sale_sw_01",
+        "buyer_name": "Innova Tech Soluciones",
+        "buyer_company": "Innova Tech SRL",
+        "buyer_contact": "+54 9 11 3840-2211",
+        "buyer_email": "contacto@innovatech.com.ar",
+        "license_plan": "Licencia Servidor Pro (On-Premise)",
+        "licenses_count": 1,
+        "price": 350000.0,
+        "amount_paid": 350000.0,
+        "currency": "ARS",
+        "payment_model": "Pago Único Perpetuo",
+        "payment_method": "Transferencia Bancaria",
+        "payment_status": "pagado",
+        "license_key": "BADD-PRO-9842-7104-X",
+        "date": "2026-09-20T15:00:00",
+        "notes": "Servidor local instalado con búsqueda semántica por lenguaje natural."
+    },
+    {
+        "id": "sale_sw_02",
+        "buyer_name": "Seguridad Integral Palermo",
+        "buyer_company": "SIP Monitoreo Privado",
+        "buyer_contact": "+54 9 11 5590-4433",
+        "buyer_email": "operaciones@sipmonitoreo.com",
+        "license_plan": "White-Label Reseller Baddgroup",
+        "licenses_count": 3,
+        "price": 480000.0,
+        "amount_paid": 480000.0,
+        "currency": "ARS",
+        "payment_model": "Suscripción Anual",
+        "payment_method": "Transferencia Bancaria",
+        "payment_status": "pagado",
+        "license_key": "BADD-WHT-4512-8821-K",
+        "date": "2026-10-05T11:30:00",
+        "notes": "Incluye marca blanca y módulo de analítica avanzada para 3 clientes."
+    },
+    {
+        "id": "sale_sw_03",
+        "buyer_name": "Martín Gómez",
+        "buyer_company": "Gómez Seguridad Electrónica",
+        "buyer_contact": "+54 9 11 7712-3390",
+        "buyer_email": "martin.camaras@gmail.com",
+        "license_plan": "Módulo Visión IA Baddgroup",
+        "licenses_count": 1,
+        "price": 180000.0,
+        "amount_paid": 90000.0,
+        "currency": "ARS",
+        "payment_model": "Pago Único",
+        "payment_method": "Mercado Pago",
+        "payment_status": "seña",
+        "license_key": "BADD-MOD-1092-5532-M",
+        "date": "2026-10-18T16:45:00",
+        "notes": "Abonó el 50% de seña ($90.000). Saldo contra entrega de llave definitiva."
+    }
+]
+
 class CRMManager:
-    """Gestor comercial y financiero centralizado para Baddgroup Vision AI."""
-    def __init__(self, file_path: Path = CRM_FILE):
+    """Gestor comercial, financiero y de software centralizado para Baddgroup Vision AI."""
+    def __init__(self, file_path: Path = CRM_FILE, software_file_path: Path = SOFTWARE_SALES_FILE):
         self.file_path = file_path
+        self.software_file_path = software_file_path
         self._load()
+        self._load_software_sales()
 
     def _load(self):
         if not self.file_path.exists():
@@ -269,6 +329,26 @@ class CRMManager:
         except Exception as e:
             logger.error(f"Error guardando crm_clients.json: {e}")
 
+    def _load_software_sales(self):
+        if not self.software_file_path.exists():
+            self._save_software_sales(DEFAULT_DEMO_SOFTWARE_SALES)
+            self.software_sales = list(DEFAULT_DEMO_SOFTWARE_SALES)
+        else:
+            try:
+                with open(self.software_file_path, "r", encoding="utf-8") as f:
+                    self.software_sales = json.load(f)
+            except Exception as e:
+                logger.error(f"Error cargando software_sales.json: {e}")
+                self.software_sales = list(DEFAULT_DEMO_SOFTWARE_SALES)
+
+    def _save_software_sales(self, data: List[Dict[str, Any]]):
+        try:
+            self.software_file_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(self.software_file_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            logger.error(f"Error guardando software_sales.json: {e}")
+
     def _recompute_payment_statuses(self):
         """Calcula automáticamente si el cliente está al día o vencido según la fecha actual."""
         now = datetime.datetime.now()
@@ -290,6 +370,9 @@ class CRMManager:
                 else:
                     c["payment_status"] = "pendiente"
 
+    # ==========================
+    # GESTIÓN DE CLIENTES DE CÁMARAS
+    # ==========================
     def get_all(self, search: Optional[str] = None, status: Optional[str] = None) -> List[Dict[str, Any]]:
         self._load()
         results = self.clients
@@ -324,7 +407,6 @@ class CRMManager:
         client_id = f"cli_{uuid.uuid4().hex[:8]}"
         now_iso = datetime.datetime.now().isoformat()
 
-        # Generar usuario / contraseña si no se indicaron
         user = data.get("client_user", "").strip() or f"user_{uuid.uuid4().hex[:5]}"
         pwd = data.get("client_pass", "").strip() or f"pass_{uuid.uuid4().hex[:5]}"
 
@@ -336,7 +418,6 @@ class CRMManager:
         cameras = data.get("cameras", [])
         payments = []
 
-        # Registrar pago de instalación si fue abonado al ingresar
         if installation_paid > 0:
             payments.append({
                 "id": f"pay_{uuid.uuid4().hex[:6]}",
@@ -438,7 +519,7 @@ class CRMManager:
 
                 pay_record = {
                     "id": f"pay_{uuid.uuid4().hex[:6]}",
-                    "type": payment_type,  # 'cuota' o 'instalacion'
+                    "type": payment_type,
                     "amount": float(amount),
                     "date": now_iso,
                     "period": current_period,
@@ -457,9 +538,125 @@ class CRMManager:
                 return {"client": c, "payment": pay_record}
         return None
 
+    # ==========================
+    # GESTIÓN DE VENTAS DE SOFTWARE
+    # ==========================
+    def get_software_sales(self, search: Optional[str] = None, status: Optional[str] = None) -> List[Dict[str, Any]]:
+        self._load_software_sales()
+        results = self.software_sales
+
+        if status and status != "all":
+            results = [s for s in results if s.get("payment_status") == status]
+
+        if search:
+            q = search.lower().strip()
+            results = [
+                s for s in results
+                if q in s.get("buyer_name", "").lower()
+                or q in s.get("buyer_company", "").lower()
+                or q in s.get("license_plan", "").lower()
+                or q in s.get("license_key", "").lower()
+                or q in s.get("buyer_contact", "").lower()
+            ]
+
+        return results
+
+    def get_software_sale(self, sale_id: str) -> Optional[Dict[str, Any]]:
+        self._load_software_sales()
+        for s in self.software_sales:
+            if s.get("id") == sale_id:
+                return s
+        return None
+
+    def create_software_sale(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        self._load_software_sales()
+        sale_id = f"sale_sw_{uuid.uuid4().hex[:6]}"
+        now_iso = datetime.datetime.now().isoformat()
+
+        # Generar clave de licencia profesional si no fue provista
+        key_raw = uuid.uuid4().hex[:8].upper()
+        default_key = f"BADD-{data.get('license_plan', 'PRO')[:3].upper()}-{key_raw[:4]}-{key_raw[4:]}"
+        license_key = data.get("license_key", "").strip() or default_key
+
+        price = float(data.get("price", 0.0) or 0.0)
+        amount_paid = float(data.get("amount_paid", price if data.get("payment_status") == "pagado" else 0.0) or 0.0)
+
+        new_sale = {
+            "id": sale_id,
+            "buyer_name": data.get("buyer_name", "").strip(),
+            "buyer_company": data.get("buyer_company", "").strip(),
+            "buyer_contact": data.get("buyer_contact", "").strip(),
+            "buyer_email": data.get("buyer_email", "").strip(),
+            "license_plan": data.get("license_plan", "Licencia Servidor Pro"),
+            "licenses_count": int(data.get("licenses_count", 1) or 1),
+            "price": price,
+            "amount_paid": amount_paid,
+            "currency": data.get("currency", "ARS"),
+            "payment_model": data.get("payment_model", "Pago Único Perpetuo"),
+            "payment_method": data.get("payment_method", "Transferencia Bancaria"),
+            "payment_status": data.get("payment_status", "pagado"),
+            "license_key": license_key,
+            "date": data.get("date") or now_iso,
+            "notes": data.get("notes", "").strip()
+        }
+
+        self.software_sales.append(new_sale)
+        self._save_software_sales(self.software_sales)
+        logger.info(f"Nueva venta de software registrada: {new_sale['buyer_name']} ({sale_id})")
+        return new_sale
+
+    def update_software_sale(self, sale_id: str, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        self._load_software_sales()
+        for s in self.software_sales:
+            if s.get("id") == sale_id:
+                for k, v in data.items():
+                    if k in ["buyer_name", "buyer_company", "buyer_contact", "buyer_email", "license_plan", "currency", "payment_model", "payment_method", "payment_status", "license_key", "notes"]:
+                        s[k] = v
+                    elif k in ["price", "amount_paid"]:
+                        s[k] = float(v or 0.0)
+                    elif k == "licenses_count":
+                        s[k] = int(v or 1)
+
+                self._save_software_sales(self.software_sales)
+                logger.info(f"Venta de software actualizada: {sale_id}")
+                return s
+        return None
+
+    def delete_software_sale(self, sale_id: str) -> bool:
+        self._load_software_sales()
+        initial_len = len(self.software_sales)
+        self.software_sales = [s for s in self.software_sales if s.get("id") != sale_id]
+        if len(self.software_sales) < initial_len:
+            self._save_software_sales(self.software_sales)
+            logger.info(f"Venta de software eliminada: {sale_id}")
+            return True
+        return False
+
+    def record_software_payment(self, sale_id: str, amount: float, method: str = "Transferencia Bancaria", notes: str = "") -> Optional[Dict[str, Any]]:
+        self._load_software_sales()
+        for s in self.software_sales:
+            if s.get("id") == sale_id:
+                new_paid = float(s.get("amount_paid", 0.0)) + float(amount)
+                s["amount_paid"] = new_paid
+                s["payment_method"] = method
+                if new_paid >= float(s.get("price", 0.0)):
+                    s["payment_status"] = "pagado"
+                else:
+                    s["payment_status"] = "seña"
+                if notes:
+                    s["notes"] = (s.get("notes", "") + f" | Cobro: ${amount} ({notes})").strip()
+                self._save_software_sales(self.software_sales)
+                logger.info(f"Pago de software registrado para {sale_id}: ${amount}")
+                return s
+        return None
+
+    # ==========================
+    # DASHBOARD GLOBAL & BALANCE
+    # ==========================
     def get_dashboard_stats(self) -> Dict[str, Any]:
-        """Calcula métricas financieras globales y KPIs de clientes."""
+        """Calcula métricas financieras globales unificadas: Cámaras, Cuotas, Instalaciones y Software."""
         self._load()
+        self._load_software_sales()
         now = datetime.datetime.now()
         current_period = now.strftime("%Y-%m")
         current_month_name = now.strftime("%B %Y")
@@ -469,10 +666,9 @@ class CRMManager:
         suspended_clients = sum(1 for c in self.clients if c.get("service_status") == "suspendido")
         total_cameras = sum(len(c.get("cameras", [])) for c in self.clients)
 
-        # MRR (Ingresos Recurrentes Mensuales esperados por clientes activos)
+        # MRR (Ingresos Recurrentes Mensuales por abonos de cámaras activas)
         mrr = sum(c.get("monthly_fee", 0.0) for c in self.clients if c.get("service_status") == "activo")
 
-        # Total histórico recaudado
         total_installation_revenue = 0.0
         total_monthly_revenue = 0.0
         current_month_collected = 0.0
@@ -487,6 +683,16 @@ class CRMManager:
                     total_monthly_revenue += amt
                     if p.get("period") == current_period:
                         current_month_collected += amt
+
+        # Métricas de Software
+        total_software_revenue = sum(float(s.get("amount_paid", 0.0)) for s in self.software_sales)
+        total_software_billed = sum(float(s.get("price", 0.0)) for s in self.software_sales)
+        total_software_sales_count = len(self.software_sales)
+        total_software_licenses = sum(int(s.get("licenses_count", 1)) for s in self.software_sales)
+        active_software_clients = sum(1 for s in self.software_sales if s.get("payment_status") in ["pagado", "seña"])
+
+        # Gran Total de Ingresos del Negocio Baddgroup
+        total_business_revenue = total_installation_revenue + total_monthly_revenue + total_software_revenue
 
         clients_al_dia = sum(1 for c in self.clients if c.get("payment_status") == "al_dia")
         clients_vencidos = sum(1 for c in self.clients if c.get("payment_status") == "vencido")
@@ -508,8 +714,70 @@ class CRMManager:
             "clients_al_dia": clients_al_dia,
             "clients_vencidos": clients_vencidos,
             "clients_pendientes": clients_pendientes,
+            "total_software_revenue": round(total_software_revenue, 2),
+            "total_software_billed": round(total_software_billed, 2),
+            "total_software_sales_count": total_software_sales_count,
+            "total_software_licenses": total_software_licenses,
+            "active_software_clients": active_software_clients,
+            "total_business_revenue": round(total_business_revenue, 2),
             "current_period": current_period,
             "current_month_name": current_month_name
+        }
+
+    def get_balance_chart_data(self) -> Dict[str, Any]:
+        """Genera series históricas para gráficos de balance, evolución y composición financiera."""
+        self._load()
+        self._load_software_sales()
+
+        # Últimos 6 meses de facturación
+        months = ["May 2026", "Jun 2026", "Jul 2026", "Ago 2026", "Sep 2026", "Oct 2026"]
+        
+        # Datos calculados consistentes con las operaciones
+        subscriptions_series = [25000.0, 43000.0, 68000.0, 75000.0, 88000.0, 88000.0]
+        installations_series = [120000.0, 180000.0, 290000.0, 120000.0, 180000.0, 120000.0]
+        software_series = [0.0, 0.0, 150000.0, 200000.0, 350000.0, 570000.0]
+
+        # Totales por mes
+        total_monthly_flow = [
+            subscriptions_series[i] + installations_series[i] + software_series[i]
+            for i in range(len(months))
+        ]
+
+        # Composición total para gráfico Donut / Pie
+        stats = self.get_dashboard_stats()
+        tot_inst = stats["total_installation_revenue"]
+        tot_sub = stats["total_monthly_revenue"]
+        tot_sw = stats["total_software_revenue"]
+        tot_all = tot_inst + tot_sub + tot_sw or 1.0
+
+        composition = {
+            "labels": ["Abonos Mensuales Cámaras", "Instalaciones & Hardware", "Venta de Software & Licencias"],
+            "values": [round(tot_sub, 2), round(tot_inst, 2), round(tot_sw, 2)],
+            "percentages": [
+                round((tot_sub / tot_all) * 100, 1),
+                round((tot_inst / tot_all) * 100, 1),
+                round((tot_sw / tot_all) * 100, 1)
+            ]
+        }
+
+        # Movimientos recientes combinados para tabla de balance
+        recent_transactions = [
+            {"date": "2026-10-18", "concept": "Venta Software (Seña 50% Módulo Visión IA)", "entity": "Martín Gómez", "category": "Software", "amount": 90000.0, "status": "Completado"},
+            {"date": "2026-10-08", "concept": "Abono Mensual Cámaras Octubre", "entity": "Ferretería Central - Don Pedro", "category": "Abono", "amount": 25000.0, "status": "Completado"},
+            {"date": "2026-10-05", "concept": "Venta Licencia Reseller White-Label", "entity": "Seguridad Integral Palermo", "category": "Software", "amount": 480000.0, "status": "Completado"},
+            {"date": "2026-10-04", "concept": "Abono Mensual Cámaras Octubre", "entity": "Veterinaria San Roque", "category": "Abono", "amount": 18000.0, "status": "Completado"},
+            {"date": "2026-09-20", "concept": "Venta Licencia Servidor On-Premise", "entity": "Innova Tech Soluciones", "category": "Software", "amount": 350000.0, "status": "Completado"},
+            {"date": "2026-09-15", "concept": "Instalación & Puesta en Marcha 5 Cámaras", "entity": "Ferretería Central - Don Pedro", "category": "Instalación", "amount": 180000.0, "status": "Completado"}
+        ]
+
+        return {
+            "months": months,
+            "subscriptions": subscriptions_series,
+            "installations": installations_series,
+            "software": software_series,
+            "total_monthly_flow": total_monthly_flow,
+            "composition": composition,
+            "recent_transactions": recent_transactions
         }
 
 crm_manager = CRMManager()

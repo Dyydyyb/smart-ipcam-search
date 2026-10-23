@@ -3,21 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baddgroup Vision AI | CRM de Clientes, Cámaras & Facturación</title>
-  <meta name="description" content="Panel privado de administración de clientes, monitoreo de cámaras RTSP, facturación mensual y control de cobranzas desarrollado por Baddgroup.">
+  <title>Baddgroup Vision AI | Suite Comercial, Facturación & Clientes</title>
+  <meta name="description" content="Centro integral de gestión empresarial Baddgroup: balances financieros con gráficos, base de datos de clientes con cámaras RTSP y control de ventas de licencias de software.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js para los Gráficos de Balance -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
   <style>
     /* =========================================================
-       SISTEMA DE DISEÑO EMPRESARIAL BADDGROUP CRM
+       SISTEMA DE DISEÑO BADDGROUP BUSINESS SUITE
        ========================================================= */
     :root[data-theme="dark"] {
-      --bg-base: #0b1120;
-      --bg-surface: #131c31;
-      --bg-card: #18233c;
-      --bg-card-hover: #1f2e4d;
-      --border-color: #24324f;
+      --bg-base: #090d16;
+      --bg-surface: #0f172a;
+      --bg-card: #141f36;
+      --bg-card-hover: #1b2a47;
+      --border-color: #1e293b;
       --border-accent: #2563eb;
       --accent-primary: #2563eb;
       --accent-primary-hover: #1d4ed8;
@@ -31,16 +34,18 @@
       --badge-bg: #1e293b;
       --badge-text: #cbd5e1;
       --input-bg: #0b1120;
-      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+      --sidebar-bg: #070b14;
+      --sidebar-border: #172238;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
       --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
-      --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.6);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
     }
 
     :root[data-theme="light"] {
-      --bg-base: #f8fafc;
+      --bg-base: #f4f6fa;
       --bg-surface: #ffffff;
       --bg-card: #ffffff;
-      --bg-card-hover: #f1f5f9;
+      --bg-card-hover: #f8fafc;
       --border-color: #e2e8f0;
       --border-accent: #2563eb;
       --accent-primary: #2563eb;
@@ -55,8 +60,10 @@
       --badge-bg: #f1f5f9;
       --badge-text: #334155;
       --input-bg: #ffffff;
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --sidebar-bg: #0b1120; /* Siempre oscuro en la barra lateral */
+      --sidebar-border: #1e293b;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.07);
       --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.1);
     }
 
@@ -72,122 +79,297 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
       overflow-x: hidden;
     }
 
-    /* VECTOR ICONS */
+    /* VECTOR ICONS (SVG) */
     .v-icon {
-      width: 16px;
-      height: 16px;
+      width: 17px;
+      height: 17px;
       fill: currentColor;
       display: inline-block;
       vertical-align: middle;
       flex-shrink: 0;
     }
-    .v-icon-lg { width: 20px; height: 20px; fill: currentColor; display: inline-block; flex-shrink: 0; }
-    .v-icon-sm { width: 13px; height: 13px; fill: currentColor; display: inline-block; flex-shrink: 0; }
+    .v-icon-lg { width: 22px; height: 22px; fill: currentColor; display: inline-block; flex-shrink: 0; }
+    .v-icon-sm { width: 14px; height: 14px; fill: currentColor; display: inline-block; flex-shrink: 0; }
 
-    /* HEADER SIEMPRE OSCURO */
-    header {
-      background: #0b1120 !important;
+    /* =========================================================
+       SIDEBAR LATERAL IZQUIERDO (COMMAND CENTER STYLE)
+       ========================================================= */
+    aside.crm-sidebar {
+      width: 270px;
+      min-width: 270px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      user-select: none;
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.35);
+      transition: transform 0.25s ease;
+    }
+
+    .sidebar-header {
+      padding: 1.35rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--sidebar-border);
+    }
+
+    .sidebar-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+      flex-shrink: 0;
+    }
+
+    .sidebar-title-wrap {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+
+    .sidebar-brand-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #f8fafc;
+    }
+
+    .sidebar-brand-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #38bdf8;
+    }
+
+    /* MENU ITEMS */
+    .sidebar-nav {
+      flex: 1;
+      padding: 1.3rem 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      overflow-y: auto;
+    }
+
+    .nav-category {
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: #64748b;
+      padding: 0.6rem 0.75rem 0.25rem;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.72rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 0.86rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .nav-btn:hover {
+      background: #151f33;
+      color: #f8fafc;
+      border-color: #1e293b;
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.22), rgba(37, 99, 235, 0.08));
+      color: #60a5fa;
+      border-color: #2563eb;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    }
+
+    .nav-btn.active .v-icon {
+      color: #38bdf8;
+    }
+
+    .nav-badge-pill {
+      margin-left: auto;
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: #1e293b;
+      color: #cbd5e1;
+    }
+
+    .nav-btn.active .nav-badge-pill {
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .nav-badge-pill.warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    /* SIDEBAR FOOTER */
+    .sidebar-footer {
+      padding: 1.1rem 1rem;
+      border-top: 1px solid var(--sidebar-border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      background: #05080f;
+    }
+
+    .server-status-box {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.75rem;
+      color: #cbd5e1;
+    }
+
+    .server-pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+    }
+
+    .sidebar-actions-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .sidebar-btn-theme {
+      flex: 1;
+      padding: 0.5rem;
+      background: #131c31;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      color: #cbd5e1;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      transition: all 0.15s ease;
+    }
+
+    .sidebar-btn-theme:hover {
+      background: #1c2a47;
+      border-color: #2563eb;
+      color: #ffffff;
+    }
+
+    /* =========================================================
+       MAIN CONTENT CONTAINER
+       ========================================================= */
+    .crm-wrapper {
+      margin-left: 270px;
+      flex: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      width: calc(100% - 270px);
+    }
+
+    /* TOP BAR DEL ÁREA PRINCIPAL */
+    header.crm-topbar {
+      background: #0b1120 !important; /* Siempre oscuro estilo command center */
       border-bottom: 1px solid #1e293b !important;
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 40;
       padding: 0.85rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
     }
 
-    .brand-logo {
+    .topbar-left {
       display: flex;
       align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      flex-shrink: 0;
+      gap: 1rem;
     }
 
-    .brand-logo-icon {
-      width: 38px;
-      height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .brand-text { display: flex; flex-direction: column; }
-    .brand-name {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.25rem;
-      font-weight: 800;
-      letter-spacing: -0.025em;
-      color: #f8fafc !important;
-      line-height: 1.15;
-    }
-    .brand-title {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #94a3b8 !important;
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .header-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.38rem 0.75rem;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      background: #18233c !important;
-      border: 1px solid #24324f !important;
-      color: #cbd5e1 !important;
-    }
-
-    .status-indicator-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--accent-success);
-    }
-
-    .btn-header-back {
+    .mobile-menu-toggle {
+      display: none;
       background: #18233c;
       border: 1px solid #24324f;
       color: #f8fafc;
-      padding: 0.42rem 0.95rem;
+      padding: 0.45rem;
       border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
       cursor: pointer;
+    }
+
+    .topbar-page-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #f8fafc;
+      letter-spacing: -0.015em;
+    }
+
+    .topbar-subtitle {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .topbar-date-badge {
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
-      text-decoration: none;
-      transition: all 0.15s ease;
-    }
-    .btn-header-back:hover {
-      background: #202e4d;
-      border-color: #2563eb;
+      background: #18233c;
+      border: 1px solid #24324f;
+      color: #cbd5e1;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
     }
 
-    .btn-header-new-client {
+    .btn-topbar-primary {
       background: linear-gradient(135deg, #1e40af, #2563eb);
       border: 1px solid #3b82f6;
-      color: #ffffff !important;
-      padding: 0.42rem 0.95rem;
+      color: #ffffff;
+      padding: 0.45rem 1rem;
       border-radius: 6px;
       font-size: 0.8rem;
       font-weight: 700;
@@ -198,33 +380,14 @@
       transition: all 0.15s ease;
       box-shadow: 0 2px 10px rgba(37, 99, 235, 0.35);
     }
-    .btn-header-new-client:hover {
+
+    .btn-topbar-primary:hover {
       background: linear-gradient(135deg, #1d4ed8, #3b82f6);
       transform: translateY(-1px);
-      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.45);
     }
 
-    .theme-toggle-btn {
-      background: #18233c;
-      border: 1px solid #24324f;
-      color: #f8fafc;
-      padding: 0.42rem 0.85rem;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      transition: all 0.15s ease;
-    }
-    .theme-toggle-btn:hover {
-      background: #202e4d;
-      border-color: #2563eb;
-    }
-
-    /* MAIN LAYOUT */
-    main {
+    /* VISTAS MODULARES SPA */
+    main.crm-main {
       flex: 1;
       max-width: 1560px;
       width: 100%;
@@ -235,10 +398,22 @@
       gap: 1.5rem;
     }
 
-    /* FINANCIAL KPI CARDS GRID */
+    .crm-view-section {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .crm-view-section.active-view {
+      display: flex;
+    }
+
+    /* =========================================================
+       COMPONENTES: CARDS DE MÉTRICAS KPI
+       ========================================================= */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 1rem;
     }
 
@@ -250,11 +425,12 @@
       box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
+      gap: 0.55rem;
+      transition: all 0.2s ease;
       position: relative;
       overflow: hidden;
-      transition: all 0.2s ease;
     }
+
     .kpi-card:hover {
       transform: translateY(-2px);
       box-shadow: var(--shadow-md);
@@ -268,7 +444,7 @@
     }
 
     .kpi-title {
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -289,6 +465,7 @@
     .kpi-icon-wrap.success { background: rgba(16, 185, 129, 0.12); color: var(--accent-success); }
     .kpi-icon-wrap.warning { background: rgba(245, 158, 11, 0.12); color: var(--accent-warning); }
     .kpi-icon-wrap.danger { background: rgba(239, 68, 68, 0.12); color: var(--accent-danger); }
+    .kpi-icon-wrap.cyan { background: rgba(6, 182, 212, 0.12); color: #06b6d4; }
 
     .kpi-value {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -312,7 +489,7 @@
       background: var(--border-color);
       border-radius: 4px;
       overflow: hidden;
-      margin-top: 0.3rem;
+      margin-top: 0.25rem;
     }
 
     .progress-bar-fill {
@@ -322,8 +499,66 @@
       transition: width 0.6s ease;
     }
 
-    /* CLIENTS SECTION */
-    .clients-card {
+    /* =========================================================
+       GRÁFICOS DE BALANCE & CONTROL FINANCIERO
+       ========================================================= */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 1024px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.35rem 1.5rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .chart-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .chart-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .chart-canvas-wrap {
+      position: relative;
+      width: 100%;
+      min-height: 280px;
+      max-height: 320px;
+    }
+
+    /* =========================================================
+       TABLAS EMPRESARIALES (CLIENTES Y SOFTWARE)
+       ========================================================= */
+    .content-panel-card {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: 12px;
@@ -331,10 +566,34 @@
       box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
       gap: 1rem;
     }
 
-    .clients-header {
+    .panel-title-box {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .panel-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .filter-actions-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -342,31 +601,7 @@
       gap: 0.85rem;
     }
 
-    .clients-title-box {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .clients-title {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .clients-filter-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-
-    .search-box-crm {
+    .search-input-box {
       position: relative;
       display: flex;
       align-items: center;
@@ -375,14 +610,14 @@
       max-width: 480px;
     }
 
-    .search-box-crm svg {
+    .search-input-box svg {
       position: absolute;
       left: 1rem;
       color: var(--text-muted);
       pointer-events: none;
     }
 
-    .search-input-crm {
+    .search-input-field {
       width: 100%;
       padding: 0.6rem 0.9rem 0.6rem 2.6rem;
       background: var(--input-bg);
@@ -393,21 +628,21 @@
       outline: none;
       transition: border-color 0.15s ease;
     }
-    .search-input-crm:focus {
+    .search-input-field:focus {
       border-color: var(--accent-primary);
     }
 
-    .filter-chips-crm {
+    .filter-pills {
       display: flex;
       gap: 0.45rem;
       flex-wrap: wrap;
     }
 
-    .chip-crm {
+    .pill-btn {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       color: var(--text-body);
-      padding: 0.35rem 0.75rem;
+      padding: 0.38rem 0.8rem;
       border-radius: 6px;
       font-size: 0.78rem;
       font-weight: 600;
@@ -417,17 +652,16 @@
       gap: 0.4rem;
       transition: all 0.15s ease;
     }
-    .chip-crm:hover {
+    .pill-btn:hover {
       background: var(--bg-card-hover);
       border-color: var(--border-accent);
     }
-    .chip-crm.active {
+    .pill-btn.active {
       background: var(--accent-primary);
       border-color: var(--accent-primary);
       color: #ffffff;
     }
 
-    /* CLIENTS TABLE */
     .table-container {
       width: 100%;
       overflow-x: auto;
@@ -435,97 +669,100 @@
       border-radius: 8px;
     }
 
-    table.crm-table {
+    table.data-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.82rem;
+      font-size: 0.83rem;
       text-align: left;
     }
 
-    table.crm-table th {
+    table.data-table th {
       background: var(--bg-card);
-      padding: 0.75rem 1rem;
+      padding: 0.8rem 1rem;
       font-weight: 700;
       color: var(--text-muted);
       border-bottom: 1px solid var(--border-color);
       white-space: nowrap;
+      font-size: 0.75rem;
       text-transform: uppercase;
-      font-size: 0.72rem;
       letter-spacing: 0.05em;
     }
 
-    table.crm-table td {
+    table.data-table td {
       padding: 0.85rem 1rem;
       border-bottom: 1px solid var(--border-color);
-      color: var(--text-body);
       vertical-align: middle;
+      color: var(--text-body);
     }
 
-    table.crm-table tr:hover td {
+    table.data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.data-table tr:hover td {
       background: var(--bg-card-hover);
     }
 
-    .client-avatar-cell {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-    }
-
-    .client-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: rgba(37, 99, 235, 0.12);
-      color: var(--accent-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.95rem;
-      flex-shrink: 0;
-    }
-
-    .client-name-bold {
-      font-weight: 700;
-      color: var(--text-main);
-      font-size: 0.9rem;
-    }
-
-    .client-type-tag {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-
-    .badge-status {
+    /* BADGES DE ESTADO */
+    .status-chip {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.4rem;
       padding: 0.22rem 0.55rem;
-      border-radius: 5px;
+      border-radius: 999px;
       font-size: 0.72rem;
       font-weight: 700;
       white-space: nowrap;
     }
 
-    .badge-status.al_dia { background: rgba(16, 185, 129, 0.12); color: var(--accent-success); border: 1px solid rgba(16, 185, 129, 0.25); }
-    .badge-status.vencido { background: rgba(239, 68, 68, 0.12); color: var(--accent-danger); border: 1px solid rgba(239, 68, 68, 0.25); }
-    .badge-status.pendiente { background: rgba(245, 158, 11, 0.12); color: var(--accent-warning); border: 1px solid rgba(245, 158, 11, 0.25); }
-    .badge-status.activo { background: rgba(16, 185, 129, 0.12); color: var(--accent-success); }
-    .badge-status.suspendido { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); }
+    .status-chip.success { background: rgba(16, 185, 129, 0.15); color: var(--accent-success); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .status-chip.warning { background: rgba(245, 158, 11, 0.15); color: var(--accent-warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .status-chip.danger { background: rgba(239, 68, 68, 0.15); color: var(--accent-danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .status-chip.neutral { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); border: 1px solid var(--border-color); }
+    .status-chip.cyan { background: rgba(6, 182, 212, 0.15); color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.3); }
 
-    .action-btn-group {
+    /* ACTION BUTTONS IN TABLE */
+    .table-actions {
       display: flex;
       align-items: center;
       gap: 0.35rem;
+      flex-wrap: nowrap;
     }
 
-    .btn-tbl {
+    .btn-action-icon {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-body);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-action-icon:hover {
+      background: var(--bg-card-hover);
+      color: var(--accent-primary);
+      border-color: var(--accent-primary);
+    }
+    .btn-action-icon.pay:hover {
+      color: var(--accent-success);
+      border-color: var(--accent-success);
+    }
+    .btn-action-icon.danger:hover {
+      color: var(--accent-danger);
+      border-color: var(--accent-danger);
+    }
+
+    .btn-table-pill {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 0.32rem 0.6rem;
-      border-radius: 5px;
-      font-size: 0.74rem;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
@@ -534,128 +771,137 @@
       text-decoration: none;
       transition: all 0.15s ease;
     }
-    .btn-tbl:hover {
+    .btn-table-pill:hover {
       background: var(--bg-card-hover);
       border-color: var(--border-accent);
     }
 
-    .btn-tbl-pay {
-      background: rgba(16, 185, 129, 0.1);
-      border-color: rgba(16, 185, 129, 0.3);
-      color: var(--accent-success);
-    }
-    .btn-tbl-pay:hover {
-      background: var(--accent-success);
-      color: #ffffff;
-      border-color: var(--accent-success);
-    }
-
-    .btn-tbl-wa {
-      background: rgba(37, 211, 102, 0.1);
-      border-color: rgba(37, 211, 102, 0.3);
-      color: #16a34a;
-    }
-    .btn-tbl-wa:hover {
-      background: #16a34a;
-      color: #ffffff;
-      border-color: #16a34a;
+    .license-code-badge {
+      font-family: monospace;
+      font-size: 0.78rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      color: #38bdf8;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
     }
 
-    /* MODALS */
-    .modal-overlay {
+    .btn-copy-code {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      padding: 2px;
+    }
+    .btn-copy-code:hover {
+      color: var(--text-main);
+    }
+
+    /* =========================================================
+       MODALS DE CARGA / COBRANZA
+       ========================================================= */
+    .modal-backdrop {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(2, 6, 23, 0.82);
-      backdrop-filter: blur(5px);
-      z-index: 100;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 200;
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
+      padding: 1.5rem;
     }
-    .modal-overlay.active { display: flex; }
+    .modal-backdrop.active {
+      display: flex;
+    }
 
-    .modal-card {
+    .modal-box {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
+      border-radius: 14px;
       width: 100%;
-      max-width: 800px;
+      max-width: 680px;
       max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: var(--shadow-lg);
       display: flex;
       flex-direction: column;
+      box-shadow: var(--shadow-lg);
+      animation: modalFadeIn 0.2s ease-out;
+      overflow: hidden;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     .modal-header {
-      padding: 1.1rem 1.4rem;
+      padding: 1.25rem 1.6rem;
       border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: sticky;
-      top: 0;
-      background: var(--bg-surface);
-      z-index: 10;
+      background: var(--bg-card);
     }
 
     .modal-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 1.15rem;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--text-main);
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
 
-    .close-modal-btn {
-      background: none;
+    .btn-close-modal {
+      background: transparent;
       border: none;
       color: var(--text-muted);
       cursor: pointer;
-      padding: 0.3rem;
-      border-radius: 4px;
+      padding: 0.35rem;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .close-modal-btn:hover { color: var(--text-main); background: var(--bg-card-hover); }
+    .btn-close-modal:hover {
+      color: var(--text-main);
+      background: var(--border-color);
+    }
 
     .modal-body {
-      padding: 1.4rem;
+      padding: 1.5rem 1.6rem;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
+      gap: 1.15rem;
     }
 
-    .form-section-title {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--text-main);
+    .modal-footer {
+      padding: 1.1rem 1.6rem;
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-card);
       display: flex;
-      align-items: center;
-      gap: 0.45rem;
-      padding-bottom: 0.4rem;
-      border-bottom: 1px solid var(--border-color);
-      margin-top: 0.5rem;
+      justify-content: flex-end;
+      gap: 0.75rem;
     }
 
+    /* FORM STYLING */
     .form-grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.85rem;
+      gap: 1rem;
     }
-
-    .form-grid-3 {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 0.85rem;
-    }
-
-    @media (max-width: 768px) {
-      .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+    @media (max-width: 640px) {
+      .form-grid-2 { grid-template-columns: 1fr; }
     }
 
     .form-group {
@@ -665,1049 +911,1850 @@
     }
 
     .form-label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-body);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
     }
 
-    .form-input {
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
       background: var(--input-bg);
       border: 1px solid var(--border-color);
+      border-radius: 8px;
       color: var(--text-main);
-      padding: 0.55rem 0.8rem;
-      border-radius: 6px;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
+      font-family: inherit;
       outline: none;
       transition: border-color 0.15s ease;
-      font-family: inherit;
     }
-    .form-input:focus {
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
       border-color: var(--accent-primary);
     }
 
-    .camera-subform-box {
-      background: var(--bg-card);
+    .cameras-repeater-box {
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 0.85rem;
+      padding: 1rem;
+      background: var(--bg-card);
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
-      margin-bottom: 0.5rem;
+      gap: 0.8rem;
     }
 
-    .modal-footer {
-      padding: 1rem 1.4rem;
-      border-top: 1px solid var(--border-color);
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.75rem;
-      background: var(--bg-card);
-    }
-
-    .btn-secondary {
+    .camera-item-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 2fr auto;
+      gap: 0.5rem;
+      align-items: center;
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 0.55rem 1rem;
+      padding: 0.55rem 0.75rem;
       border-radius: 6px;
-      font-size: 0.82rem;
+    }
+
+    .btn-modal-cancel {
+      padding: 0.55rem 1.1rem;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-body);
+      border-radius: 6px;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
     }
+    .btn-modal-cancel:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+    }
 
-    .btn-primary {
-      background: var(--accent-primary);
-      border: 1px solid var(--accent-primary);
-      color: #ffffff;
+    .btn-modal-submit {
       padding: 0.55rem 1.25rem;
+      background: linear-gradient(135deg, #1e40af, #2563eb);
+      border: 1px solid #3b82f6;
+      color: #ffffff;
       border-radius: 6px;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
+      box-shadow: 0 2px 10px rgba(37, 99, 235, 0.35);
     }
-    .btn-primary:hover { background: var(--accent-primary-hover); }
+    .btn-modal-submit:hover {
+      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+    }
 
-    /* TOAST */
-    .toast-container {
+    /* TOAST NOTIFICATIONS */
+    #toastContainer {
       position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      z-index: 200;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 300;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.6rem;
     }
-    .toast {
-      background: #0b1120;
-      border: 1px solid #24324f;
+
+    .toast-msg {
+      background: #0f172a;
+      border: 1px solid #2563eb;
       color: #ffffff;
-      padding: 0.75rem 1.1rem;
+      padding: 0.75rem 1.25rem;
       border-radius: 8px;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-weight: 600;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
       display: flex;
       align-items: center;
       gap: 0.6rem;
-      animation: toastFadeIn 0.25s ease;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      animation: toastIn 0.25s ease;
     }
-    .toast.success { border-color: var(--accent-success); }
-    .toast.danger { border-color: var(--accent-danger); }
-    @keyframes toastFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes toastIn {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      aside.crm-sidebar {
+        transform: translateX(-100%);
+      }
+      aside.crm-sidebar.open-mobile {
+        transform: translateX(0);
+      }
+      .crm-wrapper {
+        margin-left: 0;
+        width: 100%;
+      }
+      .mobile-menu-toggle {
+        display: inline-flex;
+      }
+      main.crm-main {
+        padding: 1.2rem 1rem 3rem;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- HEADER SIEMPRE OSCURO -->
-  <header>
-    <a href="/crm" class="brand-logo" aria-label="BADDGROUP CRM">
-      <div class="brand-logo-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
-          <polygon points="50,4 92,26 92,74 50,96 8,74 8,26" fill="#1e293b" stroke="#3b82f6" stroke-width="2.5"/>
-          <path d="M28 24 H48 C54.5 24 59 28 59 33.5 C59 37.5 56.5 41 52.5 42.5 C57.5 44 61 48 61 53.5 C61 60 55.5 64 48 64 H28 V24 Z" 
-                fill="none" stroke="#2563eb" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
-          <path d="M28 44 H48" stroke="#2563eb" stroke-width="4.5" stroke-linecap="round"/>
-          <path d="M72 40 V62 C72 68 66 73 58 73 H46" 
-                fill="none" stroke="#059669" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M58 58 H72" stroke="#059669" stroke-width="4" stroke-linecap="round"/>
-        </svg>
+  <!-- =========================================================
+       SIDEBAR LATERAL IZQUIERDO (COMMAND CENTER)
+       ========================================================= -->
+  <aside class="crm-sidebar" id="crmSidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <svg class="v-icon-lg" viewBox="0 0 24 24" style="color: #60a5fa;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
       </div>
-      <div class="brand-text">
-        <span class="brand-name">BADDGROUP</span>
-        <span class="brand-title">CRM &bull; GESTIÓN DE CLIENTES & FACTURACIÓN</span>
+      <div class="sidebar-title-wrap">
+        <span class="sidebar-brand-name">BADDGROUP</span>
+        <span class="sidebar-brand-tag">VISION AI • BUSINESS SUITE</span>
       </div>
-    </a>
-
-    <div class="header-right">
-      <div class="header-badge">
-        <span class="status-indicator-dot"></span>
-        <span id="crmPeriodBadge">Octubre 2026</span>
-      </div>
-
-      <!-- BOTÓN VOLVER AL MONITOREO DE CÁMARAS -->
-      <a href="/" class="btn-header-back" title="Ir al panel de videovigilancia y búsqueda con IA">
-        <svg class="v-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-        <span>Monitoreo de Cámaras</span>
-      </a>
-
-      <!-- BOTÓN REGISTRAR CLIENTE -->
-      <button class="btn-header-new-client" onclick="openCreateClientModal()">
-        <svg class="v-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-        <span>Nuevo Cliente</span>
-      </button>
-
-      <!-- BOTÓN TEMA -->
-      <button id="crmThemeBtn" class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Cambiar tema">
-        <svg id="themeIconSun" class="v-icon" style="display:none;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        <svg id="themeIconMoon" class="v-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span id="themeText">Modo Oscuro</span>
-      </button>
     </div>
-  </header>
 
-  <!-- MAIN -->
-  <main>
+    <nav class="sidebar-nav">
+      <div class="nav-category">Control Central</div>
+      
+      <!-- BOTÓN 1: DASHBOARD GENERAL & BALANCE -->
+      <button class="nav-btn active" id="navBtnDashboard" onclick="switchTab('dashboard')">
+        <svg class="v-icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        <span>Dashboard & Balance</span>
+      </button>
 
-    <!-- 1. DASHBOARD GENERAL DE FACTURACIÓN & RECAUDACIÓN (KPIs) -->
-    <section class="kpi-grid">
-      <!-- KPI 1: MRR (Ingreso Mensual Recurrente) -->
-      <div class="kpi-card">
-        <div class="kpi-top">
-          <span class="kpi-title">MRR (Cuotas Mensuales)</span>
-          <div class="kpi-icon-wrap">
-            <svg class="v-icon" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
-          </div>
-        </div>
-        <div class="kpi-value" id="kpiMrr">$0</div>
-        <div class="kpi-subtext">
-          <span>Ingreso proyectado por clientes activos</span>
-        </div>
+      <!-- BOTÓN 2: BASE DE DATOS DE CLIENTES -->
+      <button class="nav-btn" id="navBtnClients" onclick="switchTab('clients')">
+        <svg class="v-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        <span>Base de Clientes</span>
+        <span class="nav-badge-pill" id="sidebarClientsBadge">0</span>
+      </button>
+
+      <!-- BOTÓN 3: VENTAS DE SOFTWARE -->
+      <button class="nav-btn" id="navBtnSoftware" onclick="switchTab('software')">
+        <svg class="v-icon" viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
+        <span>Ventas de Software</span>
+        <span class="nav-badge-pill" id="sidebarSoftwareBadge">0</span>
+      </button>
+
+      <div class="nav-category" style="margin-top: 1rem;">Operaciones de Video</div>
+
+      <!-- BOTÓN 4: RETORNAR A MONITOREO DE CÁMARAS -->
+      <a href="/" class="nav-btn" title="Ir al visualizador en vivo de cámaras con búsqueda por IA">
+        <svg class="v-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+        <span>Monitoreo en Vivo</span>
+      </a>
+    </nav>
+
+    <!-- FOOTER DE LA BARRA LATERAL -->
+    <div class="sidebar-footer">
+      <div class="server-status-box">
+        <div class="server-pulse-dot"></div>
+        <span>DonWeb VPS • Conectado</span>
       </div>
-
-      <!-- KPI 2: Recaudación Cuotas Mes en Curso -->
-      <div class="kpi-card">
-        <div class="kpi-top">
-          <span class="kpi-title">Cobranzas de este Mes</span>
-          <div class="kpi-icon-wrap success">
-            <svg class="v-icon" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
-          </div>
-        </div>
-        <div class="kpi-value" id="kpiMonthCollected">$0</div>
-        <div class="kpi-subtext">
-          <span>Cobrado: <strong id="kpiMonthProgressText">0%</strong> de la meta</span>
-        </div>
-        <div class="progress-bar-container">
-          <div class="progress-bar-fill" id="kpiProgressBar" style="width: 0%;"></div>
-        </div>
-      </div>
-
-      <!-- KPI 3: Recaudado por Instalaciones -->
-      <div class="kpi-card">
-        <div class="kpi-top">
-          <span class="kpi-title">Total Instalaciones</span>
-          <div class="kpi-icon-wrap">
-            <svg class="v-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-          </div>
-        </div>
-        <div class="kpi-value" id="kpiInstallRevenue">$0</div>
-        <div class="kpi-subtext">
-          <span>Equipos amurados y puesta en marcha</span>
-        </div>
-      </div>
-
-      <!-- KPI 4: Clientes y Cámaras Monitoreadas -->
-      <div class="kpi-card">
-        <div class="kpi-top">
-          <span class="kpi-title">Clientes & Cámaras</span>
-          <div class="kpi-icon-wrap">
-            <svg class="v-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 3s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-          </div>
-        </div>
-        <div class="kpi-value">
-          <span id="kpiActiveClients">0</span> <span style="font-size:1.1rem; color:var(--text-muted); font-weight:600;">clientes</span>
-        </div>
-        <div class="kpi-subtext">
-          <span><strong id="kpiTotalCameras">0</strong> cámaras conectadas 24/7</span>
-        </div>
-      </div>
-
-      <!-- KPI 5: Alertas de Vencimiento / Morosos -->
-      <div class="kpi-card">
-        <div class="kpi-top">
-          <span class="kpi-title">Cuotas por Cobrar</span>
-          <div class="kpi-icon-wrap danger" id="kpiAlertIcon">
-            <svg class="v-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-          </div>
-        </div>
-        <div class="kpi-value" id="kpiOverdueCount" style="color:var(--accent-danger);">0</div>
-        <div class="kpi-subtext">
-          <span><strong id="kpiPendingCount">0</strong> pendientes de cobro este mes</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. DIRECTORIO DE CLIENTES Y GESTIÓN COMERCIAL -->
-    <section class="clients-card">
-      <div class="clients-header">
-        <div class="clients-title-box">
-          <h2 class="clients-title">
-            <svg class="v-icon-lg" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
-            <span>Directorio de Clientes & Servicios Activos</span>
-          </h2>
-          <span class="badge-status activo" id="clientsCountBadge">0 Registrados</span>
-        </div>
-
-        <button class="btn-primary" onclick="openCreateClientModal()">
-          <svg class="v-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-          <span>+ Registrar Nuevo Cliente</span>
+      <div class="sidebar-actions-row">
+        <button class="sidebar-btn-theme" onclick="toggleTheme()" aria-label="Cambiar tema">
+          <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+          <span id="themeBtnText">Tema</span>
         </button>
       </div>
+    </div>
+  </aside>
 
-      <!-- BARRA DE FILTROS Y BÚSQUEDA -->
-      <div class="clients-filter-bar">
-        <div class="search-box-crm">
-          <svg class="v-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-          <input 
-            type="text" 
-            id="crmSearchInput" 
-            class="search-input-crm" 
-            placeholder="Buscar por cliente, comercio, teléfono o dirección..."
-            oninput="handleSearchClients(this.value)"
-          >
-        </div>
+  <!-- =========================================================
+       WRAPPER PRINCIPAL
+       ========================================================= -->
+  <div class="crm-wrapper">
 
-        <div class="filter-chips-crm">
-          <button class="chip-crm active" onclick="filterClientsByStatus('all', this)">Todos</button>
-          <button class="chip-crm" onclick="filterClientsByStatus('al_dia', this)">Al Día</button>
-          <button class="chip-crm" onclick="filterClientsByStatus('vencido', this)">Cuota Vencida</button>
-          <button class="chip-crm" onclick="filterClientsByStatus('pendiente', this)">Pendiente</button>
-          <button class="chip-crm" onclick="filterClientsByStatus('suspendido', this)">Suspendidos</button>
+    <!-- TOPBAR SUPERIOR (SIEMPRE OSCURO) -->
+    <header class="crm-topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-toggle" onclick="toggleMobileSidebar()" aria-label="Abrir menú">
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </button>
+        <div class="topbar-page-info">
+          <span class="topbar-title" id="pageHeaderTitle">Dashboard General & Balance Financiero</span>
+          <span class="topbar-subtitle" id="pageHeaderSubtitle">Control de ingresos, cobros recurrentes de cámaras y venta de licencias</span>
         </div>
       </div>
 
-      <!-- TABLA DE CLIENTES -->
-      <div class="table-container">
-        <table class="crm-table">
-          <thead>
-            <tr>
-              <th>Cliente / Razón Social</th>
-              <th>Contacto & Ubicación</th>
-              <th>Cámaras & RTSP</th>
-              <th>Cuota Mensual</th>
-              <th>Vencimiento</th>
-              <th>Estado de Pago</th>
-              <th>Credenciales Cliente</th>
-              <th>Acciones Comerciales</th>
-            </tr>
-          </thead>
-          <tbody id="crmClientsTbody">
-            <!-- Filas pobladas dinámicamente -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- MODAL: CREAR / EDITAR CLIENTE -->
-  <div id="clientModal" class="modal-overlay" onclick="closeModalOnBackdrop(event, 'clientModal')">
-    <div class="modal-card">
-      <div class="modal-header">
-        <div class="modal-title" id="clientModalTitle">
-          <svg class="v-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-          <span>Registrar Nuevo Cliente & Cámaras</span>
+      <div class="topbar-right">
+        <div class="topbar-date-badge">
+          <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+          <span id="currentPeriodLabel">Cargando fecha...</span>
         </div>
-        <button class="close-modal-btn" onclick="closeClientModal()">✕</button>
+        
+        <!-- BOTÓN DE ACCIÓN RÁPIDA SEGÚN LA PESTAÑA ACTIVA -->
+        <button class="btn-topbar-primary" id="topbarActionBtn" onclick="handleTopbarAction()">
+          <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          <span id="topbarActionText">+ Nuevo Cliente</span>
+        </button>
       </div>
+    </header>
 
-      <form id="clientForm" onsubmit="handleSaveClient(event)">
-        <div class="modal-body">
-          <input type="hidden" id="clientId">
+    <!-- ÁREA DE CONTENIDO (SPA CON 3 APARTADOS) -->
+    <main class="crm-main">
 
-          <!-- SECCIÓN 1: DATOS DEL CLIENTE -->
-          <div class="form-section-title">
-            <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-            <span>1. Datos del Cliente & Negocio</span>
+      <!-- =========================================================
+           VISTA 1: DASHBOARD GENERAL & BALANCES CON GRÁFICOS
+           ========================================================= -->
+      <section class="crm-view-section active-view" id="view-dashboard">
+        
+        <!-- KPI METRICS ROW -->
+        <div class="kpi-grid">
+          <!-- KPI 1: FACTURACIÓN TOTAL GLOBAL -->
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Facturación Total Negocio</span>
+              <div class="kpi-icon-wrap cyan">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="dashTotalRevenue">$0</div>
+            <div class="kpi-subtext">Abonos + Instalaciones + Software</div>
           </div>
 
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Nombre del Cliente / Negocio *</label>
-              <input type="text" id="formClientName" class="form-input" placeholder="Ej: Ferretería Central - Don Pedro" required>
+          <!-- KPI 2: MRR ABONOS MENSUALES -->
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">MRR (Cuotas Mensuales)</span>
+              <div class="kpi-icon-wrap">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+              </div>
             </div>
-            <div class="form-group">
-              <label class="form-label">Tipo de Establecimiento</label>
-              <select id="formBusinessType" class="form-input">
-                <option value="Comercio / Local">Comercio / Local a la Calle</option>
-                <option value="Domicilio Particular">Domicilio Particular / Casa</option>
-                <option value="Depósito / Galpón">Depósito / Galpón Logístico</option>
-                <option value="Empresa / Oficina">Empresa / Oficinas</option>
-              </select>
-            </div>
+            <div class="kpi-value" id="dashMRR">$0</div>
+            <div class="kpi-subtext">Ingreso mensual proyectado cámaras</div>
           </div>
 
-          <div class="form-grid-3">
-            <div class="form-group">
-              <label class="form-label">Teléfono / WhatsApp *</label>
-              <input type="text" id="formPhone" class="form-input" placeholder="+54 9 11 2345-6789" required>
+          <!-- KPI 3: COBRANZAS DE ESTE MES -->
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Cobrado en el Mes</span>
+              <div class="kpi-icon-wrap success">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+              </div>
             </div>
-            <div class="form-group">
-              <label class="form-label">Email</label>
-              <input type="email" id="formEmail" class="form-input" placeholder="cliente@correo.com">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Dirección</label>
-              <input type="text" id="formAddress" class="form-input" placeholder="Av. San Martín 1420">
-            </div>
-          </div>
-
-          <!-- SECCIÓN 2: FACTURACIÓN Y CUOTAS -->
-          <div class="form-section-title">
-            <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
-            <span>2. Condiciones de Facturación & Cobranza</span>
-          </div>
-
-          <div class="form-grid-3">
-            <div class="form-group">
-              <label class="form-label">Abono Mensual (Cuota) *</label>
-              <input type="number" id="formMonthlyFee" class="form-input" placeholder="Ej: 25000" min="0" step="500" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Día de Cobro Mensual (1 al 31) *</label>
-              <input type="number" id="formBillingDay" class="form-input" placeholder="Ej: 10" min="1" max="31" value="10" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Costo Total Instalación</label>
-              <input type="number" id="formInstallCost" class="form-input" placeholder="Ej: 180000" min="0" step="1000">
+            <div class="kpi-value" id="dashMonthCollected">$0</div>
+            <div class="kpi-subtext" id="dashProgressLabel">Cobrado: 0% de la meta</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="dashProgressBar" style="width: 0%"></div>
             </div>
           </div>
 
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Monto Abonado de Instalación Hoy</label>
-              <input type="number" id="formInstallPaid" class="form-input" placeholder="Ej: 180000" min="0" step="1000">
+          <!-- KPI 4: VENTAS DE SOFTWARE -->
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Ventas de Software</span>
+              <div class="kpi-icon-wrap cyan">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4z"/></svg>
+              </div>
             </div>
-            <div class="form-group">
-              <label class="form-label">Método de Pago</label>
-              <select id="formPaymentMethod" class="form-input">
-                <option value="Transferencia">Transferencia Bancaria</option>
-                <option value="Efectivo">Efectivo en Mano</option>
-                <option value="Mercado Pago">Mercado Pago</option>
-              </select>
+            <div class="kpi-value" id="dashSoftwareRevenue">$0</div>
+            <div class="kpi-subtext" id="dashSoftwareCountLabel">0 licencias vendidas</div>
+          </div>
+
+          <!-- KPI 5: CONTEO DE CÁMARAS Y CLIENTES -->
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Cámaras & Clientes</span>
+              <div class="kpi-icon-wrap">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="dashCamerasCount">0</div>
+            <div class="kpi-subtext" id="dashClientsCountLabel">0 clientes activos de seguridad</div>
+          </div>
+
+          <!-- KPI 6: ALERTAS DE MOROSIDAD -->
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Cuotas Vencidas</span>
+              <div class="kpi-icon-wrap danger">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="dashOverdueCount" style="color: var(--accent-danger);">0</div>
+            <div class="kpi-subtext">Avisos pendientes por WhatsApp</div>
+          </div>
+        </div>
+
+        <!-- GRÁFICOS DE BALANCE -->
+        <div class="charts-grid">
+          <!-- GRÁFICO 1: EVOLUCIÓN HISTÓRICA DE INGRESOS (BARRA APILADA / LÍNEA) -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <div class="chart-title">
+                  <svg class="v-icon" viewBox="0 0 24 24" style="color: var(--accent-primary);"><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/></svg>
+                  <span>Balance Mensual & Flujo de Fondos</span>
+                </div>
+                <div class="chart-desc">Evolución de ingresos en ARS: Abonos recurrentes, Instalaciones y Software</div>
+              </div>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="monthlyFlowChart"></canvas>
             </div>
           </div>
 
-          <!-- SECCIÓN 3: ACCESO PARA EL CLIENTE -->
-          <div class="form-section-title">
-            <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-            <span>3. Credenciales de Acceso para el Cliente (Llave en Mano)</span>
+          <!-- GRÁFICO 2: COMPOSICIÓN DE FUENTES DE INGRESO (DONUT) -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <div class="chart-title">
+                  <svg class="v-icon" viewBox="0 0 24 24" style="color: var(--accent-success);"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2 0v8.99L21.95 12c-.5-5.04-4.52-9.14-9.95-10zm0 11.01V22c5.43-.86 9.45-4.96 9.95-10l-8.95 1.01z"/></svg>
+                  <span>Composición de Ganancias</span>
+                </div>
+                <div class="chart-desc">Distribución porcentual por línea de negocio</div>
+              </div>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="revenuePieChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABLA DE MOVIMIENTOS RECIENTES -->
+        <div class="content-panel-card">
+          <div class="panel-header">
+            <div class="panel-title-box">
+              <svg class="v-icon" viewBox="0 0 24 24" style="color: var(--accent-primary);"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+              <span class="panel-title">Últimos Movimientos & Cobranzas</span>
+            </div>
+            <span class="status-chip success">Balance en Tiempo Real</span>
           </div>
 
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Usuario para el Cliente</label>
-              <input type="text" id="formClientUser" class="form-input" placeholder="Ej: ferreteriacentral">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Contraseña</label>
-              <input type="text" id="formClientPass" class="form-input" placeholder="Ej: pedro2026">
-            </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Concepto</th>
+                  <th>Cliente / Entidad</th>
+                  <th>Rubro</th>
+                  <th>Monto Cobrado</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="recentTransactionsTableBody">
+                <!-- Se llena dinámicamente -->
+              </tbody>
+            </table>
           </div>
+        </div>
+      </section>
 
-          <!-- SECCIÓN 4: CÁMARAS DEL CLIENTE (RTSP) -->
-          <div class="form-section-title" style="justify-content:space-between;">
-            <div style="display:flex; align-items:center; gap:0.45rem;">
-              <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-              <span>4. Cámaras IP & Enlaces RTSP del Cliente</span>
+      <!-- =========================================================
+           VISTA 2: BASE DE DATOS DE CLIENTES DE CÁMARAS
+           ========================================================= -->
+      <section class="crm-view-section" id="view-clients">
+        <div class="content-panel-card">
+          <div class="panel-header">
+            <div class="panel-title-box">
+              <svg class="v-icon" viewBox="0 0 24 24" style="color: var(--accent-primary);"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+              <span class="panel-title">Base de Clientes & Monitoreo</span>
             </div>
-            <button type="button" class="btn-tbl" onclick="addCameraToForm()">
+            <button class="btn-topbar-primary" onclick="openNewClientModal()">
               <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-              <span>+ Agregar Cámara</span>
+              <span>+ Registrar Cliente</span>
             </button>
           </div>
 
-          <div id="camerasSubformContainer">
-            <!-- Cajas de cámaras generadas dinámicamente -->
+          <div class="filter-actions-bar">
+            <div class="search-input-box">
+              <svg class="v-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              <input type="text" id="clientSearchInput" class="search-input-field" placeholder="Buscar cliente, comercio, teléfono o dirección..." oninput="filterClients()">
+            </div>
+
+            <div class="filter-pills">
+              <button class="pill-btn active" id="filterClientAll" onclick="setClientStatusFilter('all')">Todos</button>
+              <button class="pill-btn" id="filterClientAlDia" onclick="setClientStatusFilter('al_dia')">Al Día</button>
+              <button class="pill-btn" id="filterClientVencido" onclick="setClientStatusFilter('vencido')">Cuota Vencida</button>
+              <button class="pill-btn" id="filterClientPendiente" onclick="setClientStatusFilter('pendiente')">Pendientes</button>
+              <button class="pill-btn" id="filterClientSuspendido" onclick="setClientStatusFilter('suspendido')">Suspendidos</button>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Notas Adicionales del Cliente</label>
-            <textarea id="formNotes" class="form-input" rows="2" placeholder="Observaciones técnicas, días de cobro preferidos, claves de WiFi local..."></textarea>
+          <!-- TABLA DE CLIENTES -->
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Cliente / Razón Social</th>
+                  <th>Contacto & Dirección</th>
+                  <th>Cámaras & RTSP</th>
+                  <th>Cuota Mensual</th>
+                  <th>Día Vence</th>
+                  <th>Instalación</th>
+                  <th>Estado Cobranza</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="clientsTableBody">
+                <!-- Se llena dinámicamente con renderClientsTable() -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           VISTA 3: APARTADO EXCLUSIVO DE VENTAS DE SOFTWARE
+           ========================================================= -->
+      <section class="crm-view-section" id="view-software">
+        
+        <!-- SOFTWARE TOP KPI CARDS -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Facturación Total Software</span>
+              <div class="kpi-icon-wrap success">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="swKpiRevenue">$0</div>
+            <div class="kpi-subtext">Cobrado por licencias y módulos</div>
           </div>
 
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Licencias Vendidas</span>
+              <div class="kpi-icon-wrap cyan">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="swKpiLicensesCount">0</div>
+            <div class="kpi-subtext">Instancias activas de Baddgroup AI</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Compradores / Empresas</span>
+              <div class="kpi-icon-wrap">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="swKpiClientsCount">0</div>
+            <div class="kpi-subtext">Clientes activos con licencia</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Ticket Promedio Venta</span>
+              <div class="kpi-icon-wrap warning">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="swKpiAverageTicket">$0</div>
+            <div class="kpi-subtext">Valor promedio por venta</div>
+          </div>
         </div>
 
-        <div class="modal-footer">
-          <button type="button" class="btn-secondary" onclick="closeClientModal()">Cancelar</button>
-          <button type="submit" class="btn-primary">
-            <svg class="v-icon" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
-            <span id="btnSaveClientText">Guardar Cliente</span>
-          </button>
+        <!-- PANEL DE CONTROL DE VENTAS DE SOFTWARE -->
+        <div class="content-panel-card">
+          <div class="panel-header">
+            <div class="panel-title-box">
+              <svg class="v-icon" viewBox="0 0 24 24" style="color: var(--accent-primary);"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4z"/></svg>
+              <span class="panel-title">Registro de Ventas de Software & Licencias</span>
+            </div>
+            <button class="btn-topbar-primary" onclick="openNewSoftwareSaleModal()">
+              <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              <span>+ Registrar Venta Software</span>
+            </button>
+          </div>
+
+          <div class="filter-actions-bar">
+            <div class="search-input-box">
+              <svg class="v-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              <input type="text" id="softwareSearchInput" class="search-input-field" placeholder="Buscar comprador, empresa, licencia o clave..." oninput="filterSoftwareSales()">
+            </div>
+
+            <div class="filter-pills">
+              <button class="pill-btn active" id="filterSwAll" onclick="setSoftwareFilter('all')">Todas</button>
+              <button class="pill-btn" id="filterSwPagado" onclick="setSoftwareFilter('pagado')">Pagadas</button>
+              <button class="pill-btn" id="filterSwSena" onclick="setSoftwareFilter('seña')">Con Seña</button>
+              <button class="pill-btn" id="filterSwPendiente" onclick="setSoftwareFilter('pendiente')">Pendientes</button>
+            </div>
+          </div>
+
+          <!-- TABLA DE VENTAS DE SOFTWARE -->
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Comprador / Empresa</th>
+                  <th>Contacto</th>
+                  <th>Plan / Tipo de Licencia</th>
+                  <th>Cant. Licencias</th>
+                  <th>Precio Venta</th>
+                  <th>Cobrado</th>
+                  <th>Clave de Licencia</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="softwareTableBody">
+                <!-- Se llena dinámicamente con renderSoftwareTable() -->
+              </tbody>
+            </table>
+          </div>
         </div>
-      </form>
-    </div>
+      </section>
+
+    </main>
   </div>
 
-  <!-- MODAL: REGISTRAR PAGO -->
-  <div id="paymentModal" class="modal-overlay" onclick="closeModalOnBackdrop(event, 'paymentModal')">
-    <div class="modal-card" style="max-width: 520px;">
+  <!-- =========================================================
+       MODAL: REGISTRAR / EDITAR CLIENTE DE CÁMARAS
+       ========================================================= -->
+  <div class="modal-backdrop" id="clientModalBackdrop">
+    <div class="modal-box">
       <div class="modal-header">
-        <div class="modal-title">
-          <svg class="v-icon" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
-          <span>Registrar Cobro / Facturación</span>
-        </div>
-        <button class="close-modal-btn" onclick="closePaymentModal()">✕</button>
+        <span class="modal-title" id="clientModalTitle">
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          <span id="clientModalTitleText">Registrar Nuevo Cliente</span>
+        </span>
+        <button class="btn-close-modal" onclick="closeClientModal()">&times;</button>
       </div>
 
-      <form id="paymentForm" onsubmit="handleSavePayment(event)">
-        <div class="modal-body">
-          <input type="hidden" id="payClientId">
+      <div class="modal-body">
+        <input type="hidden" id="editClientId" value="">
 
-          <div style="background:var(--bg-card); padding:0.85rem; border-radius:8px; border:1px solid var(--border-color);">
-            <div style="font-size:0.75rem; color:var(--text-muted);">Cliente:</div>
-            <strong id="payClientName" style="font-size:1rem; color:var(--text-main);">--</strong>
-            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:0.25rem;">
-              Cuota mensual habitual: <strong id="payClientMonthlyFee" style="color:var(--accent-primary);">$0</strong>
-            </div>
-          </div>
-
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Tipo de Cobro *</label>
-              <select id="payType" class="form-input" onchange="onPaymentTypeChange(this.value)">
-                <option value="cuota">Abono Mensual (Cuota)</option>
-                <option value="instalacion">Saldo de Instalación</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Período / Mes</label>
-              <input type="text" id="payPeriod" class="form-input" placeholder="2026-10">
-            </div>
-          </div>
-
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Monto Cobrado ($ ARS) *</label>
-              <input type="number" id="payAmount" class="form-input" placeholder="Monto" min="1" step="100" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Método de Cobro</label>
-              <select id="payMethod" class="form-input">
-                <option value="Transferencia">Transferencia Bancaria</option>
-                <option value="Efectivo">Efectivo</option>
-                <option value="Mercado Pago">Mercado Pago</option>
-              </select>
-            </div>
-          </div>
-
+        <div class="form-grid-2">
           <div class="form-group">
-            <label class="form-label">Nota o Comprobante</label>
-            <input type="text" id="payNotes" class="form-input" placeholder="Ej: Transferencia Banco Galicia comprobante #88123">
+            <label class="form-label">Nombre del Cliente / Razón Social *</label>
+            <input type="text" id="mClientName" class="form-input" placeholder="Ej: Carnicería Don Carlos" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rubro / Tipo de Lugar</label>
+            <select id="mClientType" class="form-select">
+              <option value="Comercio / Local">Comercio / Local</option>
+              <option value="Depósito / Galpón">Depósito / Galpón</option>
+              <option value="Domicilio Particular">Domicilio Particular</option>
+              <option value="Edificio / Consorcio">Edificio / Consorcio</option>
+              <option value="Estación de Servicio">Estación de Servicio</option>
+              <option value="Industria / Fábrica">Industria / Fábrica</option>
+            </select>
           </div>
         </div>
 
-        <div class="modal-footer">
-          <button type="button" class="btn-secondary" onclick="closePaymentModal()">Cancelar</button>
-          <button type="submit" class="btn-primary">
-            <svg class="v-icon" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
-            <span>Confirmar Cobro</span>
-          </button>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Teléfono (WhatsApp)</label>
+            <input type="tel" id="mClientPhone" class="form-input" placeholder="+54 9 11 1234-5678">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email de Facturación</label>
+            <input type="email" id="mClientEmail" class="form-input" placeholder="cliente@correo.com">
+          </div>
         </div>
-      </form>
-    </div>
-  </div>
 
-  <!-- MODAL: VER CÁMARAS Y ENLACES RTSP DEL CLIENTE -->
-  <div id="viewCamerasModal" class="modal-overlay" onclick="closeModalOnBackdrop(event, 'viewCamerasModal')">
-    <div class="modal-card" style="max-width: 680px;">
-      <div class="modal-header">
-        <div class="modal-title">
-          <svg class="v-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-          <span id="viewCamerasTitle">Cámaras del Cliente</span>
+        <div class="form-group">
+          <label class="form-label">Dirección / Ubicación Física</label>
+          <input type="text" id="mClientAddress" class="form-input" placeholder="Calle, Número, Localidad">
         </div>
-        <button class="close-modal-btn" onclick="closeViewCamerasModal()">✕</button>
-      </div>
 
-      <div class="modal-body" id="viewCamerasListContainer">
-        <!-- Tarjetas de cámaras -->
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Costo Total Instalación (ARS)</label>
+            <input type="number" id="mClientInstCost" class="form-input" placeholder="150000" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Monto Cobrado de Instalación (ARS)</label>
+            <input type="number" id="mClientInstPaid" class="form-input" placeholder="150000" min="0">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Cuota Mensual / Abono (ARS) *</label>
+            <input type="number" id="mClientMonthlyFee" class="form-input" placeholder="25000" min="0" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Día de Cobro Mensual (1 al 31)</label>
+            <input type="number" id="mClientBillingDay" class="form-input" placeholder="10" min="1" max="31" value="10">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Usuario para el Cliente</label>
+            <input type="text" id="mClientUser" class="form-input" placeholder="Ej: donpedro">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contraseña</label>
+            <input type="text" id="mClientPass" class="form-input" placeholder="Ej: camaras2026">
+          </div>
+        </div>
+
+        <!-- REPETIDOR DE CÁMARAS Y ENLACES RTSP -->
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label class="form-label">Cámaras Instaladas & Enlaces RTSP</label>
+            <button type="button" class="btn-table-pill" onclick="addCameraRow()">+ Agregar Cámara</button>
+          </div>
+          <div class="cameras-repeater-box" id="camerasRepeaterBox">
+            <!-- Filas dinámicas de cámaras -->
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Notas Adicionales</label>
+          <textarea id="mClientNotes" class="form-textarea" rows="2" placeholder="Detalles de instalación, cableado, requerimientos específicos..."></textarea>
+        </div>
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn-secondary" onclick="closeViewCamerasModal()">Cerrar</button>
+        <button type="button" class="btn-modal-cancel" onclick="closeClientModal()">Cancelar</button>
+        <button type="button" class="btn-modal-submit" onclick="submitClientForm()">Guardar Cliente</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL: REGISTRAR / EDITAR VENTA DE SOFTWARE
+       ========================================================= -->
+  <div class="modal-backdrop" id="softwareModalBackdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-title">
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4z"/></svg>
+          <span id="softwareModalTitleText">Registrar Venta de Software</span>
+        </span>
+        <button class="btn-close-modal" onclick="closeSoftwareModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="editSoftwareSaleId" value="">
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Comprador / Contacto *</label>
+            <input type="text" id="mSwBuyerName" class="form-input" placeholder="Ej: Ing. Mariano Rossi" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Empresa / Razón Social</label>
+            <input type="text" id="mSwBuyerCompany" class="form-input" placeholder="Ej: Soluciones de Seguridad SRL">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Teléfono / WhatsApp</label>
+            <input type="tel" id="mSwBuyerContact" class="form-input" placeholder="+54 9 11 9876-5432">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" id="mSwBuyerEmail" class="form-input" placeholder="mariano@empresa.com">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Plan / Tipo de Licencia *</label>
+            <select id="mSwLicensePlan" class="form-select">
+              <option value="Licencia Servidor Pro (On-Premise)">Licencia Servidor Pro (On-Premise)</option>
+              <option value="White-Label Reseller Baddgroup">White-Label Reseller Baddgroup</option>
+              <option value="Módulo Visión IA Baddgroup">Módulo Visión IA Baddgroup</option>
+              <option value="SaaS Cloud Multicámara Mensual">SaaS Cloud Multicámara Mensual</option>
+              <option value="Licencia Enterprise Ilimitada">Licencia Enterprise Ilimitada</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cantidad de Licencias / Servidores</label>
+            <input type="number" id="mSwLicensesCount" class="form-input" value="1" min="1" required>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Precio de Venta Total *</label>
+            <input type="number" id="mSwPrice" class="form-input" placeholder="350000" min="0" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Moneda</label>
+            <select id="mSwCurrency" class="form-select">
+              <option value="ARS">Pesos Argentinos (ARS)</option>
+              <option value="USD">Dólares (USD)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Monto Cobrado (Seña o Total)</label>
+            <input type="number" id="mSwAmountPaid" class="form-input" placeholder="350000" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Estado del Pago</label>
+            <select id="mSwPaymentStatus" class="form-select">
+              <option value="pagado">Pagado Total</option>
+              <option value="seña">Cobrado Parcial (Seña)</option>
+              <option value="pendiente">Pendiente de Pago</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Modelo de Cobro</label>
+            <select id="mSwPaymentModel" class="form-select">
+              <option value="Pago Único Perpetuo">Pago Único Perpetuo</option>
+              <option value="Suscripción Anual">Suscripción Anual</option>
+              <option value="Suscripción Mensual">Suscripción Mensual</option>
+              <option value="Setup + Abono">Setup Inicial + Abono</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Método de Cobro</label>
+            <select id="mSwPaymentMethod" class="form-select">
+              <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+              <option value="Mercado Pago">Mercado Pago</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Cripto / USDT">Cripto / USDT</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Clave de Licencia (Auto-generada si se deja vacía)</label>
+          <input type="text" id="mSwLicenseKey" class="form-input" placeholder="BADD-PRO-XXXX-XXXX">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Notas Comerciales / Especificaciones del Cliente</label>
+          <textarea id="mSwNotes" class="form-textarea" rows="2" placeholder="Requerimientos de hardware, fecha límite, número de factura o acuerdo..."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-cancel" onclick="closeSoftwareModal()">Cancelar</button>
+        <button type="button" class="btn-modal-submit" onclick="submitSoftwareForm()">Guardar Venta</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL: REGISTRAR COBRO (CLIENTE O SOFTWARE)
+       ========================================================= -->
+  <div class="modal-backdrop" id="paymentModalBackdrop">
+    <div class="modal-box" style="max-width: 480px;">
+      <div class="modal-header">
+        <span class="modal-title">
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+          <span id="paymentModalTitleText">Registrar Cobro</span>
+        </span>
+        <button class="btn-close-modal" onclick="closePaymentModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="payTargetType" value="client"> <!-- 'client' o 'software' -->
+        <input type="hidden" id="payTargetId" value="">
+
+        <div class="form-group">
+          <label class="form-label" id="payEntityNameLabel">Cliente / Empresa</label>
+          <input type="text" id="payEntityName" class="form-input" readonly style="opacity: 0.85;">
+        </div>
+
+        <div class="form-group" id="payTypeGroup">
+          <label class="form-label">Tipo de Concepto</label>
+          <select id="payConceptType" class="form-select">
+            <option value="cuota">Cuota Mensual de Cámaras</option>
+            <option value="instalacion">Saldo de Instalación</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Monto Recibido *</label>
+          <input type="number" id="payAmount" class="form-input" placeholder="0" min="1" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Medio de Pago</label>
+          <select id="payMethod" class="form-select">
+            <option value="Transferencia">Transferencia Bancaria</option>
+            <option value="Efectivo">Efectivo en Mano</option>
+            <option value="Mercado Pago">Mercado Pago</option>
+            <option value="Cripto / USDT">Cripto / USDT</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Notas del Cobro</label>
+          <input type="text" id="payNotes" class="form-input" placeholder="N° de comprobante, quién abonó, etc.">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-cancel" onclick="closePaymentModal()">Cancelar</button>
+        <button type="button" class="btn-modal-submit" onclick="submitPaymentForm()">Asentar Cobro</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL: VISUALIZADOR DE CÁMARAS Y ENLACES RTSP
+       ========================================================= -->
+  <div class="modal-backdrop" id="rtspModalBackdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-title">
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+          <span id="rtspModalClientTitle">Cámaras del Cliente</span>
+        </span>
+        <button class="btn-close-modal" onclick="closeRtspModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div id="rtspModalList" style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <!-- Se puebla con las cámaras -->
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-submit" onclick="closeRtspModal()">Cerrar</button>
       </div>
     </div>
   </div>
 
   <!-- TOAST CONTAINER -->
-  <div id="toastContainer" class="toast-container"></div>
+  <div id="toastContainer"></div>
 
+  <!-- =========================================================
+       JAVASCRIPT LOGIC & API INTEGRATION
+       ========================================================= -->
   <script>
-    let allClients = [];
-    let currentFilter = 'all';
-    let currentSearch = '';
-    let currentTheme = localStorage.getItem('baddgroup_crm_theme') || 'light';
+    // ESTADO GLOBAL
+    let globalStats = {};
+    let globalClients = [];
+    let globalSoftwareSales = [];
+    let activeClientFilter = "all";
+    let activeSoftwareFilter = "all";
+    let currentActiveTab = "dashboard";
 
-    // TEMA CLARO / OSCURO (CON HEADER SIEMPRE OSCURO)
-    function applyTheme(theme) {
-      currentTheme = theme;
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('baddgroup_crm_theme', theme);
-      const sunIcon = document.getElementById('themeIconSun');
-      const moonIcon = document.getElementById('themeIconMoon');
-      const text = document.getElementById('themeText');
-      if (theme === 'light') {
-        if (sunIcon) sunIcon.style.display = 'none';
-        if (moonIcon) moonIcon.style.display = 'inline-block';
-        if (text) text.innerText = 'Modo Oscuro';
-      } else {
-        if (sunIcon) sunIcon.style.display = 'inline-block';
-        if (moonIcon) moonIcon.style.display = 'none';
-        if (text) text.innerText = 'Modo Claro';
-      }
+    // CHARTS INSTANCES
+    let monthlyFlowChartInstance = null;
+    let revenuePieChartInstance = null;
+
+    // INICIALIZACIÓN
+    document.addEventListener("DOMContentLoaded", async () => {
+      initTheme();
+      await loadAllData();
+      // Refresco en background cada 60s
+      setInterval(loadAllData, 60000);
+    });
+
+    // TEMA CLARO / OSCURO
+    function initTheme() {
+      const savedTheme = localStorage.getItem("baddgroup_theme") || "light";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+      updateThemeBtnText(savedTheme);
     }
 
     function toggleTheme() {
-      applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
-    }
-    applyTheme(currentTheme);
-
-    // FORMATEO DE MONEDA ARS
-    function formatCurrency(val) {
-      return '$' + Number(val || 0).toLocaleString('es-AR');
-    }
-
-    // CARGA DE DATOS AL INICIAR
-    async function loadCRMData() {
-      await Promise.all([loadStats(), loadClients()]);
+      const current = document.documentElement.getAttribute("data-theme") || "light";
+      const next = current === "light" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("baddgroup_theme", next);
+      updateThemeBtnText(next);
+      if (monthlyFlowChartInstance) updateChartsTheme();
     }
 
-    async function loadStats() {
-      try {
-        const res = await fetch('/api/crm/stats');
-        if (!res.ok) return;
-        const stats = await res.json();
+    function updateThemeBtnText(theme) {
+      const btnText = document.getElementById("themeBtnText");
+      if (btnText) btnText.textContent = theme === "light" ? "Modo Oscuro" : "Modo Claro";
+    }
 
-        document.getElementById('kpiMrr').innerText = formatCurrency(stats.mrr);
-        document.getElementById('kpiMonthCollected').innerText = formatCurrency(stats.current_month_collected);
-        document.getElementById('kpiInstallRevenue').innerText = formatCurrency(stats.total_installation_revenue);
-        document.getElementById('kpiActiveClients').innerText = stats.active_clients;
-        document.getElementById('kpiTotalCameras').innerText = stats.total_cameras;
-        document.getElementById('kpiOverdueCount').innerText = stats.clients_vencidos;
-        document.getElementById('kpiPendingCount').innerText = stats.clients_pendientes;
+    function toggleMobileSidebar() {
+      const sb = document.getElementById("crmSidebar");
+      sb.classList.toggle("open-mobile");
+    }
 
-        document.getElementById('kpiMonthProgressText').innerText = `${stats.collection_progress_pct}%`;
-        document.getElementById('kpiProgressBar').style.width = `${stats.collection_progress_pct}%`;
-        document.getElementById('crmPeriodBadge').innerText = stats.current_month_name || 'Octubre 2026';
+    // CAMBIO DE PESTAÑAS (SPA)
+    function switchTab(tabId) {
+      currentActiveTab = tabId;
 
-      } catch (err) {
-        console.error("Error cargando estadísticas CRM:", err);
+      // Actualizar botones del Sidebar
+      document.querySelectorAll(".sidebar-nav .nav-btn").forEach(btn => btn.classList.remove("active"));
+      if (tabId === "dashboard") document.getElementById("navBtnDashboard").classList.add("active");
+      if (tabId === "clients") document.getElementById("navBtnClients").classList.add("active");
+      if (tabId === "software") document.getElementById("navBtnSoftware").classList.add("active");
+
+      // Actualizar secciones de vista
+      document.querySelectorAll(".crm-view-section").forEach(sec => sec.classList.remove("active-view"));
+      const targetSec = document.getElementById(`view-${tabId}`);
+      if (targetSec) targetSec.classList.add("active-view");
+
+      // Actualizar Topbar Titles y botón de acción
+      const titleEl = document.getElementById("pageHeaderTitle");
+      const subEl = document.getElementById("pageHeaderSubtitle");
+      const actionBtn = document.getElementById("topbarActionBtn");
+      const actionText = document.getElementById("topbarActionText");
+
+      if (tabId === "dashboard") {
+        titleEl.textContent = "Dashboard General & Balance Financiero";
+        subEl.textContent = "Control unificado de ingresos, cuotas recurrentes y venta de software";
+        actionText.textContent = "+ Nuevo Cliente";
+        actionBtn.style.display = "inline-flex";
+      } else if (tabId === "clients") {
+        titleEl.textContent = "Base de Datos de Clientes & Servicios";
+        subEl.textContent = "Directorio de clientes, cámaras instaladas, enlaces RTSP y cobranzas";
+        actionText.textContent = "+ Registrar Cliente";
+        actionBtn.style.display = "inline-flex";
+      } else if (tabId === "software") {
+        titleEl.textContent = "Control de Ventas de Software & Licencias";
+        subEl.textContent = "Registro comercial de compradores, servidores vendidos, precios y claves emitidas";
+        actionText.textContent = "+ Registrar Venta Software";
+        actionBtn.style.display = "inline-flex";
+      }
+
+      // Cerrar sidebar en móvil al seleccionar
+      const sb = document.getElementById("crmSidebar");
+      if (sb.classList.contains("open-mobile")) sb.classList.remove("open-mobile");
+
+      // Si entramos a dashboard, redibujar charts
+      if (tabId === "dashboard") {
+        renderCharts();
       }
     }
 
-    async function loadClients() {
-      try {
-        let url = `/api/crm/clients?status=${encodeURIComponent(currentFilter)}`;
-        if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
-        const res = await fetch(url);
-        if (!res.ok) return;
-        allClients = await res.json();
+    function handleTopbarAction() {
+      if (currentActiveTab === "software") {
+        openNewSoftwareSaleModal();
+      } else {
+        openNewClientModal();
+      }
+    }
 
-        document.getElementById('clientsCountBadge').innerText = `${allClients.length} Registrados`;
+    // CARGA DE DATOS API
+    async function loadAllData() {
+      try {
+        const [statsRes, clientsRes, softwareRes, chartsRes] = await Promise.all([
+          fetch("/api/crm/stats").then(r => r.json()),
+          fetch("/api/crm/clients").then(r => r.json()),
+          fetch("/api/crm/software-sales").then(r => r.json()),
+          fetch("/api/crm/balance-charts").then(r => r.json())
+        ]);
+
+        globalStats = statsRes;
+        globalClients = clientsRes;
+        globalSoftwareSales = softwareRes;
+
+        // Actualizar badges en sidebar
+        document.getElementById("sidebarClientsBadge").textContent = globalClients.length;
+        document.getElementById("sidebarSoftwareBadge").textContent = globalSoftwareSales.length;
+
+        // Actualizar etiqueta del periodo
+        const periodLabel = document.getElementById("currentPeriodLabel");
+        if (periodLabel) periodLabel.textContent = statsRes.current_month_name || "Octubre 2026";
+
+        // Renderizar vistas
+        renderDashboardKPIs(statsRes);
+        renderCharts(chartsRes);
+        renderRecentTransactions(chartsRes.recent_transactions);
         renderClientsTable();
+        renderSoftwareTable();
       } catch (err) {
-        console.error("Error cargando clientes:", err);
+        console.error("Error cargando datos del CRM:", err);
       }
+    }
+
+    // FORMATEADORES
+    function formatMoney(amount, currency = "ARS") {
+      const val = Number(amount) || 0;
+      return new Intl.NumberFormat("es-AR", {
+        style: "currency",
+        currency: currency,
+        maximumFractionDigits: 0
+      }).format(val);
+    }
+
+    // RENDER: DASHBOARD KPIS
+    function renderDashboardKPIs(s) {
+      document.getElementById("dashTotalRevenue").textContent = formatMoney(s.total_business_revenue || 0);
+      document.getElementById("dashMRR").textContent = formatMoney(s.mrr || 0);
+      document.getElementById("dashMonthCollected").textContent = formatMoney(s.current_month_collected || 0);
+      
+      const pct = s.collection_progress_pct || 0;
+      document.getElementById("dashProgressLabel").textContent = `Cobrado: ${pct}% de la meta ($${formatMoney(s.mrr || 0)})`;
+      document.getElementById("dashProgressBar").style.width = `${Math.min(pct, 100)}%`;
+
+      document.getElementById("dashSoftwareRevenue").textContent = formatMoney(s.total_software_revenue || 0);
+      document.getElementById("dashSoftwareCountLabel").textContent = `${s.total_software_licenses || 0} licencias en ${s.total_software_sales_count || 0} ventas`;
+
+      document.getElementById("dashCamerasCount").textContent = `${s.total_cameras || 0} cámaras`;
+      document.getElementById("dashClientsCountLabel").textContent = `${s.active_clients || 0} clientes activos de seguridad`;
+
+      document.getElementById("dashOverdueCount").textContent = s.clients_vencidos || 0;
+
+      // Software tab top KPIs
+      const swRevEl = document.getElementById("swKpiRevenue");
+      if (swRevEl) swRevEl.textContent = formatMoney(s.total_software_revenue || 0);
+      const swLicEl = document.getElementById("swKpiLicensesCount");
+      if (swLicEl) swLicEl.textContent = s.total_software_licenses || 0;
+      const swCliEl = document.getElementById("swKpiClientsCount");
+      if (swCliEl) swCliEl.textContent = s.active_software_clients || 0;
+      
+      const avg = s.total_software_sales_count > 0 ? (s.total_software_revenue / s.total_software_sales_count) : 0;
+      const swAvgEl = document.getElementById("swKpiAverageTicket");
+      if (swAvgEl) swAvgEl.textContent = formatMoney(avg);
+    }
+
+    // RENDER: GRÁFICOS DE BALANCE (CHART.JS)
+    function renderCharts(data) {
+      if (!data) return;
+
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      const gridColor = isDark ? "#1e293b" : "#e2e8f0";
+      const textColor = isDark ? "#94a3b8" : "#64748b";
+
+      // 1. Gráfico de Evolución Mensual
+      const ctxFlow = document.getElementById("monthlyFlowChart");
+      if (ctxFlow) {
+        if (monthlyFlowChartInstance) monthlyFlowChartInstance.destroy();
+
+        monthlyFlowChartInstance = new Chart(ctxFlow, {
+          type: "bar",
+          data: {
+            labels: data.months,
+            datasets: [
+              {
+                label: "Abonos Cámaras (MRR)",
+                data: data.subscriptions,
+                backgroundColor: "#2563eb",
+                borderRadius: 4
+              },
+              {
+                label: "Instalaciones & Hardware",
+                data: data.installations,
+                backgroundColor: "#10b981",
+                borderRadius: 4
+              },
+              {
+                label: "Ventas de Software",
+                data: data.software,
+                backgroundColor: "#06b6d4",
+                borderRadius: 4
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                stacked: true,
+                grid: { color: gridColor },
+                ticks: { color: textColor }
+              },
+              y: {
+                stacked: true,
+                grid: { color: gridColor },
+                ticks: {
+                  color: textColor,
+                  callback: val => "$" + (val / 1000) + "k"
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                labels: { color: textColor, boxWidth: 12 }
+              },
+              tooltip: {
+                callbacks: {
+                  label: ctx => `${ctx.dataset.label}: ${formatMoney(ctx.raw)}`
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Gráfico Donut de Composición
+      const ctxPie = document.getElementById("revenuePieChart");
+      if (ctxPie && data.composition) {
+        if (revenuePieChartInstance) revenuePieChartInstance.destroy();
+
+        revenuePieChartInstance = new Chart(ctxPie, {
+          type: "doughnut",
+          data: {
+            labels: data.composition.labels,
+            datasets: [{
+              data: data.composition.values,
+              backgroundColor: ["#2563eb", "#10b981", "#06b6d4"],
+              borderWidth: 2,
+              borderColor: isDark ? "#0f172a" : "#ffffff"
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "68%",
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: { color: textColor, boxWidth: 12, padding: 14 }
+              },
+              tooltip: {
+                callbacks: {
+                  label: ctx => ` ${formatMoney(ctx.raw)} (${data.composition.percentages[ctx.dataIndex]}%)`
+                }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    function updateChartsTheme() {
+      fetch("/api/crm/balance-charts")
+        .then(r => r.json())
+        .then(d => renderCharts(d))
+        .catch(e => console.error(e));
+    }
+
+    // RENDER: MOVIMIENTOS RECIENTES
+    function renderRecentTransactions(transactions) {
+      const tbody = document.getElementById("recentTransactionsTableBody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      if (!transactions || transactions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No hay transacciones recientes registradas.</td></tr>`;
+        return;
+      }
+
+      transactions.forEach(t => {
+        const catBadge = t.category === "Software" ? "cyan" : t.category === "Abono" ? "success" : "neutral";
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${t.date}</strong></td>
+          <td>${escapeHtml(t.concept)}</td>
+          <td><strong>${escapeHtml(t.entity)}</strong></td>
+          <td><span class="status-chip ${catBadge}">${escapeHtml(t.category)}</span></td>
+          <td><strong style="color: var(--accent-success);">${formatMoney(t.amount)}</strong></td>
+          <td><span class="status-chip success">${escapeHtml(t.status)}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // =========================================================
+    // SECCIÓN CLIENTES: TABLA, FILTROS Y ACCIONES
+    // =========================================================
+    function setClientStatusFilter(status) {
+      activeClientFilter = status;
+      document.querySelectorAll(".filter-pills .pill-btn").forEach(b => {
+        if (b.id && b.id.startsWith("filterClient")) b.classList.remove("active");
+      });
+      const targetId = "filterClient" + (status === "all" ? "All" : status === "al_dia" ? "AlDia" : status === "vencido" ? "Vencido" : status === "pendiente" ? "Pendiente" : "Suspendido");
+      const btn = document.getElementById(targetId);
+      if (btn) btn.classList.add("active");
+      renderClientsTable();
+    }
+
+    function filterClients() {
+      renderClientsTable();
     }
 
     function renderClientsTable() {
-      const tbody = document.getElementById('crmClientsTbody');
+      const tbody = document.getElementById("clientsTableBody");
       if (!tbody) return;
+      tbody.innerHTML = "";
 
-      if (allClients.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="8" style="text-align:center; padding:2.5rem; color:var(--text-muted);">
-              No se encontraron clientes con el criterio seleccionado.
-            </td>
-          </tr>
-        `;
-        return;
-      }
+      const query = (document.getElementById("clientSearchInput")?.value || "").toLowerCase().trim();
 
-      tbody.innerHTML = allClients.map(c => {
-        const initials = c.name ? c.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase() : 'CL';
-        const camCount = c.cameras ? c.cameras.length : 0;
-        const isOverdue = c.payment_status === 'vencido';
-        const isPaid = c.payment_status === 'al_dia';
-        const isSuspended = c.service_status === 'suspendido';
-
-        // Mensaje WhatsApp personalizado para recordatorio
-        const cleanPhone = (c.phone || '').replace(/[^0-9]/g, '');
-        const waMsg = encodeURIComponent(
-          `Hola ${c.name}, le escribimos desde Baddgroup Vision AI. Le recordamos que el abono mensual del servicio de videovigilancia inteligente por sus ${camCount} cámaras (${formatCurrency(c.monthly_fee)}) tiene vencimiento el día ${c.billing_day}. Quedamos a su disposición para cualquier consulta.`
-        );
-
-        return `
-          <tr>
-            <td>
-              <div class="client-avatar-cell">
-                <div class="client-avatar">${initials}</div>
-                <div>
-                  <div class="client-name-bold">${c.name}</div>
-                  <div class="client-type-tag">${c.business_type || 'Comercio'}</div>
-                </div>
-              </div>
-            </td>
-
-            <td>
-              <div style="font-weight:600; color:var(--text-main); font-size:0.84rem;">${c.phone || '--'}</div>
-              <div style="font-size:0.72rem; color:var(--text-muted);">${c.address || 'Sin dirección'}</div>
-            </td>
-
-            <td>
-              <button class="btn-tbl" onclick="openViewCamerasModal('${c.id}')" title="Ver detalle de cámaras y RTSP">
-                <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-                <span><strong>${camCount}</strong> Cámaras</span>
-              </button>
-            </td>
-
-            <td>
-              <div style="font-weight:700; color:var(--text-main);">${formatCurrency(c.monthly_fee)}</div>
-              <div style="font-size:0.7rem; color:var(--text-muted);">Instalación: ${formatCurrency(c.installation_cost)}</div>
-            </td>
-
-            <td>
-              <div style="font-weight:600;">Día ${c.billing_day || 10} de c/mes</div>
-            </td>
-
-            <td>
-              <span class="badge-status ${c.payment_status}">
-                <span class="status-indicator-dot" style="background:${isPaid ? 'var(--accent-success)' : (isOverdue ? 'var(--accent-danger)' : 'var(--accent-warning)')};"></span>
-                <span>${isPaid ? 'Al Día' : (isOverdue ? 'Vencido' : 'Pendiente')}</span>
-              </span>
-            </td>
-
-            <td>
-              <div style="font-size:0.75rem; background:var(--bg-card); padding:0.25rem 0.5rem; border-radius:5px; border:1px solid var(--border-color); width:fit-content;">
-                <span>User: <strong>${c.client_user || '--'}</strong></span><br>
-                <span>Pass: <code>${c.client_pass || '••••'}</code></span>
-              </div>
-            </td>
-
-            <td>
-              <div class="action-btn-group">
-                <button class="btn-tbl btn-tbl-pay" onclick="openPaymentModal('${c.id}', '${c.name}', ${c.monthly_fee})" title="Registrar Cobro de Cuota o Instalación">
-                  <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
-                  <span>Cobrar</span>
-                </button>
-
-                ${cleanPhone ? `
-                  <a href="https://wa.me/${cleanPhone}?text=${waMsg}" target="_blank" class="btn-tbl btn-tbl-wa" title="Enviar recordatorio por WhatsApp">
-                    <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2z"/></svg>
-                    <span>Avisar</span>
-                  </a>
-                ` : ''}
-
-                <button class="btn-tbl" onclick="openEditClientModal('${c.id}')" title="Editar datos y cámaras">
-                  <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                </button>
-
-                <button class="btn-tbl" onclick="toggleClientServiceStatus('${c.id}')" title="${isSuspended ? 'Reactivar Servicio' : 'Suspender Servicio por falta de pago'}">
-                  <span class="status-indicator-dot" style="background:${isSuspended ? 'var(--text-muted)' : 'var(--accent-success)'};"></span>
-                  <span>${isSuspended ? 'Activar' : 'Corte'}</span>
-                </button>
-
-                <button class="btn-tbl" style="color:var(--accent-danger);" onclick="deleteClient('${c.id}', '${c.name}')" title="Eliminar cliente">
-                  <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                </button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    // BÚSQUEDA Y FILTRADO
-    function handleSearchClients(val) {
-      currentSearch = val;
-      loadClients();
-    }
-
-    function filterClientsByStatus(status, btn) {
-      currentFilter = status;
-      document.querySelectorAll('.filter-chips-crm .chip-crm').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-      loadClients();
-    }
-
-    // GESTIÓN DE CÁMARAS DENTRO DEL FORMULARIO
-    let formCameras = [];
-
-    function renderFormCameras() {
-      const container = document.getElementById('camerasSubformContainer');
-      if (!container) return;
-
-      if (formCameras.length === 0) {
-        container.innerHTML = '<p style="font-size:0.75rem; color:var(--text-muted); padding:0.5rem 0;">No hay cámaras asignadas a este cliente aún. Haz click en "+ Agregar Cámara".</p>';
-        return;
-      }
-
-      container.innerHTML = formCameras.map((cam, idx) => `
-        <div class="camera-subform-box">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="font-size:0.8rem; color:var(--text-main);">Cámara #${idx + 1}</strong>
-            <button type="button" class="close-modal-btn" onclick="removeCameraFromForm(${idx})" style="color:var(--accent-danger); font-size:0.75rem;">✕ Remover</button>
-          </div>
-          <div class="form-grid-3">
-            <div class="form-group">
-              <label class="form-label">Nombre / Zona</label>
-              <input type="text" class="form-input" value="${cam.name || ''}" placeholder="Ej: Entrada Principal" oninput="updateFormCamera(${idx}, 'name', this.value)">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Ubicación</label>
-              <input type="text" class="form-input" value="${cam.location || ''}" placeholder="Ej: Caja, Vereda" oninput="updateFormCamera(${idx}, 'location', this.value)">
-            </div>
-            <div class="form-group">
-              <label class="form-label">IP de la Cámara</label>
-              <input type="text" class="form-input" value="${cam.ip || ''}" placeholder="192.168.1.101" oninput="updateFormCamera(${idx}, 'ip', this.value)">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Enlace RTSP</label>
-            <input type="text" class="form-input" value="${cam.rtsp || ''}" placeholder="rtsp://admin:clave@192.168.1.101:554/cam/realmonitor?channel=1&subtype=1" oninput="updateFormCamera(${idx}, 'rtsp', this.value)">
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function addCameraToForm() {
-      const num = formCameras.length + 1;
-      formCameras.push({
-        id: `cam_${Date.now()}_${num}`,
-        name: `Cámara ${num}: Zona ${num}`,
-        location: "General",
-        ip: `192.168.1.${100 + num}`,
-        port: 554,
-        user: "admin",
-        rtsp: `rtsp://admin:clave@192.168.1.${100 + num}:554/cam/realmonitor?channel=1&subtype=1`
+      let filtered = globalClients.filter(c => {
+        if (activeClientFilter !== "all") {
+          if (activeClientFilter === "suspendido") {
+            if (c.service_status !== "suspendido") return false;
+          } else {
+            if (c.payment_status !== activeClientFilter) return false;
+          }
+        }
+        if (query) {
+          const match = (c.name || "").toLowerCase().includes(query) ||
+                        (c.business_type || "").toLowerCase().includes(query) ||
+                        (c.phone || "").toLowerCase().includes(query) ||
+                        (c.address || "").toLowerCase().includes(query);
+          if (!match) return false;
+        }
+        return true;
       });
-      renderFormCameras();
-    }
 
-    function updateFormCamera(index, field, value) {
-      if (formCameras[index]) {
-        formCameras[index][field] = value;
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2.5rem;">No se encontraron clientes con los filtros seleccionados.</td></tr>`;
+        return;
       }
+
+      filtered.forEach(c => {
+        const tr = document.createElement("tr");
+
+        // Status badge
+        let statusBadge = "";
+        if (c.service_status === "suspendido") {
+          statusBadge = `<span class="status-chip danger">Servicio Suspendido</span>`;
+        } else if (c.payment_status === "al_dia") {
+          statusBadge = `<span class="status-chip success">Al Día</span>`;
+        } else if (c.payment_status === "vencido") {
+          statusBadge = `<span class="status-chip danger">Cuota Vencida</span>`;
+        } else {
+          statusBadge = `<span class="status-chip warning">Cobro Pendiente</span>`;
+        }
+
+        // WhatsApp Reminder
+        const cleanPhone = (c.phone || "").replace(/[^0-9]/g, "");
+        const waMsg = encodeURIComponent(`Hola ${c.name}, le escribimos de BADDGROUP Seguridad para recordarle el abono mensual de sus cámaras ($${c.monthly_fee.toLocaleString('es-AR')}) con vencimiento el día ${c.billing_day}. ¡Muchas gracias!`);
+        const waBtn = cleanPhone ? `
+          <a href="https://wa.me/${cleanPhone}?text=${waMsg}" target="_blank" class="btn-action-icon pay" title="Enviar recordatorio WhatsApp">
+            <svg class="v-icon" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-5.46-4.45-9.91-9.91-9.91zm5.79 14.07c-.24.68-1.39 1.29-1.93 1.36-.5.06-1.12.09-3.23-.76-2.5-1.02-4.1-3.56-4.22-3.73-.12-.17-1.02-1.36-1.02-2.6 0-1.24.64-1.85.87-2.1.23-.25.5-.31.67-.31.17 0 .34 0 .49.01.15.01.36-.06.56.43.2.5.69 1.69.75 1.82.06.12.1.27.02.43-.08.17-.12.27-.24.41-.12.14-.25.31-.36.42-.12.12-.25.26-.11.5.14.25.62 1.02 1.33 1.65.91.81 1.68 1.06 1.92 1.18.24.12.38.1.52-.06.14-.17.61-.71.77-.95.17-.25.33-.21.56-.12.23.08 1.45.68 1.7.81.25.12.42.18.48.29.06.1.06.59-.18 1.27z"/></svg>
+          </a>` : "";
+
+        tr.innerHTML = `
+          <td>
+            <strong style="color: var(--text-main); font-size: 0.88rem;">${escapeHtml(c.name)}</strong>
+            <div style="font-size: 0.73rem; color: var(--text-muted);">${escapeHtml(c.business_type || 'Comercio')} • Usuario: <code>${escapeHtml(c.client_user || '')}</code></div>
+          </td>
+          <td>
+            <div>${escapeHtml(c.phone || '-')}</div>
+            <div style="font-size: 0.73rem; color: var(--text-muted);">${escapeHtml(c.address || '-')}</div>
+          </td>
+          <td>
+            <button class="btn-table-pill" onclick="openRtspModal('${c.id}')">
+              <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+              <span>${c.cameras ? c.cameras.length : 0} Cámaras RTSP</span>
+            </button>
+          </td>
+          <td><strong style="color: var(--accent-primary);">${formatMoney(c.monthly_fee)}</strong></td>
+          <td>Día <strong>${c.billing_day || 10}</strong></td>
+          <td>
+            <div>${formatMoney(c.installation_cost || 0)}</div>
+            <div style="font-size: 0.72rem; color: var(--accent-success);">Cobrado: ${formatMoney(c.installation_paid || 0)}</div>
+          </td>
+          <td>${statusBadge}</td>
+          <td>
+            <div class="table-actions">
+              ${waBtn}
+              <button class="btn-action-icon pay" onclick="openClientPaymentModal('${c.id}')" title="Asentar Cobro">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+              </button>
+              <button class="btn-action-icon" onclick="openEditClientModal('${c.id}')" title="Editar Cliente">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+              </button>
+              <button class="btn-action-icon" onclick="toggleClientStatus('${c.id}')" title="${c.service_status === 'activo' ? 'Suspender Servicio' : 'Activar Servicio'}">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+              </button>
+              <button class="btn-action-icon danger" onclick="deleteClient('${c.id}')" title="Eliminar Cliente">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
     }
 
-    function removeCameraFromForm(index) {
-      formCameras.splice(index, 1);
-      renderFormCameras();
+    // =========================================================
+    // SECCIÓN SOFTWARE: TABLA, FILTROS Y ACCIONES
+    // =========================================================
+    function setSoftwareFilter(status) {
+      activeSoftwareFilter = status;
+      document.querySelectorAll(".filter-pills .pill-btn").forEach(b => {
+        if (b.id && b.id.startsWith("filterSw")) b.classList.remove("active");
+      });
+      const targetId = "filterSw" + (status === "all" ? "All" : status === "pagado" ? "Pagado" : status === "seña" ? "Sena" : "Pendiente");
+      const btn = document.getElementById(targetId);
+      if (btn) btn.classList.add("active");
+      renderSoftwareTable();
     }
 
-    // MODAL NUEVO / EDITAR CLIENTE
-    function openCreateClientModal() {
-      document.getElementById('clientForm').reset();
-      document.getElementById('clientId').value = '';
-      document.getElementById('clientModalTitle').innerHTML = `<span>Registrar Nuevo Cliente & Cámaras</span>`;
-      document.getElementById('btnSaveClientText').innerText = 'Guardar Cliente';
-      formCameras = [];
-      // Agregar 2 cámaras por defecto para agilizar
-      addCameraToForm();
-      addCameraToForm();
-      document.getElementById('clientModal').classList.add('active');
+    function filterSoftwareSales() {
+      renderSoftwareTable();
+    }
+
+    function renderSoftwareTable() {
+      const tbody = document.getElementById("softwareTableBody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      const query = (document.getElementById("softwareSearchInput")?.value || "").toLowerCase().trim();
+
+      let filtered = globalSoftwareSales.filter(s => {
+        if (activeSoftwareFilter !== "all") {
+          if (s.payment_status !== activeSoftwareFilter) return false;
+        }
+        if (query) {
+          const match = (s.buyer_name || "").toLowerCase().includes(query) ||
+                        (s.buyer_company || "").toLowerCase().includes(query) ||
+                        (s.license_plan || "").toLowerCase().includes(query) ||
+                        (s.license_key || "").toLowerCase().includes(query) ||
+                        (s.buyer_contact || "").toLowerCase().includes(query);
+          if (!match) return false;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2.5rem;">No hay ventas de software registradas con estos filtros.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(s => {
+        const tr = document.createElement("tr");
+
+        let statusChip = "";
+        if (s.payment_status === "pagado") {
+          statusChip = `<span class="status-chip success">Pagado Total</span>`;
+        } else if (s.payment_status === "seña") {
+          statusChip = `<span class="status-chip warning">Seña Recibida</span>`;
+        } else {
+          statusChip = `<span class="status-chip danger">Pendiente de Pago</span>`;
+        }
+
+        tr.innerHTML = `
+          <td>
+            <strong style="color: var(--text-main); font-size: 0.88rem;">${escapeHtml(s.buyer_name)}</strong>
+            <div style="font-size: 0.73rem; color: var(--text-muted);">${escapeHtml(s.buyer_company || 'Particular')}</div>
+          </td>
+          <td>
+            <div>${escapeHtml(s.buyer_contact || '-')}</div>
+            <div style="font-size: 0.72rem; color: var(--text-muted);">${escapeHtml(s.buyer_email || '')}</div>
+          </td>
+          <td>
+            <span class="status-chip cyan">${escapeHtml(s.license_plan)}</span>
+            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 3px;">${escapeHtml(s.payment_model)}</div>
+          </td>
+          <td><strong style="font-size: 0.95rem;">${s.licenses_count || 1}</strong> servidor(es)</td>
+          <td><strong style="color: var(--accent-primary); font-size: 0.9rem;">${formatMoney(s.price, s.currency)}</strong></td>
+          <td>
+            <strong style="color: var(--accent-success);">${formatMoney(s.amount_paid || 0, s.currency)}</strong>
+          </td>
+          <td>
+            <div class="license-code-badge">
+              <span>${escapeHtml(s.license_key)}</span>
+              <button class="btn-copy-code" onclick="copyToClipboard('${escapeHtml(s.license_key)}')" title="Copiar clave">
+                <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              </button>
+            </div>
+          </td>
+          <td>${statusChip}</td>
+          <td>
+            <div class="table-actions">
+              <button class="btn-action-icon pay" onclick="openSoftwarePaymentModal('${s.id}')" title="Registrar Cobro">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+              </button>
+              <button class="btn-action-icon" onclick="openEditSoftwareModal('${s.id}')" title="Editar Venta">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+              </button>
+              <button class="btn-action-icon danger" onclick="deleteSoftwareSale('${s.id}')" title="Eliminar Venta">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // =========================================================
+    // MODAL DE CLIENTES (CREAR / EDITAR)
+    // =========================================================
+    function openNewClientModal() {
+      document.getElementById("editClientId").value = "";
+      document.getElementById("clientModalTitleText").textContent = "Registrar Nuevo Cliente";
+      document.getElementById("mClientName").value = "";
+      document.getElementById("mClientType").value = "Comercio / Local";
+      document.getElementById("mClientPhone").value = "";
+      document.getElementById("mClientEmail").value = "";
+      document.getElementById("mClientAddress").value = "";
+      document.getElementById("mClientInstCost").value = "150000";
+      document.getElementById("mClientInstPaid").value = "150000";
+      document.getElementById("mClientMonthlyFee").value = "25000";
+      document.getElementById("mClientBillingDay").value = "10";
+      document.getElementById("mClientUser").value = "";
+      document.getElementById("mClientPass").value = "";
+      document.getElementById("mClientNotes").value = "";
+
+      const box = document.getElementById("camerasRepeaterBox");
+      box.innerHTML = "";
+      addCameraRow("Cámara 1: Entrada", "192.168.1.101", "rtsp://admin:pass@192.168.1.101:554/cam/realmonitor?channel=1&subtype=1");
+
+      document.getElementById("clientModalBackdrop").classList.add("active");
     }
 
     function openEditClientModal(clientId) {
-      const client = allClients.find(c => c.id === clientId);
-      if (!client) return;
+      const c = globalClients.find(item => item.id === clientId);
+      if (!c) return;
 
-      document.getElementById('clientId').value = client.id;
-      document.getElementById('formClientName').value = client.name || '';
-      document.getElementById('formBusinessType').value = client.business_type || 'Comercio / Local';
-      document.getElementById('formPhone').value = client.phone || '';
-      document.getElementById('formEmail').value = client.email || '';
-      document.getElementById('formAddress').value = client.address || '';
-      document.getElementById('formMonthlyFee').value = client.monthly_fee || 0;
-      document.getElementById('formBillingDay').value = client.billing_day || 10;
-      document.getElementById('formInstallCost').value = client.installation_cost || 0;
-      document.getElementById('formInstallPaid').value = client.installation_paid || 0;
-      document.getElementById('formClientUser').value = client.client_user || '';
-      document.getElementById('formClientPass').value = client.client_pass || '';
-      document.getElementById('formNotes').value = client.notes || '';
+      document.getElementById("editClientId").value = c.id;
+      document.getElementById("clientModalTitleText").textContent = "Editar Cliente: " + c.name;
+      document.getElementById("mClientName").value = c.name || "";
+      document.getElementById("mClientType").value = c.business_type || "Comercio / Local";
+      document.getElementById("mClientPhone").value = c.phone || "";
+      document.getElementById("mClientEmail").value = c.email || "";
+      document.getElementById("mClientAddress").value = c.address || "";
+      document.getElementById("mClientInstCost").value = c.installation_cost || 0;
+      document.getElementById("mClientInstPaid").value = c.installation_paid || 0;
+      document.getElementById("mClientMonthlyFee").value = c.monthly_fee || 0;
+      document.getElementById("mClientBillingDay").value = c.billing_day || 10;
+      document.getElementById("mClientUser").value = c.client_user || "";
+      document.getElementById("mClientPass").value = c.client_pass || "";
+      document.getElementById("mClientNotes").value = c.notes || "";
 
-      formCameras = JSON.parse(JSON.stringify(client.cameras || []));
-      renderFormCameras();
+      const box = document.getElementById("camerasRepeaterBox");
+      box.innerHTML = "";
+      if (c.cameras && c.cameras.length > 0) {
+        c.cameras.forEach(cam => addCameraRow(cam.name, cam.ip, cam.rtsp));
+      } else {
+        addCameraRow("Cámara Principal", "192.168.1.100", "");
+      }
 
-      document.getElementById('clientModalTitle').innerHTML = `<span>Editar Cliente: ${client.name}</span>`;
-      document.getElementById('btnSaveClientText').innerText = 'Actualizar Datos';
-      document.getElementById('clientModal').classList.add('active');
+      document.getElementById("clientModalBackdrop").classList.add("active");
     }
 
     function closeClientModal() {
-      document.getElementById('clientModal').classList.remove('active');
+      document.getElementById("clientModalBackdrop").classList.remove("active");
     }
 
-    async function handleSaveClient(e) {
-      e.preventDefault();
-      const clientId = document.getElementById('clientId').value;
+    function addCameraRow(name = "", ip = "", rtsp = "") {
+      const box = document.getElementById("camerasRepeaterBox");
+      const idx = box.children.length + 1;
+      const row = document.createElement("div");
+      row.className = "camera-item-row";
+      row.innerHTML = `
+        <input type="text" class="form-input cam-name" placeholder="Nombre (ej: Cámara ${idx}: Caja)" value="${escapeHtml(name || `Cámara ${idx}`)}">
+        <input type="text" class="form-input cam-ip" placeholder="IP (192.168.1.X)" value="${escapeHtml(ip)}">
+        <input type="text" class="form-input cam-rtsp" placeholder="URL RTSP (rtsp://admin:pass@IP:554/...)" value="${escapeHtml(rtsp)}">
+        <button type="button" class="btn-action-icon danger" onclick="this.parentElement.remove()" title="Quitar cámara">
+          <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      `;
+      box.appendChild(row);
+    }
+
+    async function submitClientForm() {
+      const clientId = document.getElementById("editClientId").value;
+      const name = document.getElementById("mClientName").value.trim();
+      if (!name) {
+        showToast("El nombre del cliente es obligatorio");
+        return;
+      }
+
+      const rows = document.querySelectorAll("#camerasRepeaterBox .camera-item-row");
+      const cameras = [];
+      rows.forEach((r, i) => {
+        const cName = r.querySelector(".cam-name").value.trim();
+        const cIp = r.querySelector(".cam-ip").value.trim();
+        const cRtsp = r.querySelector(".cam-rtsp").value.trim();
+        cameras.push({
+          id: `cam_${i + 1}`,
+          name: cName || `Cámara ${i + 1}`,
+          ip: cIp,
+          rtsp: cRtsp
+        });
+      });
+
       const payload = {
-        name: document.getElementById('formClientName').value.trim(),
-        business_type: document.getElementById('formBusinessType').value,
-        phone: document.getElementById('formPhone').value.trim(),
-        email: document.getElementById('formEmail').value.trim(),
-        address: document.getElementById('formAddress').value.trim(),
-        monthly_fee: parseFloat(document.getElementById('formMonthlyFee').value) || 0,
-        billing_day: parseInt(document.getElementById('formBillingDay').value) || 10,
-        installation_cost: parseFloat(document.getElementById('formInstallCost').value) || 0,
-        installation_paid: parseFloat(document.getElementById('formInstallPaid').value) || 0,
-        payment_method: document.getElementById('formPaymentMethod').value,
-        client_user: document.getElementById('formClientUser').value.trim(),
-        client_pass: document.getElementById('formClientPass').value.trim(),
-        notes: document.getElementById('formNotes').value.trim(),
-        cameras: formCameras
+        name: name,
+        business_type: document.getElementById("mClientType").value,
+        phone: document.getElementById("mClientPhone").value.trim(),
+        email: document.getElementById("mClientEmail").value.trim(),
+        address: document.getElementById("mClientAddress").value.trim(),
+        installation_cost: parseFloat(document.getElementById("mClientInstCost").value) || 0,
+        installation_paid: parseFloat(document.getElementById("mClientInstPaid").value) || 0,
+        monthly_fee: parseFloat(document.getElementById("mClientMonthlyFee").value) || 0,
+        billing_day: parseInt(document.getElementById("mClientBillingDay").value) || 10,
+        client_user: document.getElementById("mClientUser").value.trim(),
+        client_pass: document.getElementById("mClientPass").value.trim(),
+        notes: document.getElementById("mClientNotes").value.trim(),
+        cameras: cameras
       };
 
       try {
         let res;
         if (clientId) {
           res = await fetch(`/api/crm/clients/${clientId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
           });
         } else {
-          res = await fetch('/api/crm/clients', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+          res = await fetch("/api/crm/clients", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
           });
         }
 
         if (res.ok) {
-          showToast(clientId ? "Cliente actualizado con éxito" : "Nuevo cliente registrado con éxito", "success");
+          showToast(clientId ? "Cliente actualizado con éxito" : "Nuevo cliente registrado exitosamente");
           closeClientModal();
-          loadCRMData();
+          await loadAllData();
         } else {
-          const err = await res.json();
-          showToast(err.detail || "Error al guardar cliente", "danger");
+          showToast("Error al guardar cliente");
         }
-      } catch (err) {
-        showToast("Error de conexión al guardar cliente", "danger");
+      } catch (e) {
+        console.error(e);
+        showToast("Error de conexión al servidor");
       }
     }
 
-    // MODAL REGISTRAR COBRO
-    function openPaymentModal(clientId, clientName, fee) {
-      document.getElementById('paymentForm').reset();
-      document.getElementById('payClientId').value = clientId;
-      document.getElementById('payClientName').innerText = clientName;
-      document.getElementById('payClientMonthlyFee').innerText = formatCurrency(fee);
-      document.getElementById('payAmount').value = fee || '';
-
-      const now = new Date();
-      const periodStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-      document.getElementById('payPeriod').value = periodStr;
-
-      document.getElementById('paymentModal').classList.add('active');
-    }
-
-    function closePaymentModal() {
-      document.getElementById('paymentModal').classList.remove('active');
-    }
-
-    function onPaymentTypeChange(type) {
-      const clientId = document.getElementById('payClientId').value;
-      const client = allClients.find(c => c.id === clientId);
-      if (type === 'instalacion' && client) {
-        const remaining = (client.installation_cost || 0) - (client.installation_paid || 0);
-        document.getElementById('payAmount').value = remaining > 0 ? remaining : client.installation_cost;
-        document.getElementById('payPeriod').value = 'Instalación';
-      } else if (client) {
-        document.getElementById('payAmount').value = client.monthly_fee || 0;
-        const now = new Date();
-        document.getElementById('payPeriod').value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    async function toggleClientStatus(clientId) {
+      try {
+        const res = await fetch(`/api/crm/clients/${clientId}/toggle-status`, { method: "POST" });
+        if (res.ok) {
+          showToast("Estado de servicio modificado");
+          await loadAllData();
+        }
+      } catch (e) {
+        console.error(e);
       }
     }
 
-    async function handleSavePayment(e) {
-      e.preventDefault();
-      const clientId = document.getElementById('payClientId').value;
+    async function deleteClient(clientId) {
+      if (!confirm("¿Seguro que deseas eliminar este cliente y sus cámaras del CRM?")) return;
+      try {
+        const res = await fetch(`/api/crm/clients/${clientId}`, { method: "DELETE" });
+        if (res.ok) {
+          showToast("Cliente eliminado");
+          await loadAllData();
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // =========================================================
+    // MODAL DE VENTAS DE SOFTWARE (CREAR / EDITAR)
+    // =========================================================
+    function openNewSoftwareSaleModal() {
+      document.getElementById("editSoftwareSaleId").value = "";
+      document.getElementById("softwareModalTitleText").textContent = "Registrar Venta de Software";
+      document.getElementById("mSwBuyerName").value = "";
+      document.getElementById("mSwBuyerCompany").value = "";
+      document.getElementById("mSwBuyerContact").value = "";
+      document.getElementById("mSwBuyerEmail").value = "";
+      document.getElementById("mSwLicensePlan").value = "Licencia Servidor Pro (On-Premise)";
+      document.getElementById("mSwLicensesCount").value = "1";
+      document.getElementById("mSwPrice").value = "350000";
+      document.getElementById("mSwAmountPaid").value = "350000";
+      document.getElementById("mSwCurrency").value = "ARS";
+      document.getElementById("mSwPaymentStatus").value = "pagado";
+      document.getElementById("mSwPaymentModel").value = "Pago Único Perpetuo";
+      document.getElementById("mSwPaymentMethod").value = "Transferencia Bancaria";
+      document.getElementById("mSwLicenseKey").value = "";
+      document.getElementById("mSwNotes").value = "";
+
+      document.getElementById("softwareModalBackdrop").classList.add("active");
+    }
+
+    function openEditSoftwareModal(saleId) {
+      const s = globalSoftwareSales.find(item => item.id === saleId);
+      if (!s) return;
+
+      document.getElementById("editSoftwareSaleId").value = s.id;
+      document.getElementById("softwareModalTitleText").textContent = "Editar Venta: " + s.buyer_name;
+      document.getElementById("mSwBuyerName").value = s.buyer_name || "";
+      document.getElementById("mSwBuyerCompany").value = s.buyer_company || "";
+      document.getElementById("mSwBuyerContact").value = s.buyer_contact || "";
+      document.getElementById("mSwBuyerEmail").value = s.buyer_email || "";
+      document.getElementById("mSwLicensePlan").value = s.license_plan || "Licencia Servidor Pro (On-Premise)";
+      document.getElementById("mSwLicensesCount").value = s.licenses_count || 1;
+      document.getElementById("mSwPrice").value = s.price || 0;
+      document.getElementById("mSwAmountPaid").value = s.amount_paid || 0;
+      document.getElementById("mSwCurrency").value = s.currency || "ARS";
+      document.getElementById("mSwPaymentStatus").value = s.payment_status || "pagado";
+      document.getElementById("mSwPaymentModel").value = s.payment_model || "Pago Único Perpetuo";
+      document.getElementById("mSwPaymentMethod").value = s.payment_method || "Transferencia Bancaria";
+      document.getElementById("mSwLicenseKey").value = s.license_key || "";
+      document.getElementById("mSwNotes").value = s.notes || "";
+
+      document.getElementById("softwareModalBackdrop").classList.add("active");
+    }
+
+    function closeSoftwareModal() {
+      document.getElementById("softwareModalBackdrop").classList.remove("active");
+    }
+
+    async function submitSoftwareForm() {
+      const saleId = document.getElementById("editSoftwareSaleId").value;
+      const buyerName = document.getElementById("mSwBuyerName").value.trim();
+      if (!buyerName) {
+        showToast("El nombre del comprador es obligatorio");
+        return;
+      }
+
       const payload = {
-        payment_type: document.getElementById('payType').value,
-        amount: parseFloat(document.getElementById('payAmount').value) || 0,
-        period: document.getElementById('payPeriod').value.trim(),
-        method: document.getElementById('payMethod').value,
-        notes: document.getElementById('payNotes').value.trim()
+        buyer_name: buyerName,
+        buyer_company: document.getElementById("mSwBuyerCompany").value.trim(),
+        buyer_contact: document.getElementById("mSwBuyerContact").value.trim(),
+        buyer_email: document.getElementById("mSwBuyerEmail").value.trim(),
+        license_plan: document.getElementById("mSwLicensePlan").value,
+        licenses_count: parseInt(document.getElementById("mSwLicensesCount").value) || 1,
+        price: parseFloat(document.getElementById("mSwPrice").value) || 0,
+        amount_paid: parseFloat(document.getElementById("mSwAmountPaid").value) || 0,
+        currency: document.getElementById("mSwCurrency").value,
+        payment_status: document.getElementById("mSwPaymentStatus").value,
+        payment_model: document.getElementById("mSwPaymentModel").value,
+        payment_method: document.getElementById("mSwPaymentMethod").value,
+        license_key: document.getElementById("mSwLicenseKey").value.trim(),
+        notes: document.getElementById("mSwNotes").value.trim()
       };
 
       try {
-        const res = await fetch(`/api/crm/clients/${clientId}/payment`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        let res;
+        if (saleId) {
+          res = await fetch(`/api/crm/software-sales/${saleId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+        } else {
+          res = await fetch("/api/crm/software-sales", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+        }
 
         if (res.ok) {
-          showToast("Cobro asentado y cliente actualizado a 'Al Día'", "success");
+          showToast(saleId ? "Venta de software actualizada" : "Venta de software registrada exitosamente");
+          closeSoftwareModal();
+          await loadAllData();
+        } else {
+          showToast("Error al guardar venta de software");
+        }
+      } catch (e) {
+        console.error(e);
+        showToast("Error de conexión");
+      }
+    }
+
+    async function deleteSoftwareSale(saleId) {
+      if (!confirm("¿Eliminar este registro de venta de software?")) return;
+      try {
+        const res = await fetch(`/api/crm/software-sales/${saleId}`, { method: "DELETE" });
+        if (res.ok) {
+          showToast("Venta de software eliminada");
+          await loadAllData();
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // =========================================================
+    // MODAL DE COBRANZAS (CLIENTE O SOFTWARE)
+    // =========================================================
+    function openClientPaymentModal(clientId) {
+      const c = globalClients.find(i => i.id === clientId);
+      if (!c) return;
+
+      document.getElementById("payTargetType").value = "client";
+      document.getElementById("payTargetId").value = c.id;
+      document.getElementById("paymentModalTitleText").textContent = "Registrar Cobro de Cliente";
+      document.getElementById("payEntityName").value = `${c.name} (${c.business_type})`;
+      document.getElementById("payTypeGroup").style.display = "flex";
+      document.getElementById("payAmount").value = c.monthly_fee || 0;
+      document.getElementById("payNotes").value = "Abono cuota mensual";
+
+      document.getElementById("paymentModalBackdrop").classList.add("active");
+    }
+
+    function openSoftwarePaymentModal(saleId) {
+      const s = globalSoftwareSales.find(i => i.id === saleId);
+      if (!s) return;
+
+      document.getElementById("payTargetType").value = "software";
+      document.getElementById("payTargetId").value = s.id;
+      document.getElementById("paymentModalTitleText").textContent = "Registrar Cobro de Software";
+      document.getElementById("payEntityName").value = `${s.buyer_name} - ${s.license_plan}`;
+      document.getElementById("payTypeGroup").style.display = "none";
+      
+      const balancePending = Math.max(0, (s.price || 0) - (s.amount_paid || 0));
+      document.getElementById("payAmount").value = balancePending || s.price || 0;
+      document.getElementById("payNotes").value = balancePending === 0 ? "Cobro de software" : "Saldo cancelatorio";
+
+      document.getElementById("paymentModalBackdrop").classList.add("active");
+    }
+
+    function closePaymentModal() {
+      document.getElementById("paymentModalBackdrop").classList.remove("active");
+    }
+
+    async function submitPaymentForm() {
+      const type = document.getElementById("payTargetType").value;
+      const targetId = document.getElementById("payTargetId").value;
+      const amount = parseFloat(document.getElementById("payAmount").value) || 0;
+      const method = document.getElementById("payMethod").value;
+      const notes = document.getElementById("payNotes").value.trim();
+
+      if (amount <= 0) {
+        showToast("El monto debe ser superior a cero");
+        return;
+      }
+
+      try {
+        let res;
+        if (type === "client") {
+          const pConcept = document.getElementById("payConceptType").value;
+          res = await fetch(`/api/crm/clients/${targetId}/payment`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              payment_type: pConcept,
+              amount: amount,
+              method: method,
+              notes: notes
+            })
+          });
+        } else {
+          res = await fetch(`/api/crm/software-sales/${targetId}/payment`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              amount: amount,
+              method: method,
+              notes: notes
+            })
+          });
+        }
+
+        if (res.ok) {
+          showToast("Cobro asentado exitosamente");
           closePaymentModal();
-          loadCRMData();
+          await loadAllData();
         } else {
-          const err = await res.json();
-          showToast(err.detail || "Error al asentar el pago", "danger");
+          showToast("Error al asentar cobro");
         }
-      } catch (err) {
-        showToast("Error de conexión al registrar pago", "danger");
+      } catch (e) {
+        console.error(e);
+        showToast("Error de conexión");
       }
     }
 
-    // MODAL VER CÁMARAS Y ENLACES RTSP
-    function openViewCamerasModal(clientId) {
-      const client = allClients.find(c => c.id === clientId);
-      if (!client) return;
+    // =========================================================
+    // MODAL DE CÁMARAS Y ENLACES RTSP
+    // =========================================================
+    function openRtspModal(clientId) {
+      const c = globalClients.find(item => item.id === clientId);
+      if (!c) return;
 
-      document.getElementById('viewCamerasTitle').innerText = `Cámaras de ${client.name} (${client.cameras ? client.cameras.length : 0})`;
-      const container = document.getElementById('viewCamerasListContainer');
+      document.getElementById("rtspModalClientTitle").textContent = `Cámaras de: ${c.name}`;
+      const list = document.getElementById("rtspModalList");
+      list.innerHTML = "";
 
-      if (!client.cameras || client.cameras.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">Este cliente no tiene cámaras registradas todavía.</p>';
+      if (!c.cameras || c.cameras.length === 0) {
+        list.innerHTML = `<p style="color: var(--text-muted); padding: 1rem;">No hay cámaras registradas para este cliente.</p>`;
       } else {
-        container.innerHTML = client.cameras.map((cam, idx) => `
-          <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px; padding:0.85rem; margin-bottom:0.75rem;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
-              <strong style="color:var(--text-main); font-size:0.9rem;">#${idx + 1} - ${cam.name}</strong>
-              <span class="badge-status activo" style="font-size:0.68rem;">${cam.location || 'Sector General'}</span>
+        c.cameras.forEach((cam, i) => {
+          const item = document.createElement("div");
+          item.style.background = "var(--bg-card)";
+          item.style.border = "1px solid var(--border-color)";
+          item.style.borderRadius = "8px";
+          item.style.padding = "0.85rem 1rem";
+          item.style.display = "flex";
+          item.style.flexDirection = "column";
+          item.style.gap = "0.4rem";
+
+          item.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <strong style="font-size: 0.9rem; color: var(--text-main);">${escapeHtml(cam.name || `Cámara ${i + 1}`)}</strong>
+              <span class="status-chip success">IP: ${escapeHtml(cam.ip || 'Local')}</span>
             </div>
-            <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.4rem;">
-              IP Local: <strong>${cam.ip || '0.0.0.0'}:${cam.port || 554}</strong> &bull; Usuario Cámara: <strong>${cam.user || 'admin'}</strong>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input type="text" class="form-input" style="font-size: 0.76rem; font-family: monospace;" readonly value="${escapeHtml(cam.rtsp || '')}">
+              <button class="btn-table-pill" onclick="copyToClipboard('${escapeHtml(cam.rtsp || '')}')" title="Copiar enlace RTSP">Copiar</button>
             </div>
-            <div style="display:flex; gap:0.5rem; align-items:center;">
-              <input type="text" class="form-input" style="font-size:0.75rem; padding:0.35rem 0.6rem; flex:1;" readonly value="${cam.rtsp || ''}" id="rtspInput_${cam.id}">
-              <button class="btn-tbl" onclick="copyRTSP('rtspInput_${cam.id}')" title="Copiar enlace RTSP">
-                <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                <span>Copiar</span>
-              </button>
-            </div>
-          </div>
-        `).join('');
+          `;
+          list.appendChild(item);
+        });
       }
 
-      document.getElementById('viewCamerasModal').classList.add('active');
+      document.getElementById("rtspModalBackdrop").classList.add("active");
     }
 
-    function closeViewCamerasModal() {
-      document.getElementById('viewCamerasModal').classList.remove('active');
+    function closeRtspModal() {
+      document.getElementById("rtspModalBackdrop").classList.remove("active");
     }
 
-    function copyRTSP(inputId) {
-      const el = document.getElementById(inputId);
-      if (el) {
-        navigator.clipboard.writeText(el.value);
-        showToast("Enlace RTSP copiado al portapapeles", "success");
-      }
+    // UTILIDADES
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
-    // TOGGLE CORTE / SUSPENSIÓN DE SERVICIO
-    async function toggleClientServiceStatus(clientId) {
-      try {
-        const res = await fetch(`/api/crm/clients/${clientId}/toggle-status`, { method: 'POST' });
-        if (res.ok) {
-          const data = await res.json();
-          showToast(`Estado de servicio cambiado a: ${data.client.service_status.toUpperCase()}`, "success");
-          loadCRMData();
-        }
-      } catch (err) {
-        showToast("Error al alternar estado del cliente", "danger");
-      }
+    function copyToClipboard(text) {
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("Copiado al portapapeles: " + text);
+      }).catch(err => {
+        prompt("Copiar manualmente:", text);
+      });
     }
 
-    // ELIMINAR CLIENTE
-    async function deleteClient(clientId, clientName) {
-      if (!confirm(`¿Estás seguro de eliminar al cliente "${clientName}" y todas sus cámaras del CRM?`)) return;
-
-      try {
-        const res = await fetch(`/api/crm/clients/${clientId}`, { method: 'DELETE' });
-        if (res.ok) {
-          showToast(`Cliente "${clientName}" eliminado del CRM`, "success");
-          loadCRMData();
-        } else {
-          showToast("Error al eliminar cliente", "danger");
-        }
-      } catch (err) {
-        showToast("Error de conexión al eliminar cliente", "danger");
-      }
-    }
-
-    // TOAST NOTIFICATIONS
-    function showToast(msg, type = 'success') {
-      const container = document.getElementById('toastContainer');
+    function showToast(msg) {
+      const container = document.getElementById("toastContainer");
       if (!container) return;
-      const toast = document.createElement('div');
-      toast.className = `toast ${type}`;
-      toast.innerHTML = `
-        <span class="status-indicator-dot" style="background:${type === 'success' ? 'var(--accent-success)' : 'var(--accent-danger)'};"></span>
-        <span>${msg}</span>
+      const t = document.createElement("div");
+      t.className = "toast-msg";
+      t.innerHTML = `
+        <svg class="v-icon" viewBox="0 0 24 24" style="color: #60a5fa;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        <span>${escapeHtml(msg)}</span>
       `;
-      container.appendChild(toast);
+      container.appendChild(t);
       setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
+        t.style.opacity = "0";
+        t.style.transition = "opacity 0.3s ease";
+        setTimeout(() => t.remove(), 300);
       }, 3500);
     }
-
-    function closeModalOnBackdrop(e, modalId) {
-      if (e.target.id === modalId) {
-        document.getElementById(modalId).classList.remove('active');
-      }
-    }
-
-    // INICIAR
-    loadCRMData();
   </script>
 </body>
 </html>

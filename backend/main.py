@@ -127,6 +127,44 @@ class RecordPaymentRequest(BaseModel):
     period: Optional[str] = None
     notes: Optional[str] = ""
 
+class CreateSoftwareSaleRequest(BaseModel):
+    buyer_name: str
+    buyer_company: Optional[str] = ""
+    buyer_contact: Optional[str] = ""
+    buyer_email: Optional[str] = ""
+    license_plan: Optional[str] = "Licencia Servidor Pro (On-Premise)"
+    licenses_count: Optional[int] = 1
+    price: float
+    amount_paid: Optional[float] = 0.0
+    currency: Optional[str] = "ARS"
+    payment_model: Optional[str] = "Pago Único Perpetuo"
+    payment_method: Optional[str] = "Transferencia Bancaria"
+    payment_status: Optional[str] = "pagado"
+    license_key: Optional[str] = ""
+    date: Optional[str] = None
+    notes: Optional[str] = ""
+
+class UpdateSoftwareSaleRequest(BaseModel):
+    buyer_name: Optional[str] = None
+    buyer_company: Optional[str] = None
+    buyer_contact: Optional[str] = None
+    buyer_email: Optional[str] = None
+    license_plan: Optional[str] = None
+    licenses_count: Optional[int] = None
+    price: Optional[float] = None
+    amount_paid: Optional[float] = None
+    currency: Optional[str] = None
+    payment_model: Optional[str] = None
+    payment_method: Optional[str] = None
+    payment_status: Optional[str] = None
+    license_key: Optional[str] = None
+    notes: Optional[str] = None
+
+class RecordSoftwarePaymentRequest(BaseModel):
+    amount: float
+    method: Optional[str] = "Transferencia Bancaria"
+    notes: Optional[str] = ""
+
 @app.get("/", response_class=HTMLResponse)
 async def serve_index():
     """Sirve la interfaz web principal."""
@@ -555,6 +593,75 @@ async def toggle_client_status(client_id: str):
     if not updated:
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
     return {"status": "ok", "client": updated}
+
+# ==========================================
+# BALANCE FINANCIERO & GRÁFICOS
+# ==========================================
+@app.get("/api/crm/balance-charts")
+async def get_balance_charts():
+    """Retorna series históricas y composición porcentual de ingresos para gráficos."""
+    return crm_manager.get_balance_chart_data()
+
+# ==========================================
+# VENTAS DE SOFTWARE & LICENCIAS
+# ==========================================
+@app.get("/api/crm/software-sales")
+async def get_software_sales(
+    search: Optional[str] = Query(None),
+    status: Optional[str] = Query("all")
+):
+    """Lista las ventas de software con filtros por búsqueda o estado de cobro."""
+    return crm_manager.get_software_sales(search=search, status=status)
+
+@app.get("/api/crm/software-sales/{sale_id}")
+async def get_software_sale(sale_id: str):
+    """Obtiene los detalles de una venta de software específica."""
+    sale = crm_manager.get_software_sale(sale_id)
+    if not sale:
+        raise HTTPException(status_code=404, detail="Venta de software no encontrada")
+    return sale
+
+@app.post("/api/crm/software-sales")
+async def create_software_sale(req: CreateSoftwareSaleRequest):
+    """Registra una nueva venta de software, emite clave de licencia y asienta el valor."""
+    if not req.buyer_name or not req.buyer_name.strip():
+        raise HTTPException(status_code=400, detail="El nombre del comprador es obligatorio")
+    data = req.model_dump() if hasattr(req, "model_dump") else req.dict()
+    new_sale = crm_manager.create_software_sale(data)
+    return {"status": "ok", "sale": new_sale}
+
+@app.put("/api/crm/software-sales/{sale_id}")
+async def update_software_sale(sale_id: str, req: UpdateSoftwareSaleRequest):
+    """Actualiza los datos o montos de una venta de software."""
+    raw_data = req.model_dump() if hasattr(req, "model_dump") else req.dict()
+    clean_data = {k: v for k, v in raw_data.items() if v is not None}
+    updated = crm_manager.update_software_sale(sale_id, clean_data)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Venta de software no encontrada")
+    return {"status": "ok", "sale": updated}
+
+@app.delete("/api/crm/software-sales/{sale_id}")
+async def delete_software_sale(sale_id: str):
+    """Elimina una venta de software."""
+    success = crm_manager.delete_software_sale(sale_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Venta de software no encontrada")
+    return {"status": "ok", "deleted_id": sale_id}
+
+@app.post("/api/crm/software-sales/{sale_id}/payment")
+async def record_software_sale_payment(sale_id: str, req: RecordSoftwarePaymentRequest):
+    """Asienta un cobro total o parcial (saldo/seña) de una venta de software."""
+    if req.amount <= 0:
+        raise HTTPException(status_code=400, detail="El monto del cobro debe ser mayor a 0")
+    result = crm_manager.record_software_payment(
+        sale_id=sale_id,
+        amount=req.amount,
+        method=req.method or "Transferencia Bancaria",
+        notes=req.notes or ""
+    )
+    if not result:
+        raise HTTPException(status_code=404, detail="Venta de software no encontrada")
+    return {"status": "ok", "sale": result}
 
 
 
