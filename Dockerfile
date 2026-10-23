@@ -1,5 +1,5 @@
 # BADDGROUP VISION AI - Dockerfile de Producción
-FROM python:3.12-slim
+FROM public.ecr.aws/docker/library/python:3.12-slim
 
 # Instalar dependencias del sistema requeridas por OpenCV y FFmpeg
 RUN apt-get update && apt-get install -y --no-install-recommends \
