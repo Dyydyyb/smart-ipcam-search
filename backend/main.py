@@ -21,6 +21,7 @@ from core.config import settings
 from core.database import init_db, get_db, AsyncSessionLocal
 from core.models import SecurityEvent
 from core.camera_manager import camera_manager
+from core.crm_manager import crm_manager
 from engine.stream_capture import RTSPStreamReader
 from engine.vision_pipeline import VisionPipeline
 from engine.storage_manager import storage_manager
@@ -85,6 +86,46 @@ class AddCameraRequest(BaseModel):
     password: str = ""
     rtsp_sub: Optional[str] = None
     rtsp_main: Optional[str] = None
+
+class CreateClientRequest(BaseModel):
+    name: str
+    business_type: Optional[str] = "Comercio / Local"
+    phone: Optional[str] = ""
+    email: Optional[str] = ""
+    address: Optional[str] = ""
+    notes: Optional[str] = ""
+    installation_cost: float = 0.0
+    installation_paid: float = 0.0
+    monthly_fee: float = 0.0
+    billing_day: int = 10
+    payment_method: Optional[str] = "Efectivo"
+    service_status: Optional[str] = "activo"
+    client_user: Optional[str] = ""
+    client_pass: Optional[str] = ""
+    cameras: Optional[List[Dict[str, Any]]] = []
+
+class UpdateClientRequest(BaseModel):
+    name: Optional[str] = None
+    business_type: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    address: Optional[str] = None
+    notes: Optional[str] = None
+    installation_cost: Optional[float] = None
+    installation_paid: Optional[float] = None
+    monthly_fee: Optional[float] = None
+    billing_day: Optional[int] = None
+    service_status: Optional[str] = None
+    client_user: Optional[str] = None
+    client_pass: Optional[str] = None
+    cameras: Optional[List[Dict[str, Any]]] = None
+
+class RecordPaymentRequest(BaseModel):
+    payment_type: str  # 'cuota' o 'instalacion'
+    amount: float
+    method: Optional[str] = "Transferencia"
+    period: Optional[str] = None
+    notes: Optional[str] = ""
 
 @app.get("/", response_class=HTMLResponse)
 async def serve_index():
@@ -430,5 +471,90 @@ async def trigger_storage_cleanup():
     """Ejecuta purga manual preventiva de grabaciones vencidas o exceso de GB."""
     result = await storage_manager.run_retention_cleanup()
     return {"status": "ok", "result": result}
+
+# ==========================================
+# CRM & DASHBOARD DE FACTURACIÓN BADDGROUP
+# ==========================================
+@app.get("/crm", response_class=HTMLResponse)
+async def serve_crm():
+    """Sirve la interfaz web del CRM y panel de facturación de Baddgroup."""
+    crm_file = frontend_dir / "crm.html"
+    if crm_file.exists():
+        return HTMLResponse(content=crm_file.read_text(encoding="utf-8"))
+    return HTMLResponse("<h1>Baddgroup CRM</h1><p>Panel no encontrado en frontend/crm.html</p>", status_code=404)
+
+@app.get("/api/crm/stats")
+async def get_crm_stats():
+    """Retorna las métricas financieras globales, MRR y conteo de clientes."""
+    return crm_manager.get_dashboard_stats()
+
+@app.get("/api/crm/clients")
+async def get_crm_clients(
+    search: Optional[str] = Query(None),
+    status: Optional[str] = Query("all")
+):
+    """Lista todos los clientes con filtros por búsqueda o estado."""
+    return crm_manager.get_all(search=search, status=status)
+
+@app.get("/api/crm/clients/{client_id}")
+async def get_crm_client(client_id: str):
+    """Obtiene los detalles completos de un cliente específico."""
+    client = crm_manager.get(client_id)
+    if not client:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+    return client
+
+@app.post("/api/crm/clients")
+async def create_crm_client(req: CreateClientRequest):
+    """Registra un nuevo cliente con sus cámaras, cuotas y credenciales."""
+    if not req.name or not req.name.strip():
+        raise HTTPException(status_code=400, detail="El nombre del cliente es obligatorio")
+    data = req.model_dump() if hasattr(req, "model_dump") else req.dict()
+    new_client = crm_manager.create(data)
+    return {"status": "ok", "client": new_client}
+
+@app.put("/api/crm/clients/{client_id}")
+async def update_crm_client(client_id: str, req: UpdateClientRequest):
+    """Actualiza datos del cliente, cuotas, estado o cámaras."""
+    raw_data = req.model_dump() if hasattr(req, "model_dump") else req.dict()
+    clean_data = {k: v for k, v in raw_data.items() if v is not None}
+    updated = crm_manager.update(client_id, clean_data)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+    return {"status": "ok", "client": updated}
+
+@app.delete("/api/crm/clients/{client_id}")
+async def delete_crm_client(client_id: str):
+    """Elimina un cliente del CRM."""
+    success = crm_manager.delete(client_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+    return {"status": "ok", "deleted_id": client_id}
+
+@app.post("/api/crm/clients/{client_id}/payment")
+async def record_client_payment(client_id: str, req: RecordPaymentRequest):
+    """Registra un pago de cuota mensual o saldo de instalación."""
+    if req.amount <= 0:
+        raise HTTPException(status_code=400, detail="El monto del pago debe ser mayor a 0")
+    result = crm_manager.record_payment(
+        client_id=client_id,
+        payment_type=req.payment_type,
+        amount=req.amount,
+        method=req.method or "Transferencia",
+        period=req.period,
+        notes=req.notes or ""
+    )
+    if not result:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+    return {"status": "ok", "result": result}
+
+@app.post("/api/crm/clients/{client_id}/toggle-status")
+async def toggle_client_status(client_id: str):
+    """Suspende o activa el servicio de un cliente."""
+    updated = crm_manager.toggle_status(client_id)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+    return {"status": "ok", "client": updated}
+
 
 
