@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baddgroup Vision AI | Acceso Seguro al Sistema</title>
+  <meta name="description" content="Portal de inicio de sesión seguro para clientes de monitoreo y panel maestro de administración Baddgroup.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #060911;
+      --bg-surface: #0c1220;
+      --bg-card: #111a2e;
+      --border-color: #1e293b;
+      --border-accent: #2563eb;
+      --accent-primary: #2563eb;
+      --accent-primary-hover: #1d4ed8;
+      --text-main: #f8fafc;
+      --text-muted: #64748b;
+      --accent-success: #10b981;
+      --accent-danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* BACKGROUND RADIAL GLOW */
+    body::before {
+      content: "";
+      position: absolute;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 750px;
+      height: 750px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, rgba(6, 9, 17, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 440px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2.25rem 2.2rem;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 1.6rem;
+    }
+
+    .brand-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo-icon {
+      width: 58px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #f8fafc;
+      line-height: 1.1;
+    }
+
+    .brand-tagline {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #38bdf8;
+    }
+
+    /* ROLE SWITCHER PILLS */
+    .role-switcher {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #060911;
+      padding: 0.35rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      gap: 0.35rem;
+    }
+
+    .role-btn {
+      padding: 0.55rem;
+      border-radius: 7px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      transition: all 0.15s ease;
+    }
+
+    .role-btn:hover {
+      color: var(--text-main);
+    }
+
+    .role-btn.active {
+      background: #18233c;
+      color: #60a5fa;
+      border: 1px solid #2563eb;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    }
+
+    .v-icon {
+      width: 15px;
+      height: 15px;
+      fill: currentColor;
+    }
+
+    /* FORM STYLING */
+    form.login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper svg {
+      position: absolute;
+      left: 1rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.72rem 1rem 0.72rem 2.6rem;
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.15s ease;
+    }
+
+    .form-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .btn-submit-login {
+      margin-top: 0.4rem;
+      width: 100%;
+      padding: 0.78rem;
+      background: linear-gradient(135deg, #1e40af, #2563eb);
+      border: 1px solid #3b82f6;
+      color: #ffffff;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-submit-login:hover {
+      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+      transform: translateY(-1px);
+    }
+
+    .btn-submit-login:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <div class="brand-header">
+      <div class="brand-logo-icon">
+        <!-- Logo Oficial Hexagonal Baddgroup -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+          <polygon points="50,4 92,26 92,74 50,96 8,74 8,26" fill="#0f172a" stroke="#3b82f6" stroke-width="2.5"/>
+          <path d="M28 24 H48 C54.5 24 59 28 59 33.5 C59 37.5 56.5 41 52.5 42.5 C57.5 44 61 48 61 53.5 C61 60 55.5 64 48 64 H28 V24 Z" 
+                fill="none" stroke="#2563eb" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+          <path d="M28 44 H48" stroke="#2563eb" stroke-width="4.5" stroke-linecap="round"/>
+          <path d="M72 40 V62 C72 68 66 73 58 73 H46" 
+                fill="none" stroke="#059669" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M58 58 H72" stroke="#059669" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="brand-title">BADDGROUP</h1>
+        <span class="brand-tagline">VISION AI • PLATAFORMA DE SEGURIDAD</span>
+      </div>
+    </div>
+
+    <!-- SELECTOR DE ROL -->
+    <div class="role-switcher">
+      <button type="button" class="role-btn active" id="btnRoleClient" onclick="setLoginRole('client')">
+        <svg class="v-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+        <span>Acceso Clientes</span>
+      </button>
+      <button type="button" class="role-btn" id="btnRoleAdmin" onclick="setLoginRole('admin')">
+        <svg class="v-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+        <span>Administrador</span>
+      </button>
+    </div>
+
+    <div class="alert-error" id="loginErrorBox">
+      <svg class="v-icon" viewBox="0 0 24 24" style="color: var(--accent-danger);"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+      <span id="loginErrorMsg">Credenciales inválidas</span>
+    </div>
+
+    <form class="login-form" id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label class="form-label" id="userLabelText">Usuario o Correo Electrónico</label>
+        <div class="input-wrapper">
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          <input type="text" id="usernameInput" class="form-input" placeholder="Ingresa tu usuario..." required autofocus>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <div class="input-wrapper">
+          <svg class="v-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+          <input type="password" id="passwordInput" class="form-input" placeholder="••••••••" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit-login" id="submitBtn">
+        <span id="submitBtnText">Ingresar al Sistema</span>
+        <svg class="v-icon" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+      </button>
+    </form>
+
+    <div class="footer-note">
+      Servidor Baddgroup Cloud • DonWeb Datacenter<br>
+      Base de Datos PostgreSQL en Supabase
+    </div>
+  </div>
+
+  <script>
+    let selectedRole = "client";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Si hay un query param ?role=admin, preseleccionarlo
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("role") === "admin" || urlParams.get("redirect") === "/crm") {
+        setLoginRole("admin");
+      }
+    });
+
+    function setLoginRole(role) {
+      selectedRole = role;
+      document.getElementById("btnRoleClient").classList.toggle("active", role === "client");
+      document.getElementById("btnRoleAdmin").classList.toggle("active", role === "admin");
+
+      const userLabel = document.getElementById("userLabelText");
+      const submitText = document.getElementById("submitBtnText");
+
+      if (role === "admin") {
+        userLabel.textContent = "Usuario Administrador";
+        submitText.textContent = "Ingresar al Panel CRM";
+      } else {
+        userLabel.textContent = "Usuario del Comercio / Cliente";
+        submitText.textContent = "Ver Mis Cámaras en Vivo";
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const errBox = document.getElementById("loginErrorBox");
+      const errMsg = document.getElementById("loginErrorMsg");
+      const submitBtn = document.getElementById("submitBtn");
+
+      errBox.style.display = "none";
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = "Verificando credenciales...";
+
+      const username = document.getElementById("usernameInput").value.trim();
+      const password = document.getElementById("passwordInput").value;
+
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: username,
+            password: password,
+            expected_role: selectedRole
+          })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.status === "ok") {
+          // Guardar token en localStorage y cookie
+          localStorage.setItem("baddgroup_auth_token", data.token);
+          localStorage.setItem("baddgroup_user", JSON.stringify(data.user));
+          document.cookie = `baddgroup_token=${data.token}; path=/; max-age=604800; SameSite=Lax`;
+
+          // Redirección inteligente
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirect = urlParams.get("redirect");
+
+          if (redirect) {
+            window.location.href = redirect;
+          } else if (data.user.role === "admin") {
+            window.location.href = "/crm";
+          } else {
+            window.location.href = "/";
+          }
+        } else {
+          errMsg.textContent = data.detail || "Usuario o contraseña incorrectos.";
+          errBox.style.display = "flex";
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<span>Ingresar al Sistema</span><svg class="v-icon" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>`;
+        }
+      } catch (err) {
+        console.error(err);
+        errMsg.textContent = "Error de conexión con el servidor.";
+        errBox.style.display = "flex";
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>Ingresar al Sistema</span><svg class="v-icon" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>`;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1099,10 +1099,14 @@
         <div class="server-pulse-dot"></div>
         <span>DonWeb VPS • Conectado</span>
       </div>
-      <div class="sidebar-actions-row">
-        <button class="sidebar-btn-theme" onclick="toggleTheme()" aria-label="Cambiar tema">
+      <div class="sidebar-actions-row" style="display:flex; gap:0.4rem; width:100%;">
+        <button class="sidebar-btn-theme" onclick="toggleTheme()" aria-label="Cambiar tema" style="flex:1;">
           <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
           <span id="themeBtnText">Tema</span>
+        </button>
+        <button class="sidebar-btn-theme" onclick="logoutSession()" aria-label="Cerrar sesión" style="flex:1; border-color: rgba(239, 68, 68, 0.4); color: #f87171;">
+          <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+          <span>Salir</span>
         </button>
       </div>
     </div>
@@ -1782,13 +1786,44 @@
     let monthlyFlowChartInstance = null;
     let revenuePieChartInstance = null;
 
-    // INICIALIZACIÓN
+    // INICIALIZACIÓN CON AUTH GUARD
     document.addEventListener("DOMContentLoaded", async () => {
+      // 1. Verificar sesión activa de Administrador
+      const token = localStorage.getItem("baddgroup_auth_token");
+      try {
+        const authRes = await fetch("/api/auth/me", {
+          headers: token ? { "Authorization": `Bearer ${token}` } : {}
+        });
+        if (!authRes.ok) {
+          window.location.href = "/login?redirect=/crm&role=admin";
+          return;
+        }
+        const authData = await authRes.json();
+        if (authData.user.role !== "admin") {
+          window.location.href = "/login?redirect=/crm&role=admin";
+          return;
+        }
+        window.currentUser = authData.user;
+      } catch (e) {
+        window.location.href = "/login?redirect=/crm&role=admin";
+        return;
+      }
+
       initTheme();
       await loadAllData();
       // Refresco en background cada 60s
       setInterval(loadAllData, 60000);
     });
+
+    async function logoutSession() {
+      try {
+        await fetch("/api/auth/logout", { method: "POST" });
+      } catch (e) {}
+      localStorage.removeItem("baddgroup_auth_token");
+      localStorage.removeItem("baddgroup_user");
+      document.cookie = "baddgroup_token=; path=/; max-age=0";
+      window.location.href = "/login?role=admin";
+    }
 
     // TEMA CLARO / OSCURO
     function initTheme() {

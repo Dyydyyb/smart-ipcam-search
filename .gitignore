@@ -39,6 +39,7 @@ storage/thumbnails/
 storage/smart_cam.db
 storage/models/
 storage/*.log
+storage/*.json
 *.log
 
 # Environment and sensitive keys

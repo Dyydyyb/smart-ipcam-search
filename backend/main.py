@@ -8,7 +8,7 @@ from typing import Optional, List, Dict, Any
 
 import cv2
 import numpy as np
-from fastapi import FastAPI, Depends, Query, HTTPException, Response, status
+from fastapi import FastAPI, Depends, Query, HTTPException, Response, status, Request
 from fastapi.responses import StreamingResponse, FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,6 +22,7 @@ from core.database import init_db, get_db, AsyncSessionLocal
 from core.models import SecurityEvent
 from core.camera_manager import camera_manager
 from core.crm_manager import crm_manager
+from core import supabase_db
 from engine.stream_capture import RTSPStreamReader
 from engine.vision_pipeline import VisionPipeline
 from engine.storage_manager import storage_manager
@@ -120,6 +121,11 @@ class UpdateClientRequest(BaseModel):
     client_pass: Optional[str] = None
     cameras: Optional[List[Dict[str, Any]]] = None
 
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+    expected_role: Optional[str] = None
+
 class RecordPaymentRequest(BaseModel):
     payment_type: str  # 'cuota' o 'instalacion'
     amount: float
@@ -172,6 +178,74 @@ async def serve_index():
     if index_file.exists():
         return HTMLResponse(content=index_file.read_text(encoding="utf-8"))
     return HTMLResponse("<h1>Smart IP Camera AI Search</h1><p>Frontend no encontrado en frontend/index.html</p>")
+
+@app.get("/login", response_class=HTMLResponse)
+async def serve_login():
+    """Sirve la página de inicio de sesión de Baddgroup."""
+    login_file = frontend_dir / "login.html"
+    if login_file.exists():
+        return HTMLResponse(content=login_file.read_text(encoding="utf-8"))
+    return HTMLResponse("<h1>Baddgroup Login</h1><p>Archivo no encontrado en frontend/login.html</p>", status_code=404)
+
+def get_current_user(request: Request) -> Optional[Dict[str, Any]]:
+    """Extrae y verifica el usuario autenticado desde header Authorization o cookie."""
+    auth_header = request.headers.get("Authorization")
+    token = None
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ", 1)[1].strip()
+    if not token:
+        token = request.cookies.get("baddgroup_token")
+    if not token:
+        return None
+    return supabase_db.verify_token(token)
+
+def require_admin(request: Request) -> Dict[str, Any]:
+    user = get_current_user(request)
+    if not user or user.get("role") != "admin":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Acceso denegado. Se requiere cuenta de Administrador.")
+    return user
+
+@app.post("/api/auth/login")
+async def auth_login(req: LoginRequest, response: Response):
+    """Autentica credenciales en Supabase y emite token JWT firmado."""
+    user = supabase_db.authenticate_user(req.username, req.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos")
+    
+    if req.expected_role and req.expected_role == "admin" and user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Esta cuenta no posee privilegios de Administrador del CRM")
+
+    token = supabase_db.generate_token(user)
+    
+    response.set_cookie(
+        key="baddgroup_token",
+        value=token,
+        max_age=86400 * 7,
+        httponly=False,
+        samesite="lax",
+        secure=False
+    )
+    
+    return {
+        "status": "ok",
+        "token": token,
+        "user": user,
+        "redirect": "/crm" if user.get("role") == "admin" else "/"
+    }
+
+@app.get("/api/auth/me")
+async def auth_me(request: Request):
+    """Retorna los datos del usuario logueado actualmente."""
+    user = get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Sesión no iniciada o token expirado")
+    return {"status": "ok", "user": user}
+
+@app.post("/api/auth/logout")
+async def auth_logout(response: Response):
+    """Cierra la sesión activa borrando la cookie de autenticación."""
+    response.delete_cookie("baddgroup_token")
+    return {"status": "ok", "message": "Sesión cerrada correctamente"}
 
 @app.get("/api/status")
 async def get_system_status(db: AsyncSession = Depends(get_db)):
@@ -462,8 +536,20 @@ async def create_demo_event(db: AsyncSession = Depends(get_db)):
     return {"status": "ok", "event_id": event_id, "event": ev.to_dict()}
 
 @app.get("/api/cameras")
-async def get_cameras():
-    """Retorna la lista de todas las cámaras IP configuradas."""
+async def get_cameras(request: Request):
+    """Retorna la lista de cámaras IP configuradas, filtrando por cliente si corresponde."""
+    user = get_current_user(request)
+    if user:
+        try:
+            supabase_cams = supabase_db.get_cameras_for_user(user)
+            if supabase_cams:
+                for c in supabase_cams:
+                    c["connected"] = True if c.get("stream_url") or c.get("rtsp_sub") else False
+                return supabase_cams
+        except Exception as e:
+            logger.warning(f"Error cargando cámaras de Supabase: {e}")
+
+    # Fallback local
     cams = camera_manager.get_all()
     for c in cams:
         if c.get("id") == "cam_1":
@@ -487,6 +573,20 @@ async def add_camera(req: AddCameraRequest):
         rtsp_sub=req.rtsp_sub,
         rtsp_main=req.rtsp_main
     )
+    # Registrar también en Supabase si está disponible
+    try:
+        supabase_db.add_camera_supabase({
+            "name": req.name,
+            "location": req.location,
+            "ip": req.ip,
+            "port": req.port,
+            "user": req.user,
+            "rtsp_sub": req.rtsp_sub,
+            "rtsp_main": req.rtsp_main
+        })
+    except Exception as e:
+        logger.warning(f"No se pudo sincronizar cámara a Supabase: {e}")
+        
     return {"status": "ok", "camera": new_cam}
 
 @app.delete("/api/cameras/{cam_id}")
@@ -495,6 +595,10 @@ async def delete_camera(cam_id: str):
     if cam_id == "cam_1" and len(camera_manager.get_all()) <= 1:
         raise HTTPException(status_code=400, detail="No se puede eliminar la cámara principal predeterminada.")
     success = camera_manager.delete(cam_id)
+    try:
+        supabase_db.delete_camera_supabase(cam_id)
+    except Exception:
+        pass
     if not success:
         raise HTTPException(status_code=404, detail="Cámara no encontrada")
     return {"status": "ok", "deleted_id": cam_id}
@@ -511,7 +615,7 @@ async def trigger_storage_cleanup():
     return {"status": "ok", "result": result}
 
 # ==========================================
-# CRM & DASHBOARD DE FACTURACIÓN BADDGROUP
+# CRM & DASHBOARD DE FACTURACIÓN BADDGROUP (SUPABASE POSTGRESQL)
 # ==========================================
 @app.get("/crm", response_class=HTMLResponse)
 async def serve_crm():
@@ -523,63 +627,63 @@ async def serve_crm():
 
 @app.get("/api/crm/stats")
 async def get_crm_stats():
-    """Retorna las métricas financieras globales, MRR y conteo de clientes."""
-    return crm_manager.get_dashboard_stats()
+    """Retorna las métricas financieras globales, MRR y conteo de clientes desde Supabase."""
+    return supabase_db.get_dashboard_stats()
 
 @app.get("/api/crm/clients")
 async def get_crm_clients(
     search: Optional[str] = Query(None),
     status: Optional[str] = Query("all")
 ):
-    """Lista todos los clientes con filtros por búsqueda o estado."""
-    return crm_manager.get_all(search=search, status=status)
+    """Lista todos los clientes con filtros por búsqueda o estado desde Supabase."""
+    return supabase_db.get_clients(search=search, status=status)
 
 @app.get("/api/crm/clients/{client_id}")
 async def get_crm_client(client_id: str):
-    """Obtiene los detalles completos de un cliente específico."""
-    client = crm_manager.get(client_id)
+    """Obtiene los detalles completos de un cliente específico desde Supabase."""
+    client = supabase_db.get_client(client_id)
     if not client:
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
     return client
 
 @app.post("/api/crm/clients")
 async def create_crm_client(req: CreateClientRequest):
-    """Registra un nuevo cliente con sus cámaras, cuotas y credenciales."""
+    """Registra un nuevo cliente con sus cámaras, cuotas y credenciales en Supabase."""
     if not req.name or not req.name.strip():
         raise HTTPException(status_code=400, detail="El nombre del cliente es obligatorio")
     data = req.model_dump() if hasattr(req, "model_dump") else req.dict()
-    new_client = crm_manager.create(data)
+    new_client = supabase_db.create_client(data)
     return {"status": "ok", "client": new_client}
 
 @app.put("/api/crm/clients/{client_id}")
 async def update_crm_client(client_id: str, req: UpdateClientRequest):
-    """Actualiza datos del cliente, cuotas, estado o cámaras."""
+    """Actualiza datos del cliente, cuotas, estado o cámaras en Supabase."""
     raw_data = req.model_dump() if hasattr(req, "model_dump") else req.dict()
     clean_data = {k: v for k, v in raw_data.items() if v is not None}
-    updated = crm_manager.update(client_id, clean_data)
+    updated = supabase_db.update_client(client_id, clean_data)
     if not updated:
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
     return {"status": "ok", "client": updated}
 
 @app.delete("/api/crm/clients/{client_id}")
 async def delete_crm_client(client_id: str):
-    """Elimina un cliente del CRM."""
-    success = crm_manager.delete(client_id)
+    """Elimina un cliente del CRM en Supabase."""
+    success = supabase_db.delete_client(client_id)
     if not success:
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
     return {"status": "ok", "deleted_id": client_id}
 
 @app.post("/api/crm/clients/{client_id}/payment")
 async def record_client_payment(client_id: str, req: RecordPaymentRequest):
-    """Registra un pago de cuota mensual o saldo de instalación."""
+    """Registra un pago de cuota mensual o saldo de instalación en Supabase."""
     if req.amount <= 0:
         raise HTTPException(status_code=400, detail="El monto del pago debe ser mayor a 0")
-    result = crm_manager.record_payment(
+    result = supabase_db.record_client_payment(
         client_id=client_id,
         payment_type=req.payment_type,
         amount=req.amount,
         method=req.method or "Transferencia",
-        period=req.period,
+        period=req.period or "",
         notes=req.notes or ""
     )
     if not result:
@@ -588,72 +692,72 @@ async def record_client_payment(client_id: str, req: RecordPaymentRequest):
 
 @app.post("/api/crm/clients/{client_id}/toggle-status")
 async def toggle_client_status(client_id: str):
-    """Suspende o activa el servicio de un cliente."""
-    updated = crm_manager.toggle_status(client_id)
+    """Suspende o activa el servicio de un cliente en Supabase."""
+    updated = supabase_db.toggle_client_status(client_id)
     if not updated:
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
     return {"status": "ok", "client": updated}
 
 # ==========================================
-# BALANCE FINANCIERO & GRÁFICOS
+# BALANCE FINANCIERO & GRÁFICOS (SUPABASE)
 # ==========================================
 @app.get("/api/crm/balance-charts")
 async def get_balance_charts():
-    """Retorna series históricas y composición porcentual de ingresos para gráficos."""
-    return crm_manager.get_balance_chart_data()
+    """Retorna series históricas y composición porcentual de ingresos para gráficos desde Supabase."""
+    return supabase_db.get_balance_charts()
 
 # ==========================================
-# VENTAS DE SOFTWARE & LICENCIAS
+# VENTAS DE SOFTWARE & LICENCIAS (SUPABASE)
 # ==========================================
 @app.get("/api/crm/software-sales")
 async def get_software_sales(
     search: Optional[str] = Query(None),
     status: Optional[str] = Query("all")
 ):
-    """Lista las ventas de software con filtros por búsqueda o estado de cobro."""
-    return crm_manager.get_software_sales(search=search, status=status)
+    """Lista las ventas de software con filtros por búsqueda o estado de cobro desde Supabase."""
+    return supabase_db.get_software_sales(search=search, status=status)
 
 @app.get("/api/crm/software-sales/{sale_id}")
 async def get_software_sale(sale_id: str):
-    """Obtiene los detalles de una venta de software específica."""
-    sale = crm_manager.get_software_sale(sale_id)
+    """Obtiene los detalles de una venta de software específica desde Supabase."""
+    sale = supabase_db.get_software_sale(sale_id)
     if not sale:
         raise HTTPException(status_code=404, detail="Venta de software no encontrada")
     return sale
 
 @app.post("/api/crm/software-sales")
 async def create_software_sale(req: CreateSoftwareSaleRequest):
-    """Registra una nueva venta de software, emite clave de licencia y asienta el valor."""
+    """Registra una nueva venta de software, emite clave de licencia y asienta el valor en Supabase."""
     if not req.buyer_name or not req.buyer_name.strip():
         raise HTTPException(status_code=400, detail="El nombre del comprador es obligatorio")
     data = req.model_dump() if hasattr(req, "model_dump") else req.dict()
-    new_sale = crm_manager.create_software_sale(data)
+    new_sale = supabase_db.create_software_sale(data)
     return {"status": "ok", "sale": new_sale}
 
 @app.put("/api/crm/software-sales/{sale_id}")
 async def update_software_sale(sale_id: str, req: UpdateSoftwareSaleRequest):
-    """Actualiza los datos o montos de una venta de software."""
+    """Actualiza los datos o montos de una venta de software en Supabase."""
     raw_data = req.model_dump() if hasattr(req, "model_dump") else req.dict()
     clean_data = {k: v for k, v in raw_data.items() if v is not None}
-    updated = crm_manager.update_software_sale(sale_id, clean_data)
+    updated = supabase_db.update_software_sale(sale_id, clean_data)
     if not updated:
         raise HTTPException(status_code=404, detail="Venta de software no encontrada")
     return {"status": "ok", "sale": updated}
 
 @app.delete("/api/crm/software-sales/{sale_id}")
 async def delete_software_sale(sale_id: str):
-    """Elimina una venta de software."""
-    success = crm_manager.delete_software_sale(sale_id)
+    """Elimina una venta de software en Supabase."""
+    success = supabase_db.delete_software_sale(sale_id)
     if not success:
         raise HTTPException(status_code=404, detail="Venta de software no encontrada")
     return {"status": "ok", "deleted_id": sale_id}
 
 @app.post("/api/crm/software-sales/{sale_id}/payment")
 async def record_software_sale_payment(sale_id: str, req: RecordSoftwarePaymentRequest):
-    """Asienta un cobro total o parcial (saldo/seña) de una venta de software."""
+    """Asienta un cobro total o parcial (saldo/seña) de una venta de software en Supabase."""
     if req.amount <= 0:
         raise HTTPException(status_code=400, detail="El monto del cobro debe ser mayor a 0")
-    result = crm_manager.record_software_payment(
+    result = supabase_db.record_software_payment(
         sale_id=sale_id,
         amount=req.amount,
         method=req.method or "Transferencia Bancaria",
