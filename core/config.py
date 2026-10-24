@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     SUPABASE_PROJECT_ID: str = "foghkrwrxqoqrkvdipnn"
     SUPABASE_URL: str = "https://foghkrwrxqoqrkvdipnn.supabase.co"
     SUPABASE_ANON_KEY: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvZ2hrcndyeHFvcXJrdmRpcG5uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI4MDAxMDMsImV4cCI6MjEwODM3NjEwM30.gJgjTMIAGIsZjlnBhIKyQ9C16oprjwiyShJhND37YSM"
-    SUPABASE_DB_URL: str = "postgresql://postgres:1569957772Db!@db.foghkrwrxqoqrkvdipnn.supabase.co:5432/postgres?sslmode=require"
+    SUPABASE_DB_URL: str = "postgresql://postgres.foghkrwrxqoqrkvdipnn:1569957772Db!@aws-0-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require"
     JWT_SECRET: str = "baddgroup_master_jwt_key_2026_vision_ai_sec"
 
     # Vision & AI
