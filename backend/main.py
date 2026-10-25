@@ -542,9 +542,14 @@ async def get_cameras(request: Request):
     if user:
         try:
             supabase_cams = supabase_db.get_cameras_for_user(user)
+            if user.get("role") == "client":
+                for c in supabase_cams:
+                    c["connected"] = True if c.get("stream_url") or c.get("rtsp_sub") or c.get("ip") else False
+                return supabase_cams
+
             if supabase_cams:
                 for c in supabase_cams:
-                    c["connected"] = True if c.get("stream_url") or c.get("rtsp_sub") else False
+                    c["connected"] = True if c.get("stream_url") or c.get("rtsp_sub") or c.get("ip") else False
                 return supabase_cams
         except Exception as e:
             logger.warning(f"Error cargando cámaras de Supabase: {e}")

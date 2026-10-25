@@ -673,14 +673,15 @@ def get_cameras_for_user(user: Dict[str, Any]) -> List[Dict[str, Any]]:
                     ORDER BY c.created_at ASC;
                 """)
             else:
-                user_id = user.get("sub") or user.get("id")
+                user_id = str(user.get("sub") or user.get("id") or "")
+                username = str(user.get("username") or "")
                 cur.execute("""
                     SELECT c.*, cl.name as client_name 
                     FROM cameras c 
                     JOIN clients cl ON c.client_id = cl.id
-                    WHERE cl.user_id = %s
+                    WHERE (cl.user_id::text = %s OR cl.client_user = %s)
                     ORDER BY c.created_at ASC;
-                """, (user_id,))
+                """, (user_id, username))
             rows = cur.fetchall()
             cams = []
             for r in rows:

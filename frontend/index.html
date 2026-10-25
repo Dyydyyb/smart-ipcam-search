@@ -2351,9 +2351,13 @@
     // ==========================================
     async function loadCameras() {
       try {
-        const res = await fetch('/api/cameras');
+        const token = localStorage.getItem("baddgroup_auth_token");
+        const res = await fetch('/api/cameras', {
+          headers: token ? { "Authorization": `Bearer ${token}` } : {}
+        });
         if (!res.ok) return;
-        allCamerasList = await res.json();
+        const freshList = await res.json();
+        allCamerasList = freshList;
 
         // Actualizar contador en header
         const countEl = document.getElementById('camerasCountHeader');
@@ -2363,9 +2367,22 @@
         const select = document.getElementById('cameraSelect');
         if (select) {
           const prevVal = currentCameraId;
-          select.innerHTML = '<option value="all">Todas las Cámaras (Mosaico)</option>' + 
-            allCamerasList.map(c => `<option value="${c.id}" ${c.id === prevVal ? 'selected' : ''}>${c.name} (${c.ip})</option>`).join('');
-          select.value = prevVal;
+          let opts = '';
+          if (allCamerasList.length > 1) {
+            opts += '<option value="all">Todas las Cámaras (Mosaico)</option>';
+          }
+          opts += allCamerasList.map(c => {
+            const extra = c.safety_code ? ` [Code: ${escapeHtml(c.safety_code)}]` : (c.ip ? ` (${c.ip})` : '');
+            return `<option value="${c.id}" ${c.id === prevVal ? 'selected' : ''}>${escapeHtml(c.name)}${extra}</option>`;
+          }).join('');
+          
+          select.innerHTML = opts || '<option value="">Sin cámaras asignadas</option>';
+          if (allCamerasList.some(c => c.id === prevVal) || (prevVal === 'all' && allCamerasList.length > 1)) {
+            select.value = prevVal;
+          } else if (allCamerasList.length > 0) {
+            currentCameraId = allCamerasList.length > 1 ? 'all' : allCamerasList[0].id;
+            select.value = currentCameraId;
+          }
         }
 
         // Actualizar selector OBLIGATORIO de cámara para búsqueda IA
@@ -2374,13 +2391,13 @@
           const prevVal = aiSelect.value;
           let html = '<option value="" disabled ' + (!prevVal ? 'selected' : '') + '>Elige una cámara en específico para consultar con IA...</option>';
           allCamerasList.forEach(c => {
-            const isSel = c.id === prevVal || (allCamerasList.length === 1 && c.id === 'cam_1' && !prevVal);
-            html += `<option value="${c.id}" ${isSel ? 'selected' : ''}>${c.name} - ${c.location || 'Sector General'} (${c.ip})</option>`;
+            const isSel = c.id === prevVal || (allCamerasList.length === 1 && !prevVal);
+            html += `<option value="${c.id}" ${isSel ? 'selected' : ''}>${escapeHtml(c.name)} - ${escapeHtml(c.location || 'Sector General')}</option>`;
           });
           aiSelect.innerHTML = html;
           if (allCamerasList.length === 1 && !prevVal) {
-            aiSelect.value = 'cam_1';
-            onAICameraSelectChange('cam_1');
+            aiSelect.value = allCamerasList[0].id;
+            onAICameraSelectChange(allCamerasList[0].id);
           }
         }
 
@@ -2399,6 +2416,19 @@
       const singleCard = document.getElementById('liveCard');
       const btnBack = document.getElementById('btnBackToMosaic');
 
+      if (allCamerasList.length === 0) {
+        if (mosaicCard) mosaicCard.style.display = 'none';
+        if (singleCard) singleCard.style.display = 'block';
+        if (btnBack) btnBack.style.display = 'none';
+        const titleEl = document.getElementById('liveHeroCamTitle');
+        if (titleEl) titleEl.innerHTML = `Sin cámaras asignadas &bull; Modo En Espera`;
+        const hudEl = document.getElementById('liveHudCamIp');
+        if (hudEl) hudEl.innerHTML = `Comunícate con el administrador para vincular tus cámaras`;
+        const streamImg = document.getElementById('liveStreamImg');
+        if (streamImg) streamImg.src = '';
+        return;
+      }
+
       if (allCamerasList.length > 1 && currentCameraId === 'all') {
         // Mosaico simultáneo de todas las cámaras
         if (mosaicCard) mosaicCard.style.display = 'block';
@@ -2414,9 +2444,10 @@
         const activeCam = allCamerasList.find(c => c.id === currentCameraId) || allCamerasList[0];
         if (activeCam) {
           const titleEl = document.getElementById('liveHeroCamTitle');
-          if (titleEl) titleEl.innerHTML = `${activeCam.name} &bull; En Tiempo Real`;
+          if (titleEl) titleEl.innerHTML = `${escapeHtml(activeCam.name)} &bull; En Tiempo Real`;
           const hudEl = document.getElementById('liveHudCamIp');
-          if (hudEl) hudEl.innerHTML = `${activeCam.name} &bull; IP: ${activeCam.ip}`;
+          const codeInfo = activeCam.safety_code ? `Code: ${escapeHtml(activeCam.safety_code)}` : (activeCam.ip ? `IP: ${activeCam.ip}` : 'Cloud');
+          if (hudEl) hudEl.innerHTML = `${escapeHtml(activeCam.name)} &bull; ${codeInfo}`;
           const streamImg = document.getElementById('liveStreamImg');
           if (streamImg) streamImg.src = `/api/live?camera_id=${activeCam.id}`;
         }
@@ -3552,6 +3583,7 @@
       updateStatus();
       loadEvents();
       setInterval(updateStatus, 3000);
+      setInterval(loadCameras, 6000); // Polling continuo cada 6s para reflejar altas o bajas de cámaras automáticamente
       setInterval(() => {
         if (!isSearchActive && !document.getElementById('galleryModal').classList.contains('active')) {
           loadEvents(currentFilterClass);
