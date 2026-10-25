@@ -90,7 +90,7 @@ def authenticate_user(username: str, password: str) -> Optional[Dict[str, Any]]:
             cur.execute("""
                 SELECT id, username, email, password_hash, full_name, role, is_active 
                 FROM users 
-                WHERE (username = %s OR email = %s) AND is_active = TRUE;
+                WHERE (LOWER(username) = LOWER(%s) OR LOWER(email) = LOWER(%s)) AND is_active = TRUE;
             """, (username.strip(), username.strip().lower()))
             row = cur.fetchone()
             if not row:

@@ -75,7 +75,12 @@ def main():
 
     # 6. Comprobar status de mediamtx
     stdin, stdout, stderr = ssh.exec_command("systemctl status mediamtx --no-pager")
-    print("MEDIAMTX STATUS:\n", stdout.read().decode()[:300])
+    status_text = stdout.read().decode('utf-8', errors='replace')[:300].encode('ascii', errors='replace').decode('ascii')
+    print("MEDIAMTX STATUS:\n", status_text)
+
+    # 7. Actualizar repositorio del host
+    stdin, stdout, stderr = ssh.exec_command("cd /opt/baddgroup-vision && git pull origin main")
+    print("HOST REPO PULL:", stdout.read().decode('utf-8', errors='replace'))
 
     ssh.close()
     print("\nDespliegue completado con éxito!")
