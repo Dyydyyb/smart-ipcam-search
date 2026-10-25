@@ -37,11 +37,14 @@ def main():
     
     files_to_sync = [
         ("core/supabase_db.py", "/tmp/supabase_db.py", "/app/core/supabase_db.py"),
+        ("core/camera_manager.py", "/tmp/camera_manager.py", "/app/core/camera_manager.py"),
         ("core/config.py", "/tmp/config.py", "/app/core/config.py"),
+        ("engine/stream_capture.py", "/tmp/stream_capture.py", "/app/engine/stream_capture.py"),
         ("backend/main.py", "/tmp/main.py", "/app/backend/main.py"),
         ("frontend/login.html", "/tmp/login.html", "/app/frontend/login.html"),
         ("frontend/crm.html", "/tmp/crm.html", "/app/frontend/crm.html"),
         ("frontend/index.html", "/tmp/index.html", "/app/frontend/index.html"),
+        ("storage/cameras.json", "/tmp/cameras.json", "/app/storage/cameras.json"),
         (".env", "/tmp/.env", "/app/.env")
     ]
     

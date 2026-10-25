@@ -2503,6 +2503,7 @@
           showToast(clientId ? "Cliente actualizado con éxito" : "Nuevo cliente registrado exitosamente");
           closeClientModal();
           await loadAllData();
+          switchTab("clients");
         } else {
           showToast("Error al guardar cliente");
         }

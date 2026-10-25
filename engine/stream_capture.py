@@ -37,6 +37,22 @@ class RTSPStreamReader:
         self.width = 640
         self.height = 480
 
+        self.last_push_time: float = 0.0
+
+    def push_frame(self, frame: np.ndarray):
+        """Permite inyectar frames remotamente desde HTTP/WebSocket push bridge con cero latencia."""
+        now = time.time()
+        self.connected = True
+        self.last_push_time = now
+        h, w = frame.shape[:2]
+        if w > 0 and h > 0:
+            self.width = w
+            self.height = h
+        with self.lock:
+            self.latest_frame = frame
+            self.latest_timestamp = now
+            self.frame_buffer.append((now, frame))
+
     def start(self):
         """Inicia el hilo de lectura del stream."""
         if self.running:
@@ -58,6 +74,8 @@ class RTSPStreamReader:
 
     def _connect(self) -> bool:
         """Intenta abrir la conexión RTSP."""
+        if getattr(self, "last_push_time", 0) > 0 and (time.time() - self.last_push_time) < 4.0:
+            return True
         logger.info(f"[{self.name}] Conectando a {self.rtsp_url.split('@')[-1]}...")
         if self.cap:
             try:
@@ -87,12 +105,21 @@ class RTSPStreamReader:
         """Bucle principal de lectura continua de frames."""
         retry_delay = 2.0
         while self.running:
+            # Si estamos recibiendo frames por push (bridge remoto activo), no intentar abrir RTSP local
+            if getattr(self, "last_push_time", 0) > 0 and (time.time() - self.last_push_time) < 4.0:
+                time.sleep(0.05)
+                continue
+
             if not self.connected:
                 if not self._connect():
                     time.sleep(retry_delay)
                     retry_delay = min(retry_delay * 1.5, 30.0)
                     continue
                 retry_delay = 2.0
+
+            if not self.cap:
+                time.sleep(0.5)
+                continue
 
             ret, frame = self.cap.read()
             if not ret or frame is None:
@@ -115,8 +142,12 @@ class RTSPStreamReader:
 
     def get_latest_frame(self) -> Tuple[bool, Optional[np.ndarray], float]:
         """Retorna el frame más reciente sin latencia."""
+        now = time.time()
         with self.lock:
-            if self.latest_frame is not None:
+            # Si pasaron más de 5 segundos sin frames, marcar como desconectado
+            if self.latest_timestamp > 0 and (now - self.latest_timestamp) > 5.0:
+                self.connected = False
+            if self.latest_frame is not None and self.connected:
                 return True, self.latest_frame.copy(), self.latest_timestamp
             return False, None, 0.0
 

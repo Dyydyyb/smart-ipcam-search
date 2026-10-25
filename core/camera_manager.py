@@ -7,19 +7,7 @@ from core.config import settings
 
 CAMERAS_FILE = settings.STORAGE_DIR / "cameras.json"
 
-DEFAULT_CAMERAS = [
-    {
-        "id": "cam_1",
-        "name": "Cámara Poste Principal",
-        "location": "Poste Exterior",
-        "ip": settings.CAMERA_IP,
-        "port": settings.CAMERA_PORT,
-        "user": settings.CAMERA_USER,
-        "rtsp_sub": settings.CAMERA_RTSP_SUB,
-        "rtsp_main": settings.CAMERA_RTSP_MAIN,
-        "is_active": True
-    }
-]
+DEFAULT_CAMERAS = []
 
 class CameraManager:
     """Administra el registro dinámico de cámaras IP para despliegue distribuido."""

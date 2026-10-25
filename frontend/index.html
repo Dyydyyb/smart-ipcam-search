@@ -1721,8 +1721,7 @@
       <div class="camera-selector-box" title="Filtrar eventos por cámara">
         <svg class="v-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
         <select id="cameraSelect" class="camera-select-dropdown" onchange="onCameraSelectChange(this.value)">
-          <option value="all" selected>Todas las Cámaras (Mosaico)</option>
-          <option value="cam_1">Cámara Poste Principal</option>
+          <option value="" disabled selected>Cargando cámaras...</option>
         </select>
       </div>
 
@@ -1799,7 +1798,7 @@
         <div class="live-hero-header">
           <div class="live-hero-title">
             <span class="status-indicator-dot"></span>
-            <span id="liveHeroCamTitle">Cámara Poste Principal &bull; En Tiempo Real</span>
+            <span id="liveHeroCamTitle">Cargando Cámara... &bull; En Tiempo Real</span>
             <span class="status-badge" style="padding:0.2rem 0.5rem; font-size:0.72rem;">YOLO11 Tracking</span>
           </div>
           <div style="display:flex; gap:0.5rem; align-items:center;">
@@ -1829,7 +1828,7 @@
               <span>RTSP ACTIVO &bull; GRABACIÓN CONTINUA</span>
             </div>
             <div class="hud-pill" id="liveHudCamIp" style="font-size:0.72rem;">
-              Imou Cruiser (Dahua OEM) &bull; IP: 192.168.100.209
+              Baddgroup Vision Stream
             </div>
           </div>
 
@@ -1838,7 +1837,7 @@
               --:--:--
             </div>
             <div class="hud-pill">
-              DirectML AMD GPU
+              Baddgroup Vision AI
             </div>
           </div>
         </div>
@@ -2281,8 +2280,8 @@
               Plan de Despliegue en Producción & Escalabilidad Comercial
             </strong>
             <span>
-              1. <strong>Fase 1 (Prueba Personal 1 semana):</strong> Su cámara actual en el poste continuará grabando y detectando 24/7. Puede consultar eventos en tiempo real con Gemini Vision AI.<br>
-              2. <strong>Fase 2 (Escalado a 5+ Cámaras):</strong> Registre las nuevas cámaras directamente desde este panel o despliegue el paquete Docker en cada sede o servidor de cliente ejecutando <code>docker compose up -d</code>.
+              1. <strong>Monitoreo y Transmisión Centralizada:</strong> Sus cámaras IP transmiten cifradas en tiempo real 24/7 y procesan eventos mediante Vision AI.<br>
+              2. <strong>Escalabilidad Multi-Sede:</strong> Registre nuevas cámaras directamente desde este panel o vincule sedes remotas para visualización en mosaico y búsqueda pericial.
             </span>
           </div>
         </div>
@@ -2295,6 +2294,16 @@
   <div id="toastContainer" class="toast-container"></div>
 
   <script>
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     let currentFilterClass = '';
     let currentCameraId = 'all';
     let allCamerasList = [];
@@ -2575,14 +2584,13 @@
       }
 
       grid.innerHTML = allCamerasList.map(c => {
-        const isPrimary = c.id === 'cam_1';
-        const isOnline = c.connected;
+        const isOnline = c.connected !== false;
         return `
           <div class="camera-item-card">
             <div class="camera-item-header">
               <div>
-                <div class="camera-item-name">${c.name}</div>
-                <div class="camera-item-loc">${c.location || 'Sector General'}</div>
+                <div class="camera-item-name">${escapeHtml(c.name)}</div>
+                <div class="camera-item-loc">${escapeHtml(c.location || 'Sector General')}</div>
               </div>
               <span class="status-badge" style="font-size:0.7rem; padding:0.2rem 0.5rem;">
                 <span class="status-indicator-dot" style="background:${isOnline ? 'var(--accent-success)' : 'var(--text-muted)'};"></span>
@@ -2591,41 +2599,22 @@
             </div>
 
             <div class="camera-item-detail">
-              IP: ${c.ip}:${c.port} | Usuario: ${c.user}
+              ${c.safety_code ? `Safety Code: ${escapeHtml(c.safety_code)}` : `IP: ${c.ip || 'Cloud P2P'}`}
             </div>
-            <div class="camera-item-detail" style="font-size:0.7rem; color:var(--text-muted);" title="${c.rtsp_sub}">
-              RTSP: ${c.rtsp_sub ? c.rtsp_sub.replace(/:[^:]*@/, ':****@') : 'Predeterminado'}
+            <div class="camera-item-detail" style="font-size:0.7rem; color:var(--text-muted);" title="${c.serial_number || ''}">
+              ${c.serial_number ? `S/N: ${escapeHtml(c.serial_number)}` : 'Cámara IP Encriptada'}
             </div>
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.4rem;">
               <span style="font-size:0.7rem; color:var(--text-muted); font-weight:600;">ID: ${c.id}</span>
-              ${isPrimary ? `
-                <span class="status-badge" style="font-size:0.68rem; padding:0.2rem 0.4rem;">Principal (Poste)</span>
-              ` : `
-                <button class="btn-action-danger-subtle" style="padding:0.25rem 0.6rem; font-size:0.72rem;" onclick="handleDeleteCamera('${c.id}', '${c.name}')">
-                  <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                  <span>Eliminar</span>
-                </button>
-              `}
+              <button class="btn-action-danger-subtle" style="padding:0.25rem 0.6rem; font-size:0.72rem;" onclick="handleDeleteCamera('${c.id}', '${escapeHtml(c.name)}')">
+                <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                <span>Eliminar</span>
+              </button>
             </div>
           </div>
         `;
       }).join('');
-    }
-
-    function onCameraSelectChange(val) {
-      currentCameraId = val;
-      const selectedCam = allCamerasList.find(c => c.id === val);
-      if (selectedCam) {
-        const titleEl = document.getElementById('liveHeroCamTitle');
-        if (titleEl) titleEl.innerHTML = `${selectedCam.name} &bull; En Tiempo Real`;
-        const hudEl = document.getElementById('liveHudCamIp');
-        if (hudEl) hudEl.innerHTML = `${selectedCam.name} &bull; IP: ${selectedCam.ip}`;
-      } else {
-        const titleEl = document.getElementById('liveHeroCamTitle');
-        if (titleEl) titleEl.innerHTML = `Todas las Cámaras &bull; En Tiempo Real`;
-      }
-      loadEvents(currentFilterClass);
     }
 
     function openCameraModal() {
@@ -2746,7 +2735,10 @@
     // ==========================================
     async function updateStatus() {
       try {
-        const res = await fetch('/api/status');
+        const token = localStorage.getItem("baddgroup_auth_token");
+        const res = await fetch('/api/status', {
+          headers: token ? { "Authorization": `Bearer ${token}` } : {}
+        });
         const data = await res.json();
         if (data.camera) {
           document.getElementById('cameraResBadge').innerText = `${data.camera.width}x${data.camera.height} (${data.camera.fps} FPS)`;
@@ -2761,7 +2753,7 @@
             aiBadge.innerText = `Motor IA: ${data.ai_engine.name}`;
           }
         }
-        if (data.cameras_count) {
+        if (data.cameras_count !== undefined) {
           const countEl = document.getElementById('camerasCountHeader');
           if (countEl) countEl.innerText = data.cameras_count;
         }
@@ -2788,7 +2780,10 @@
         if (currentCameraId && currentCameraId !== 'all') {
           url += `&camera_id=${encodeURIComponent(currentCameraId)}`;
         }
-        const res = await fetch(url);
+        const token = localStorage.getItem("baddgroup_auth_token");
+        const res = await fetch(url, {
+          headers: token ? { "Authorization": `Bearer ${token}` } : {}
+        });
         const events = await res.json();
         renderEvents(events, false);
       } catch (e) {

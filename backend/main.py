@@ -8,7 +8,7 @@ from typing import Optional, List, Dict, Any
 
 import cv2
 import numpy as np
-from fastapi import FastAPI, Depends, Query, HTTPException, Response, status, Request
+from fastapi import FastAPI, Depends, Query, HTTPException, Response, status, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import StreamingResponse, FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -248,25 +248,44 @@ async def auth_logout(response: Response):
     return {"status": "ok", "message": "Sesión cerrada correctamente"}
 
 @app.get("/api/status")
-async def get_system_status(db: AsyncSession = Depends(get_db)):
+async def get_system_status(request: Request, db: AsyncSession = Depends(get_db)):
     """Retorna el estado de la cámara, motor de IA y conteo de eventos."""
     total_events_query = await db.execute(select(SecurityEvent))
     events_count = len(total_events_query.scalars().all())
 
-    cameras = camera_manager.get_all()
-    primary_cam = cameras[0] if cameras else {}
+    user = get_current_user(request)
+    primary_cam = None
+    cameras_count = 0
+    if user:
+        try:
+            supabase_cams = supabase_db.get_cameras_for_user(user)
+            if supabase_cams:
+                primary_cam = supabase_cams[0]
+                cameras_count = len(supabase_cams)
+        except Exception:
+            pass
+
+    if not primary_cam:
+        cameras = camera_manager.get_all()
+        primary_cam = cameras[0] if cameras else {}
+        cameras_count = len(cameras)
+
+    cam_id = primary_cam.get("id", "")
+    cam_name = primary_cam.get("name", "Cámara de Seguridad")
 
     ai_mode = "Gemini 1.5 Flash (Visión Multimodal)" if bool(settings.GEMINI_API_KEY) else f"Qwen 2.5 ({settings.OLLAMA_MODEL} Local)"
+    is_connected = stream_reader.connected if (stream_reader.connected and cam_id) else False
 
     return {
         "camera": {
-            "id": primary_cam.get("id", "cam_1"),
-            "name": primary_cam.get("name", "Cámara Poste Principal"),
-            "ip": settings.CAMERA_IP,
-            "connected": stream_reader.connected,
-            "width": stream_reader.width,
-            "height": stream_reader.height,
-            "fps": round(stream_reader.fps, 1),
+            "id": cam_id,
+            "name": cam_name,
+            "ip": primary_cam.get("ip", ""),
+            "safety_code": primary_cam.get("safety_code", ""),
+            "connected": is_connected,
+            "width": stream_reader.width if is_connected else 640,
+            "height": stream_reader.height if is_connected else 480,
+            "fps": round(stream_reader.fps, 1) if is_connected else 15.0,
             "detection_fps": settings.DETECTION_FPS
         },
         "ai_engine": {
@@ -275,7 +294,7 @@ async def get_system_status(db: AsyncSession = Depends(get_db)):
             "model": settings.GEMINI_MODEL if bool(settings.GEMINI_API_KEY) else settings.OLLAMA_MODEL,
             "multimodal": bool(settings.GEMINI_API_KEY)
         },
-        "cameras_count": len(cameras),
+        "cameras_count": cameras_count,
         "vision": {
             "model": settings.YOLO_MODEL_NAME,
             "active_tracks": len(vision_pipeline.active_tracks),
@@ -288,6 +307,7 @@ async def get_system_status(db: AsyncSession = Depends(get_db)):
 
 @app.get("/api/events")
 async def get_events(
+    request: Request,
     limit: int = 50,
     offset: int = 0,
     object_class: Optional[str] = None,
@@ -296,11 +316,27 @@ async def get_events(
     db: AsyncSession = Depends(get_db)
 ):
     """Lista los eventos registrados con filtros opcionales de clase y cámara."""
+    user = get_current_user(request)
+    allowed_cam_ids = None
+    if user and user.get("role") == "client":
+        try:
+            cams = supabase_db.get_cameras_for_user(user)
+            allowed_cam_ids = [c["id"] for c in cams]
+        except Exception:
+            pass
+
     stmt = select(SecurityEvent).order_by(desc(SecurityEvent.start_time))
     if object_class:
         stmt = stmt.where(SecurityEvent.object_class == object_class)
+        
     if camera_id and camera_id != "all":
         stmt = stmt.where(SecurityEvent.camera_id == camera_id)
+    elif allowed_cam_ids is not None:
+        if allowed_cam_ids:
+            stmt = stmt.where(SecurityEvent.camera_id.in_(allowed_cam_ids))
+        else:
+            return []
+            
     if not all:
         stmt = stmt.limit(limit).offset(offset)
     
@@ -414,35 +450,108 @@ async def search_events(req: SearchRequest, db: AsyncSession = Depends(get_db)):
     results = await execute_smart_search(db, query, camera_id=req.camera_id.strip())
     return results
 
+@app.post("/api/stream/push")
+async def push_stream_frame(request: Request):
+    """Recibe fotogramas de cámaras remotas a través del canal encriptado HTTPS."""
+    body = await request.body()
+    if not body:
+        raise HTTPException(status_code=400, detail="Empty frame")
+    
+    nparr = np.frombuffer(body, np.uint8)
+    frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if frame is not None:
+        stream_reader.push_frame(frame)
+        return {"status": "ok", "received": True}
+    raise HTTPException(status_code=400, detail="Invalid image frame")
+
+@app.websocket("/api/stream/ws")
+async def stream_ws_ingest(websocket: WebSocket):
+    """Canal WebSocket de ultra-baja latencia (15ms) para ingesta de video desde cámaras remotas."""
+    await websocket.accept()
+    logger.info("Cámara remota conectada vía WebSocket Bridge.")
+    try:
+        while True:
+            data = await websocket.receive_bytes()
+            if data:
+                nparr = np.frombuffer(data, np.uint8)
+                frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+                if frame is not None:
+                    stream_reader.push_frame(frame)
+    except WebSocketDisconnect:
+        logger.warning("Cámara remota desconectada del WebSocket Bridge.")
+    except Exception as e:
+        logger.error(f"Error en WebSocket Bridge: {e}")
+
+def to_ascii_banner(text: str) -> str:
+    import unicodedata
+    if not text:
+        return ""
+    return unicodedata.normalize('NFKD', str(text)).encode('ascii', 'ignore').decode('ascii').upper()
+
 @app.get("/api/live")
-def live_stream(camera_id: Optional[str] = "cam_1"):
+def live_stream(request: Request, camera_id: Optional[str] = None):
     """Genera un stream MJPEG con detección en tiempo real para la cámara solicitada."""
-    target_cam_id = camera_id or "cam_1"
+    target_cam_id = camera_id
 
     def generate_mjpeg():
         while True:
             frame = None
-            if target_cam_id == "cam_1":
+            cam_info = None
+
+            if target_cam_id and target_cam_id != "all":
+                try:
+                    cam_info = supabase_db.get_camera_by_id(target_cam_id)
+                except Exception:
+                    pass
+                if not cam_info:
+                    cam_info = camera_manager.get(target_cam_id)
+            else:
+                user = get_current_user(request)
+                if user:
+                    try:
+                        user_cams = supabase_db.get_cameras_for_user(user)
+                        if user_cams:
+                            cam_info = user_cams[0]
+                    except Exception:
+                        pass
+                if not cam_info:
+                    cams = camera_manager.get_all()
+                    if cams:
+                        cam_info = cams[0]
+
+            # Si el stream físico está conectado
+            if stream_reader.connected:
                 frame = vision_pipeline.get_annotated_frame()
                 if frame is None:
                     ret, raw, _ = stream_reader.get_latest_frame()
                     frame = raw if ret and raw is not None else None
-            else:
-                cam_info = camera_manager.get(target_cam_id)
-                cam_name = cam_info.get("name", "Cámara Secundaria") if cam_info else "Cámara Secundaria"
-                cam_ip = cam_info.get("ip", "0.0.0.0") if cam_info else ""
-                
-                # Standby feed render
+
+            # Render de standby Baddgroup si aún no hay flujo directo de video
+            if frame is None:
+                cam_name = cam_info.get("name", "Cámara de Seguridad") if cam_info else "Cámara de Seguridad"
+                cam_code = cam_info.get("safety_code", "") if cam_info else ""
+                cam_serial = cam_info.get("serial_number", "") if cam_info else ""
+                cam_ip = cam_info.get("ip", "") if cam_info else ""
+
                 canvas = np.zeros((480, 640, 3), dtype=np.uint8)
-                canvas[:] = (20, 26, 38)
-                cv2.putText(canvas, f"BADDGROUP VISION - {cam_name.upper()}", (25, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (245, 245, 245), 2)
-                cv2.putText(canvas, f"IP: {cam_ip} | RTSP ACTIVO", (25, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (37, 99, 235), 1)
+                canvas[:] = (15, 23, 42) # Slate-900
+
+                banner_text = f"BADDGROUP VISION - {to_ascii_banner(cam_name)}"
+                cv2.putText(canvas, banner_text, (25, 55), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (248, 250, 252), 2)
+                
+                details = f"SAFETY CODE: {cam_code}" if cam_code else (f"IP: {cam_ip}" if cam_ip else "STREAM P2P")
+                if cam_serial:
+                    details += f" | S/N: {cam_serial}"
+                cv2.putText(canvas, details, (25, 95), cv2.FONT_HERSHEY_SIMPLEX, 0.48, (59, 130, 246), 1)
+
+                cv2.putText(canvas, "ESTADO: ESPERANDO TRANSMISION DE VIDEO", (25, 230), cv2.FONT_HERSHEY_SIMPLEX, 0.50, (245, 158, 11), 1)
+                cv2.putText(canvas, "CANAL ENCRIPTADO P2P LISTO PARA RECIBIR", (25, 260), cv2.FONT_HERSHEY_SIMPLEX, 0.44, (148, 163, 184), 1)
+
                 now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                cv2.putText(canvas, f"REC 24/7 | {now_str}", (25, 430), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (16, 185, 129), 1)
+                cv2.putText(canvas, f"MONITOREO BADDGROUP 24/7 | {now_str}", (25, 435), cv2.FONT_HERSHEY_SIMPLEX, 0.48, (16, 185, 129), 1)
                 frame = canvas
 
             if frame is not None:
-                # Codificar a JPEG
                 ret, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 75])
                 if ret:
                     yield (b'--frame\r\n'

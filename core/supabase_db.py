@@ -15,6 +15,7 @@ from core.config import settings
 def get_db():
     """Retorna una conexión a Supabase PostgreSQL."""
     conn = psycopg2.connect(settings.SUPABASE_DB_URL, connect_timeout=10)
+    conn.set_client_encoding('UTF8')
     conn.autocommit = True
     return conn
 
@@ -737,4 +738,26 @@ def delete_camera_supabase(cam_id: str) -> bool:
             return cur.rowcount > 0
     finally:
         conn.close()
+
+def get_camera_by_id(cam_id: str) -> Optional[Dict[str, Any]]:
+    """Obtiene los detalles de una cámara específica por su ID."""
+    conn = get_db()
+    try:
+        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+            cur.execute("""
+                SELECT c.*, cl.name as client_name 
+                FROM cameras c 
+                LEFT JOIN clients cl ON c.client_id = cl.id
+                WHERE c.id = %s;
+            """, (cam_id,))
+            row = cur.fetchone()
+            if row:
+                c = dict(row)
+                if c.get("created_at"):
+                    c["created_at"] = c["created_at"].isoformat()
+                return c
+            return None
+    finally:
+        conn.close()
+
 
