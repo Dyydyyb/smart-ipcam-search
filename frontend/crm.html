@@ -1537,10 +1537,10 @@
           </div>
         </div>
 
-        <!-- REPETIDOR DE CÁMARAS Y ENLACES RTSP -->
+        <!-- REPETIDOR DE CÁMARAS POR SAFETY CODE -->
         <div class="form-group">
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <label class="form-label">Cámaras Instaladas & Enlaces RTSP</label>
+            <label class="form-label">Cámaras Asignadas (Vinculación Cloud P2P por Safety Code)</label>
             <button type="button" class="btn-table-pill" onclick="addCameraRow()">+ Agregar Cámara</button>
           </div>
           <div class="cameras-repeater-box" id="camerasRepeaterBox">
@@ -1879,7 +1879,7 @@
         actionBtn.style.display = "inline-flex";
       } else if (tabId === "clients") {
         titleEl.textContent = "Base de Datos de Clientes & Servicios";
-        subEl.textContent = "Directorio de clientes, cámaras instaladas, enlaces RTSP y cobranzas";
+        subEl.textContent = "Directorio de clientes, cámaras vinculadas por Safety Code y cobranzas";
         actionText.textContent = "+ Registrar Cliente";
         actionBtn.style.display = "inline-flex";
       } else if (tabId === "software") {
@@ -2358,7 +2358,7 @@
 
       const box = document.getElementById("camerasRepeaterBox");
       box.innerHTML = "";
-      addCameraRow("Cámara 1: Entrada", "", "", "L27EA4F3", "");
+      addCameraRow("Cámara 1: Entrada", "", "", "", "");
 
       document.getElementById("clientModalBackdrop").classList.add("active");
     }
@@ -2429,13 +2429,25 @@
             <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
           </button>
         </div>
-        <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 0.45rem;">
-          <input type="text" class="form-input cam-name" placeholder="Nombre (ej: Cámara ${idx}: Frente)" value="${escapeHtml(name || `Cámara ${idx}`)}">
-          <input type="text" class="form-input cam-safety" placeholder="Safety Code (ej: L27EA4F3)" value="${escapeHtml(safetyCode || '')}">
+        <div style="display: grid; grid-template-columns: 1.3fr 1.1fr; gap: 0.5rem;">
+          <div>
+            <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px;">Nombre de la Cámara</label>
+            <input type="text" class="form-input cam-name" placeholder="Ej: Cámara ${idx}: Entrada" value="${escapeHtml(name || `Cámara ${idx}`)}">
+          </div>
+          <div>
+            <label style="font-size: 0.72rem; color: #10b981; font-weight: 600; display: block; margin-bottom: 2px;">Safety Code (Dahua/IMOU) *</label>
+            <input type="text" class="form-input cam-safety" placeholder="Ej: L27EA4F3" value="${escapeHtml(safetyCode || '')}" style="font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;">
+          </div>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1.4fr; gap: 0.45rem;">
-          <input type="text" class="form-input cam-serial" placeholder="N° de Serie / QR (ej: L27...)" value="${escapeHtml(serialNumber || '')}">
-          <input type="text" class="form-input cam-rtsp" placeholder="IP o URL RTSP (ej: 192.168.1.50 o rtsp://...)" value="${escapeHtml(rtsp || ip || '')}">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; align-items: center;">
+          <div>
+            <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px;">N° de Serie / QR (Opcional)</label>
+            <input type="text" class="form-input cam-serial" placeholder="Ej: F2B66APSFC7A8E" value="${escapeHtml(serialNumber || '')}">
+          </div>
+          <div style="font-size: 0.74rem; color: #10b981; display: flex; align-items: center; gap: 0.35rem; padding-top: 14px;">
+            <svg style="width: 14px; height: 14px; fill: currentColor; flex-shrink: 0;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <span>Conexión Cloud P2P Inmediata</span>
+          </div>
         </div>
       `;
       box.appendChild(row);
@@ -2453,17 +2465,17 @@
       const cameras = [];
       rows.forEach((r, i) => {
         const cName = r.querySelector(".cam-name").value.trim();
-        const cSafety = r.querySelector(".cam-safety") ? r.querySelector(".cam-safety").value.trim() : "";
-        const cSerial = r.querySelector(".cam-serial") ? r.querySelector(".cam-serial").value.trim() : "";
-        const cRtsp = r.querySelector(".cam-rtsp").value.trim();
+        const cSafety = r.querySelector(".cam-safety") ? r.querySelector(".cam-safety").value.trim().toUpperCase() : "";
+        const cSerial = r.querySelector(".cam-serial") ? r.querySelector(".cam-serial").value.trim().toUpperCase() : "";
         cameras.push({
           id: `cam_${i + 1}`,
           name: cName || `Cámara ${i + 1}`,
-          ip: cRtsp.startsWith("rtsp://") ? "" : cRtsp,
-          rtsp: cRtsp,
-          rtsp_sub: cRtsp,
           safety_code: cSafety,
-          serial_number: cSerial
+          serial_number: cSerial,
+          ip: "",
+          rtsp: "",
+          rtsp_sub: "",
+          location: "General"
         });
       });
 

@@ -46,16 +46,35 @@ class CameraManager:
                 return c
         return None
 
-    def add(self, name: str, location: str, ip: str, port: int, user: str, password: str, rtsp_sub: Optional[str] = None, rtsp_main: Optional[str] = None) -> Dict[str, Any]:
+    def add(
+        self,
+        name: str,
+        location: str = "General",
+        safety_code: str = "",
+        serial_number: str = "",
+        ip: str = "",
+        port: int = 554,
+        user: str = "admin",
+        password: str = "",
+        rtsp_sub: Optional[str] = None,
+        rtsp_main: Optional[str] = None
+    ) -> Dict[str, Any]:
         self._load()
         cam_id = f"cam_{uuid.uuid4().hex[:6]}"
-        sub_url = rtsp_sub or f"rtsp://{user}:{password}@{ip}:{port}/cam/realmonitor?channel=1&subtype=1"
-        main_url = rtsp_main or f"rtsp://{user}:{password}@{ip}:{port}/cam/realmonitor?channel=1&subtype=0"
+        effective_pass = password or safety_code
+        if ip:
+            sub_url = rtsp_sub or f"rtsp://{user}:{effective_pass}@{ip}:{port}/cam/realmonitor?channel=1&subtype=1"
+            main_url = rtsp_main or f"rtsp://{user}:{effective_pass}@{ip}:{port}/cam/realmonitor?channel=1&subtype=0"
+        else:
+            sub_url = rtsp_sub or f"p2p://{safety_code}"
+            main_url = rtsp_main or f"p2p://{safety_code}"
 
         new_cam = {
             "id": cam_id,
             "name": name.strip(),
             "location": location.strip() if location else "General",
+            "safety_code": safety_code.strip().upper(),
+            "serial_number": serial_number.strip().upper(),
             "ip": ip.strip(),
             "port": port,
             "user": user.strip(),
@@ -65,7 +84,7 @@ class CameraManager:
         }
         self.cameras.append(new_cam)
         self._save(self.cameras)
-        logger.info(f"Nueva cámara registrada: {name} ({cam_id})")
+        logger.info(f"Nueva cámara registrada: {name} ({cam_id}) [Safety Code: {safety_code}]")
         return new_cam
 
     def delete(self, camera_id: str) -> bool:

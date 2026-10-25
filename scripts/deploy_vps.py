@@ -40,6 +40,7 @@ def main():
         ("core/camera_manager.py", "/tmp/camera_manager.py", "/app/core/camera_manager.py"),
         ("core/config.py", "/tmp/config.py", "/app/core/config.py"),
         ("engine/stream_capture.py", "/tmp/stream_capture.py", "/app/engine/stream_capture.py"),
+        ("engine/vision_pipeline.py", "/tmp/vision_pipeline.py", "/app/engine/vision_pipeline.py"),
         ("backend/main.py", "/tmp/main.py", "/app/backend/main.py"),
         ("frontend/login.html", "/tmp/login.html", "/app/frontend/login.html"),
         ("frontend/crm.html", "/tmp/crm.html", "/app/frontend/crm.html"),
@@ -75,6 +76,10 @@ def main():
     # 5. Comprobar salud y logs
     stdin, stdout, stderr = ssh.exec_command("sleep 3 && docker logs --tail 25 baddgroup-vision-ai")
     print("LOGS DEL CONTENEDOR:\n", stdout.read().decode())
+
+    # 5b. Comprobar CPU y Memoria
+    stdin, stdout, stderr = ssh.exec_command("docker stats --no-stream")
+    print("DOCKER STATS:\n", stdout.read().decode())
 
     # 6. Comprobar status de mediamtx
     stdin, stdout, stderr = ssh.exec_command("systemctl status mediamtx --no-pager")

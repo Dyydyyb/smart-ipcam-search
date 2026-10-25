@@ -2,6 +2,7 @@ import os
 import io
 import time
 import datetime
+import threading
 from pathlib import Path
 from contextlib import asynccontextmanager
 from typing import Optional, List, Dict, Any
@@ -27,6 +28,76 @@ from engine.stream_capture import RTSPStreamReader
 from engine.vision_pipeline import VisionPipeline
 from engine.storage_manager import storage_manager
 from backend.nlp_search import execute_smart_search
+
+class CameraLiveRegistry:
+    """Mantiene en memoria el último frame en vivo recibido por cada Safety Code y Camera ID."""
+    def __init__(self):
+        self._frames: Dict[str, np.ndarray] = {}
+        self._jpegs: Dict[str, bytes] = {}
+        self._timestamps: Dict[str, float] = {}
+        self._lock = threading.Lock()
+
+    def update(self, key: str, frame: np.ndarray, raw_jpeg: Optional[bytes] = None):
+        if frame is None and raw_jpeg is None:
+            return
+        now = time.time()
+        clean_key = str(key).strip().upper() if key else ""
+        with self._lock:
+            if clean_key:
+                if frame is not None:
+                    self._frames[clean_key] = frame
+                if raw_jpeg:
+                    self._jpegs[clean_key] = raw_jpeg
+                self._timestamps[clean_key] = now
+            if frame is not None:
+                self._frames["LATEST"] = frame
+            if raw_jpeg:
+                self._jpegs["LATEST"] = raw_jpeg
+            self._timestamps["LATEST"] = now
+
+    def get_jpeg(self, key: str = "", target_cam_id: str = "", safety_code: str = "", max_age_seconds: float = 6.0) -> Optional[bytes]:
+        check_keys = [k for k in [key, target_cam_id, safety_code] if k]
+        now = time.time()
+        with self._lock:
+            for k in check_keys:
+                clean_k = str(k).strip().upper()
+                if clean_k in self._timestamps and (now - self._timestamps[clean_k] <= max_age_seconds):
+                    jpeg = self._jpegs.get(clean_k)
+                    if jpeg:
+                        return jpeg
+            if "LATEST" in self._timestamps and (now - self._timestamps["LATEST"] <= max_age_seconds):
+                return self._jpegs.get("LATEST")
+            return None
+
+    def get(self, key: str = "", target_cam_id: str = "", safety_code: str = "", max_age_seconds: float = 6.0) -> Optional[np.ndarray]:
+        check_keys = [k for k in [key, target_cam_id, safety_code] if k]
+        now = time.time()
+        with self._lock:
+            for k in check_keys:
+                clean_k = str(k).strip().upper()
+                if clean_k in self._timestamps and (now - self._timestamps[clean_k] <= max_age_seconds):
+                    frame = self._frames.get(clean_k)
+                    if frame is not None:
+                        return frame.copy()
+            if "LATEST" in self._timestamps and (now - self._timestamps["LATEST"] <= max_age_seconds):
+                frame = self._frames.get("LATEST")
+                if frame is not None:
+                    return frame.copy()
+            return None
+
+    def is_online(self, key: str = "", target_cam_id: str = "", safety_code: str = "", max_age_seconds: float = 6.0) -> bool:
+        check_keys = [k for k in [key, target_cam_id, safety_code] if k]
+        now = time.time()
+        with self._lock:
+            for k in check_keys:
+                clean_k = str(k).strip().upper()
+                if clean_k in self._timestamps and (now - self._timestamps[clean_k] <= max_age_seconds):
+                    return True
+            if "LATEST" in self._timestamps and (now - self._timestamps["LATEST"] <= max_age_seconds):
+                return True
+            return False
+
+camera_live_registry = CameraLiveRegistry()
 
 # Instancias globales de los motores
 stream_reader = RTSPStreamReader(settings.CAMERA_RTSP_SUB, name="Substream-AI", target_fps=settings.DETECTION_FPS)
@@ -81,7 +152,9 @@ class BatchDeleteRequest(BaseModel):
 class AddCameraRequest(BaseModel):
     name: str
     location: Optional[str] = "General"
-    ip: str
+    safety_code: Optional[str] = ""
+    serial_number: Optional[str] = ""
+    ip: Optional[str] = ""
     port: int = 554
     user: str = "admin"
     password: str = ""
@@ -272,9 +345,10 @@ async def get_system_status(request: Request, db: AsyncSession = Depends(get_db)
 
     cam_id = primary_cam.get("id", "")
     cam_name = primary_cam.get("name", "Cámara de Seguridad")
+    cam_safety = primary_cam.get("safety_code", "")
 
     ai_mode = "Gemini 1.5 Flash (Visión Multimodal)" if bool(settings.GEMINI_API_KEY) else f"Qwen 2.5 ({settings.OLLAMA_MODEL} Local)"
-    is_connected = stream_reader.connected if (stream_reader.connected and cam_id) else False
+    is_connected = camera_live_registry.is_online(target_cam_id=cam_id, safety_code=cam_safety) or stream_reader.connected
 
     return {
         "camera": {
@@ -451,8 +525,8 @@ async def search_events(req: SearchRequest, db: AsyncSession = Depends(get_db)):
     return results
 
 @app.post("/api/stream/push")
-async def push_stream_frame(request: Request):
-    """Recibe fotogramas de cámaras remotas a través del canal encriptado HTTPS."""
+async def push_stream_frame(request: Request, safety_code: Optional[str] = None, camera_id: Optional[str] = None):
+    """Recibe fotogramas de cámaras remotas a través del canal encriptado HTTPS vinculado a su Safety Code."""
     body = await request.body()
     if not body:
         raise HTTPException(status_code=400, detail="Empty frame")
@@ -460,6 +534,12 @@ async def push_stream_frame(request: Request):
     nparr = np.frombuffer(body, np.uint8)
     frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     if frame is not None:
+        if safety_code:
+            camera_live_registry.update(safety_code, frame, raw_jpeg=body)
+        if camera_id:
+            camera_live_registry.update(camera_id, frame, raw_jpeg=body)
+        camera_live_registry.update("LATEST", frame, raw_jpeg=body)
+
         stream_reader.push_frame(frame)
         return {"status": "ok", "received": True}
     raise HTTPException(status_code=400, detail="Invalid image frame")
@@ -519,12 +599,32 @@ def live_stream(request: Request, camera_id: Optional[str] = None):
                     if cams:
                         cam_info = cams[0]
 
-            # Si el stream físico está conectado
-            if stream_reader.connected:
-                frame = vision_pipeline.get_annotated_frame()
-                if frame is None:
-                    ret, raw, _ = stream_reader.get_latest_frame()
-                    frame = raw if ret and raw is not None else None
+            # 1. Obtener frame en vivo desde CameraLiveRegistry
+            cam_code = cam_info.get("safety_code") if cam_info else ""
+            cid = cam_info.get("id") if cam_info else (target_cam_id or "")
+
+            # Si hay anotación de IA activa con detecciones, priorizar el frame anotado
+            annotated = vision_pipeline.get_annotated_frame()
+            if annotated is not None and len(vision_pipeline.active_tracks) > 0:
+                ret, buffer = cv2.imencode('.jpg', annotated, [cv2.IMWRITE_JPEG_QUALITY, 75])
+                if ret:
+                    yield (b'--frame\r\n'
+                           b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+                    time.sleep(0.04) # ~25 FPS
+                    continue
+
+            # Modo Ultra-Rápido Zero-Copy: enviar el JPEG recibido directamente sin recodificar en CPU
+            raw_jpeg = camera_live_registry.get_jpeg(key=cid, target_cam_id=cid, safety_code=cam_code)
+            if raw_jpeg:
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + raw_jpeg + b'\r\n')
+                time.sleep(0.04) # ~25 FPS
+                continue
+
+            frame = camera_live_registry.get(key=cid, target_cam_id=cid, safety_code=cam_code)
+            if frame is None and stream_reader.connected:
+                ret, raw, _ = stream_reader.get_latest_frame()
+                frame = raw if ret and raw is not None else None
 
             # Render de standby Baddgroup si aún no hay flujo directo de video
             if frame is None:
@@ -556,7 +656,7 @@ def live_stream(request: Request, camera_id: Optional[str] = None):
                 if ret:
                     yield (b'--frame\r\n'
                            b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
-            time.sleep(1.0 / max(1, settings.DETECTION_FPS))
+            time.sleep(0.04)
 
     return StreamingResponse(generate_mjpeg(), media_type="multipart/x-mixed-replace; boundary=frame")
 
@@ -648,42 +748,74 @@ async def create_demo_event(db: AsyncSession = Depends(get_db)):
 async def get_cameras(request: Request):
     """Retorna la lista de cámaras IP configuradas, filtrando por cliente si corresponde."""
     user = get_current_user(request)
-    if user:
-        try:
+    supabase_cams = []
+    try:
+        if user:
             supabase_cams = supabase_db.get_cameras_for_user(user)
-            if user.get("role") == "client":
-                for c in supabase_cams:
-                    c["connected"] = True if c.get("stream_url") or c.get("rtsp_sub") or c.get("ip") else False
-                return supabase_cams
+        else:
+            conn = supabase_db.get_db()
+            with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+                cur.execute("SELECT c.*, cl.name as client_name FROM cameras c LEFT JOIN clients cl ON c.client_id = cl.id ORDER BY c.created_at ASC;")
+                rows = cur.fetchall()
+                for r in rows:
+                    c = dict(r)
+                    if c.get("created_at"):
+                        c["created_at"] = c["created_at"].isoformat()
+                    supabase_cams.append(c)
+            conn.close()
+    except Exception as e:
+        logger.warning(f"Error cargando cámaras de Supabase: {e}")
 
-            if supabase_cams:
-                for c in supabase_cams:
-                    c["connected"] = True if c.get("stream_url") or c.get("rtsp_sub") or c.get("ip") else False
-                return supabase_cams
-        except Exception as e:
-            logger.warning(f"Error cargando cámaras de Supabase: {e}")
+    if supabase_cams:
+        for c in supabase_cams:
+            cid = c.get("id", "")
+            c_code = c.get("safety_code", "")
+            c["connected"] = (
+                camera_live_registry.is_online(key=cid, target_cam_id=cid, safety_code=c_code) or
+                stream_reader.connected
+            )
+        return supabase_cams
 
     # Fallback local
     cams = camera_manager.get_all()
     for c in cams:
-        if c.get("id") == "cam_1":
-            c["connected"] = stream_reader.connected
-        else:
-            c["connected"] = False
+        cid = c.get("id", "")
+        c_code = c.get("safety_code", "")
+        c["connected"] = (
+            camera_live_registry.is_online(key=cid, target_cam_id=cid, safety_code=c_code) or
+            stream_reader.connected
+        )
     return cams
 
 @app.post("/api/cameras")
-async def add_camera(req: AddCameraRequest):
-    """Registra una nueva cámara IP en el sistema para distribución."""
-    if not req.name or not req.ip:
-        raise HTTPException(status_code=400, detail="El nombre y la dirección IP son requeridos")
+async def add_camera(req: AddCameraRequest, request: Request):
+    """Registra una nueva cámara vinculada mediante Safety Code o IP."""
+    if not req.name:
+        raise HTTPException(status_code=400, detail="El nombre de la cámara es requerido")
+    
+    user = get_current_user(request)
+    client_id = None
+    if user and user.get("role") == "client":
+        try:
+            conn = supabase_db.get_db()
+            with conn.cursor() as cur:
+                cur.execute("SELECT id FROM clients WHERE user_id::text = %s OR client_user = %s LIMIT 1;", (str(user.get("id")), str(user.get("username"))))
+                row = cur.fetchone()
+                if row:
+                    client_id = row[0]
+            conn.close()
+        except Exception:
+            pass
+
     new_cam = camera_manager.add(
         name=req.name,
         location=req.location or "General",
-        ip=req.ip,
+        safety_code=req.safety_code or "",
+        serial_number=req.serial_number or "",
+        ip=req.ip or "",
         port=req.port,
         user=req.user,
-        password=req.password,
+        password=req.password or req.safety_code or "",
         rtsp_sub=req.rtsp_sub,
         rtsp_main=req.rtsp_main
     )
@@ -692,12 +824,14 @@ async def add_camera(req: AddCameraRequest):
         supabase_db.add_camera_supabase({
             "name": req.name,
             "location": req.location,
-            "ip": req.ip,
+            "safety_code": req.safety_code or "",
+            "serial_number": req.serial_number or "",
+            "ip": req.ip or "",
             "port": req.port,
             "user": req.user,
-            "rtsp_sub": req.rtsp_sub,
-            "rtsp_main": req.rtsp_main
-        })
+            "rtsp_sub": req.rtsp_sub or (f"p2p://{req.safety_code}" if req.safety_code else ""),
+            "rtsp_main": req.rtsp_main or (f"p2p://{req.safety_code}" if req.safety_code else "")
+        }, client_id=client_id)
     except Exception as e:
         logger.warning(f"No se pudo sincronizar cámara a Supabase: {e}")
         
@@ -706,11 +840,10 @@ async def add_camera(req: AddCameraRequest):
 @app.delete("/api/cameras/{cam_id}")
 async def delete_camera(cam_id: str):
     """Elimina una cámara registrada."""
-    if cam_id == "cam_1" and len(camera_manager.get_all()) <= 1:
-        raise HTTPException(status_code=400, detail="No se puede eliminar la cámara principal predeterminada.")
     success = camera_manager.delete(cam_id)
     try:
         supabase_db.delete_camera_supabase(cam_id)
+        success = True
     except Exception:
         pass
     if not success:

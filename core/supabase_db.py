@@ -760,4 +760,30 @@ def get_camera_by_id(cam_id: str) -> Optional[Dict[str, Any]]:
     finally:
         conn.close()
 
+def get_camera_by_safety_code(safety_code: str) -> Optional[Dict[str, Any]]:
+    """Obtiene la cámara registrada en Supabase asociada al Safety Code indicado."""
+    if not safety_code:
+        return None
+    conn = get_db()
+    try:
+        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+            cur.execute("""
+                SELECT c.*, cl.name as client_name 
+                FROM cameras c 
+                LEFT JOIN clients cl ON c.client_id = cl.id
+                WHERE LOWER(TRIM(c.safety_code)) = LOWER(TRIM(%s))
+                ORDER BY c.created_at DESC
+                LIMIT 1;
+            """, (safety_code.strip(),))
+            row = cur.fetchone()
+            if row:
+                c = dict(row)
+                if c.get("created_at"):
+                    c["created_at"] = c["created_at"].isoformat()
+                return c
+            return None
+    finally:
+        conn.close()
+
+
 
