@@ -42,6 +42,7 @@ def main():
         ("engine/stream_capture.py", "/tmp/stream_capture.py", "/app/engine/stream_capture.py"),
         ("engine/vision_pipeline.py", "/tmp/vision_pipeline.py", "/app/engine/vision_pipeline.py"),
         ("backend/main.py", "/tmp/main.py", "/app/backend/main.py"),
+        ("backend/nlp_search.py", "/tmp/nlp_search.py", "/app/backend/nlp_search.py"),
         ("frontend/login.html", "/tmp/login.html", "/app/frontend/login.html"),
         ("frontend/crm.html", "/tmp/crm.html", "/app/frontend/crm.html"),
         ("frontend/index.html", "/tmp/index.html", "/app/frontend/index.html"),

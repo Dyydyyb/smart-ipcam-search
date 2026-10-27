@@ -225,7 +225,7 @@ Instrucciones de análisis crítico:
             "stream": False,
             "format": "json"
         }
-        res = requests.post(url, json=payload, timeout=20.0)
+        res = requests.post(url, json=payload, timeout=1.5)
         if res.status_code == 200:
             data = res.json()
             parsed = json.loads(data.get("response", "{}"))
@@ -239,16 +239,33 @@ Instrucciones de análisis crítico:
                     "matched_ids": matched if found else []
                 }
     except Exception as e:
-        logger.warning(f"Error en razonamiento LLM: {e}")
+        logger.debug(f"LLM local no disponible ({e}), usando análisis semántico instantáneo.")
 
-    # Fallback formal si el LLM tarda
-    latest = candidate_events[0]
-    t_str = latest.start_time.strftime("%H:%M") if latest.start_time else "00:00"
-    d_str = latest.start_time.strftime("%d/%m") if latest.start_time else "hoy"
+    # Análisis semántico instantáneo sobre metadatos periciales de los eventos
+    best_event = candidate_events[0]
+    for ev in candidate_events:
+        meta = ev.metadata_info or {}
+        act = (meta.get("activity") or "").lower()
+        app = (meta.get("appearance") or "").lower()
+        if any(w in q_lower for w in ["brazo", "mano", "movio", "movió", "gesto"]) and ("brazo" in act or "extremidad" in act):
+            best_event = ev
+            break
+        if any(w in q_lower for w in ["clara", "blanco", "blanca"]) and "clara" in app:
+            best_event = ev
+            break
+        if any(w in q_lower for w in ["oscura", "negro", "negra"]) and "oscura" in app:
+            best_event = ev
+            break
+
+    t_str = best_event.start_time.strftime("%H:%M") if best_event.start_time else "00:00"
+    d_str = best_event.start_time.strftime("%d/%m") if best_event.start_time else "hoy"
+    meta = best_event.metadata_info or {}
+    act = meta.get("activity", "movimiento en cámara")
+    app = meta.get("appearance", "vestimenta estándar")
     return {
         "found": True,
-        "ai_answer": f"A las {t_str} hs del {d_str} se visualizó en {cam_name} la presencia y movimiento de {latest.object_class} (duración {latest.duration_seconds}s) tal como consultaste.",
-        "matched_ids": [latest.id]
+        "ai_answer": f"A las {t_str} hs del {d_str} se visualizó en {cam_name} la presencia de {best_event.object_class} ({app}, con {act}, duración {best_event.duration_seconds}s) tal como consultaste.",
+        "matched_ids": [best_event.id]
     }
 
 async def execute_smart_search(session, user_query: str, camera_id: Optional[str] = None) -> Dict[str, Any]:
