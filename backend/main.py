@@ -644,29 +644,33 @@ def live_stream(request: Request, camera_id: Optional[str] = None):
                 ret, raw, _ = stream_reader.get_latest_frame()
                 frame = raw if ret and raw is not None else None
 
-            # Render de standby Baddgroup si aún no hay flujo directo de video
+            # Render de standby Baddgroup con estética Cyber-Tech moderna
             if frame is None:
                 cam_name = cam_info.get("name", "Cámara de Seguridad") if cam_info else "Cámara de Seguridad"
-                cam_code = cam_info.get("safety_code", "") if cam_info else ""
-                cam_serial = cam_info.get("serial_number", "") if cam_info else ""
-                cam_ip = cam_info.get("ip", "") if cam_info else ""
-
                 canvas = np.zeros((480, 640, 3), dtype=np.uint8)
-                canvas[:] = (15, 23, 42) # Slate-900
+                canvas[:] = (14, 9, 6) # Deep Cyber Dark
 
-                banner_text = f"BADDGROUP VISION - {to_ascii_banner(cam_name)}"
-                cv2.putText(canvas, banner_text, (25, 55), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (248, 250, 252), 2)
-                
-                details = "CANAL P2P ENCRIPTADO" if cam_code else (f"IP: {cam_ip}" if cam_ip else "STREAM P2P")
-                if cam_serial:
-                    details += f" | S/N: {cam_serial}"
-                cv2.putText(canvas, details, (25, 95), cv2.FONT_HERSHEY_SIMPLEX, 0.48, (59, 130, 246), 1)
+                # Líneas sutiles de cuadrícula
+                for gx in range(40, 640, 60):
+                    cv2.line(canvas, (gx, 0), (gx, 480), (22, 16, 12), 1)
+                for gy in range(40, 480, 60):
+                    cv2.line(canvas, (0, gy), (640, gy), (22, 16, 12), 1)
 
-                cv2.putText(canvas, "ESTADO: ESPERANDO TRANSMISION DE VIDEO", (25, 230), cv2.FONT_HERSHEY_SIMPLEX, 0.50, (245, 158, 11), 1)
-                cv2.putText(canvas, "CANAL ENCRIPTADO P2P LISTO PARA RECIBIR", (25, 260), cv2.FONT_HERSHEY_SIMPLEX, 0.44, (148, 163, 184), 1)
+                # Radar circular central sutil
+                cv2.circle(canvas, (320, 240), 120, (35, 28, 18), 1)
+                cv2.circle(canvas, (320, 240), 70, (45, 36, 22), 1)
+                cv2.circle(canvas, (320, 240), 20, (65, 52, 28), 1)
+                cv2.circle(canvas, (320, 240), 4, (254, 242, 0), -1) # Centro cian BGR
+
+                # Textos modernos con contraste y tipografía limpia
+                cv2.putText(canvas, "BADDGROUP VISION AI - PLATAFORMA DE SEGURIDAD", (35, 45), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (254, 242, 0), 1, cv2.LINE_AA)
+                cv2.putText(canvas, f"CANAL P2P ENCRIPTADO | {to_ascii_banner(cam_name).upper()}", (35, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.44, (180, 160, 140), 1, cv2.LINE_AA)
+
+                cv2.putText(canvas, "CANAL ENCRIPTADO P2P LISTO", (175, 230), cv2.FONT_HERSHEY_SIMPLEX, 0.56, (248, 250, 252), 1, cv2.LINE_AA)
+                cv2.putText(canvas, "Esperando flujo de video en vivo de la camara...", (145, 260), cv2.FONT_HERSHEY_SIMPLEX, 0.44, (148, 163, 184), 1, cv2.LINE_AA)
 
                 now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                cv2.putText(canvas, f"MONITOREO BADDGROUP 24/7 | {now_str}", (25, 435), cv2.FONT_HERSHEY_SIMPLEX, 0.48, (16, 185, 129), 1)
+                cv2.putText(canvas, f"MONITOREO ACTIVO 24/7 | {now_str}", (35, 445), cv2.FONT_HERSHEY_SIMPLEX, 0.42, (120, 100, 80), 1, cv2.LINE_AA)
                 frame = canvas
 
             if frame is not None:
