@@ -10,7 +10,7 @@ from typing import Optional, List, Dict, Any
 import cv2
 import numpy as np
 from fastapi import FastAPI, Depends, Query, HTTPException, Response, status, Request, WebSocket, WebSocketDisconnect
-from fastapi.responses import StreamingResponse, FileResponse, HTMLResponse
+from fastapi.responses import StreamingResponse, FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select, desc
@@ -260,8 +260,11 @@ async def serve_landing():
 @app.get("/cameras", response_class=HTMLResponse)
 @app.get("/app", response_class=HTMLResponse)
 @app.get("/dashboard", response_class=HTMLResponse)
-async def serve_cameras():
-    """Sirve la plataforma de monitoreo y gestión de cámaras de los usuarios."""
+async def serve_cameras(request: Request):
+    """Sirve la plataforma de monitoreo y gestión de cámaras de los usuarios (requiere login)."""
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login?redirect=/cameras", status_code=302)
     index_file = frontend_dir / "index.html"
     if index_file.exists():
         return HTMLResponse(content=index_file.read_text(encoding="utf-8"))
@@ -761,23 +764,14 @@ async def create_demo_event(db: AsyncSession = Depends(get_db)):
 
 @app.get("/api/cameras")
 async def get_cameras(request: Request):
-    """Retorna la lista de cámaras IP configuradas, filtrando por cliente si corresponde."""
+    """Retorna la lista de cámaras IP configuradas, filtrando por cliente si corresponde (Requiere autenticación)."""
     user = get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Debe iniciar sesión para ver las cámaras")
+        
     supabase_cams = []
     try:
-        if user:
-            supabase_cams = supabase_db.get_cameras_for_user(user)
-        else:
-            conn = supabase_db.get_db()
-            with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-                cur.execute("SELECT c.*, cl.name as client_name FROM cameras c LEFT JOIN clients cl ON c.client_id = cl.id ORDER BY c.created_at ASC;")
-                rows = cur.fetchall()
-                for r in rows:
-                    c = dict(r)
-                    if c.get("created_at"):
-                        c["created_at"] = c["created_at"].isoformat()
-                    supabase_cams.append(c)
-            conn.close()
+        supabase_cams = supabase_db.get_cameras_for_user(user)
     except Exception as e:
         logger.warning(f"Error cargando cámaras de Supabase: {e}")
 
@@ -791,16 +785,18 @@ async def get_cameras(request: Request):
             )
         return supabase_cams
 
-    # Fallback local
-    cams = camera_manager.get_all()
-    for c in cams:
-        cid = c.get("id", "")
-        c_code = c.get("safety_code", "")
-        c["connected"] = (
-            camera_live_registry.is_online(key=cid, target_cam_id=cid, safety_code=c_code) or
-            stream_reader.connected
-        )
-    return cams
+    # Fallback local únicamente para administradores si no hay cámaras en Supabase
+    if user.get("role") == "admin":
+        cams = camera_manager.get_all()
+        for c in cams:
+            cid = c.get("id", "")
+            c_code = c.get("safety_code", "")
+            c["connected"] = (
+                camera_live_registry.is_online(key=cid, target_cam_id=cid, safety_code=c_code) or
+                stream_reader.connected
+            )
+        return cams
+    return []
 
 @app.post("/api/cameras")
 async def add_camera(req: AddCameraRequest, request: Request):

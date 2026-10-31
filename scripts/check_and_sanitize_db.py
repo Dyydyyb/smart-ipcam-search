@@ -18,17 +18,18 @@ cur.execute("SELECT * FROM cameras")
 rows = cur.fetchall()
 print("CAMARAS ACTUALES:", rows)
 
-cur.execute("UPDATE cameras SET safety_code = 'BG-SEC-01' WHERE safety_code ILIKE '%L27EA4F3%'")
-cur.execute("UPDATE cameras SET rtsp_sub = REPLACE(rtsp_sub, 'L27EA4F3', 'BG-SEC-01') WHERE rtsp_sub ILIKE '%L27EA4F3%'")
-cur.execute("UPDATE cameras SET rtsp_main = REPLACE(rtsp_main, 'L27EA4F3', 'BG-SEC-01') WHERE rtsp_main ILIKE '%L27EA4F3%'")
-cur.execute("UPDATE cameras SET stream_url = REPLACE(stream_url, 'L27EA4F3', 'BG-SEC-01') WHERE stream_url ILIKE '%L27EA4F3%'")
-conn.commit()
+cur.execute("SELECT id, username, role FROM users")
+print("USERS:", cur.fetchall())
 
-cur.execute("SELECT id, name, safety_code, rtsp_sub FROM cameras")
-print("CAMARAS SANITIZADAS:", cur.fetchall())
+cur.execute("SELECT id, user_id, name, client_user FROM clients")
+print("CLIENTS:", cur.fetchall())
+
+cur.execute("SELECT id, client_id, name, safety_code FROM cameras")
+print("CAMERAS:", cur.fetchall())
 '''
 
     # Escribir script temporal dentro del contenedor
+
     sftp = ssh.open_sftp()
     with sftp.file('/tmp/sanitize_db.py', 'w') as f:
         f.write(python_code)

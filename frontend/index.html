@@ -3619,7 +3619,7 @@
           headers: token ? { "Authorization": `Bearer ${token}` } : {}
         });
         if (!authRes.ok) {
-          window.location.href = "/login?redirect=/";
+          window.location.href = "/login?redirect=/cameras";
           return;
         }
         const authData = await authRes.json();
@@ -3639,7 +3639,7 @@
           if (crmLink) crmLink.style.display = "none";
         }
       } catch (e) {
-        window.location.href = "/login?redirect=/";
+        window.location.href = "/login?redirect=/cameras";
         return;
       }
 
