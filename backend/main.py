@@ -338,6 +338,53 @@ async def auth_logout(response: Response):
     response.delete_cookie("baddgroup_token")
     return {"status": "ok", "message": "Sesión cerrada correctamente"}
 
+import urllib.request
+import json
+
+_cached_dolar_blue: Dict[str, Any] = {
+    "moneda": "USD",
+    "casa": "blue",
+    "nombre": "Blue",
+    "compra": 1545,
+    "venta": 1565,
+    "fechaActualizacion": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    "last_fetch": 0.0
+}
+_dolar_lock = threading.Lock()
+
+@app.get("/api/dolar-blue")
+def get_dolar_blue():
+    """Retorna la cotización del dólar blue en tiempo real con fallback y caché de 5 minutos."""
+    global _cached_dolar_blue
+    now = time.time()
+    if now - _cached_dolar_blue.get("last_fetch", 0.0) < 300:
+        return _cached_dolar_blue
+
+    with _dolar_lock:
+        if now - _cached_dolar_blue.get("last_fetch", 0.0) < 300:
+            return _cached_dolar_blue
+        try:
+            req = urllib.request.Request(
+                "https://dolarapi.com/v1/dolares/blue",
+                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Baddgroup/1.0"}
+            )
+            with urllib.request.urlopen(req, timeout=4.0) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                if data and "venta" in data:
+                    _cached_dolar_blue = {
+                        "moneda": data.get("moneda", "USD"),
+                        "casa": data.get("casa", "blue"),
+                        "nombre": data.get("nombre", "Blue"),
+                        "compra": data.get("compra", 1545),
+                        "venta": data.get("venta", 1565),
+                        "fechaActualizacion": data.get("fechaActualizacion", datetime.datetime.now(datetime.timezone.utc).isoformat()),
+                        "last_fetch": now
+                    }
+        except Exception as e:
+            logger.warning(f"Error fetching Dolar Blue: {e}")
+            _cached_dolar_blue["last_fetch"] = now - 240
+    return _cached_dolar_blue
+
 @app.get("/api/status")
 async def get_system_status(request: Request, db: AsyncSession = Depends(get_db)):
     """Retorna el estado de la cámara, motor de IA y conteo de eventos."""

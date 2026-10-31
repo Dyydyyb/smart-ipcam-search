@@ -329,6 +329,33 @@
       margin: 0 0.15rem;
     }
 
+    /* LIVE DOLAR BLUE BADGE & PULSE */
+    .live-dolar-header-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.28);
+      border-radius: 9999px;
+      padding: 0.32rem 0.65rem;
+      font-size: 0.74rem;
+      color: #34d399;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .live-dolar-header-pill strong {
+      color: #fff;
+    }
+    .live-pulse-dot {
+      width: 6px;
+      height: 6px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse-dot 2s infinite;
+      display: inline-block;
+    }
+
     /* SEGMENTED SWITCHER PILLS (CURRENCY & LANGUAGE) */
     .segmented-pill {
       display: inline-flex;
@@ -1881,6 +1908,12 @@
             <button type="button" class="segmented-btn" id="currBtnUSD" onclick="setCurrency('USD')">USD</button>
           </div>
 
+          <!-- Live Dolar Blue Badge -->
+          <div class="live-dolar-header-pill" id="headerDolarBadge" title="Cotización oficial en tiempo real Dólar Blue (DolarApi)">
+            <span class="live-pulse-dot"></span>
+            <span>Blue: <strong id="headerDolarRate">$1.565</strong></span>
+          </div>
+
           <!-- Language Switcher Pill -->
           <div class="segmented-pill" title="Cambiar idioma / Change language">
             <button type="button" class="segmented-btn active" id="langBtnES" onclick="setLanguage('es')">ES</button>
@@ -1930,6 +1963,10 @@
           <div class="segmented-pill">
             <button type="button" class="segmented-btn active" id="currBtnARSMobile" onclick="setCurrency('ARS')">ARS</button>
             <button type="button" class="segmented-btn" id="currBtnUSDMobile" onclick="setCurrency('USD')">USD</button>
+          </div>
+          <div class="live-dolar-header-pill" id="mobileDolarBadge">
+            <span class="live-pulse-dot"></span>
+            <span>Blue: <strong id="mobileDolarRate">$1.565</strong></span>
           </div>
           <!-- Mobile Language Switcher -->
           <div class="segmented-pill">
@@ -2360,72 +2397,165 @@
     <div class="container">
       <div class="section-header" style="text-align: center; max-width: 860px; margin: 0 auto 3.5rem;">
         <span class="section-tag" style="background: rgba(37, 99, 235, 0.15); border-color: rgba(37, 99, 235, 0.4); color: #60a5fa;" data-i18n="b2b_tag">SOLUCIÓN B2B PARA EMPRESAS DE SEGURIDAD & MONITOREO</span>
-        <h2 class="section-title" style="font-size: 2.6rem; margin: 0.8rem 0;" data-i18n="b2b_title">Potenciá tu Empresa de Seguridad con IA de Baddgroup</h2>
+        <h2 class="section-title" style="font-size: 2.6rem; margin: 0.8rem 0;" data-i18n="b2b_title">Vendé Videovigilancia Forense con IA a tus Propios Clientes</h2>
         <p class="section-desc" style="font-size: 1.05rem; line-height: 1.6; color: var(--text-muted);" data-i18n="b2b_desc">
-          Te proveemos el software completo, tu propio panel máster multi-tenant, cuentas independientes para tus clientes e infraestructura en la nube. Vos vendés el servicio con tu marca a tus abonados y nosotros ponemos la inteligencia artificial pericial.
+          Te proveemos la plataforma de software completa, tu propio panel máster multi-tenant y los servidores en la nube con IA pericial YOLOv11. Vos comercializás las cámaras e IA a tus clientes con tu propia marca o como partner oficial, con márgenes superiores al 500%.
         </p>
       </div>
 
-      <!-- Grid de Beneficios B2B -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
-        <!-- Card 1: Panel Máster -->
-        <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 2rem 1.75rem; transition: var(--transition-smooth); box-shadow: var(--shadow-card);">
-          <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(6, 182, 212, 0.12); border: 1px solid var(--border-cyan); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; color: var(--cyan-bright);">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <!-- LAS 2 MODALIDADES DE IMPLEMENTACIÓN (SETUP INICIAL) -->
+      <div class="b2b-setup-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem; margin-bottom: 2.5rem;">
+        
+        <!-- Opción 1: Implementación Partner Baddgroup -->
+        <div class="b2b-tier-card" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 2.2rem 2rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-card); transition: var(--transition-smooth);">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <span class="b2b-tier-badge badge-partner" style="background: rgba(37, 99, 235, 0.15); border: 1px solid rgba(37, 99, 235, 0.4); color: #60a5fa; padding: 0.3rem 0.8rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">CO-BRANDING • INICIO RÁPIDO</span>
+            </div>
+            <h3 style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;" data-i18n="b2b_opt1_title">Plataforma Baddgroup Partner</h3>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.5;" data-i18n="b2b_opt1_desc">
+              Implementación del software donde vendés y ofrecés la IA respaldado por la plataforma Baddgroup Vision AI a tus abonados.
+            </p>
+
+            <div style="margin: 1.25rem 0; padding: 1.2rem; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px;">
+              <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-dim); font-weight: 700; letter-spacing: 0.05em;">Inversión Única de Implementación</div>
+              <div style="display: flex; align-items: baseline; gap: 0.6rem; margin-top: 0.3rem;">
+                <span style="font-size: 2.4rem; font-weight: 800; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif;">$300 USD</span>
+                <span id="b2bPartnerArs" style="font-size: 0.95rem; color: var(--cyan-bright); font-weight: 700;">(~$470.000 ARS)</span>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Pago único por despliegue de software, aprovisionamiento de servidor y capacitación técnica.</div>
+            </div>
+
+            <ul class="plan-features-list" style="margin-bottom: 1.5rem;">
+              <li class="plan-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span><strong>Panel Máster Multi-Tenant:</strong> Administrá a todos tus clientes</span>
+              </li>
+              <li class="plan-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Cuentas independientes y aisladas para tus abonados</span>
+              </li>
+              <li class="plan-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Conexión de cámaras en 30 seg con Safety Code P2P</span>
+              </li>
+              <li class="plan-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Búsqueda forense con IA y detección de personas/autos</span>
+              </li>
+              <li class="plan-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Respaldo y soporte técnico pericial Baddgroup</span>
+              </li>
+            </ul>
           </div>
-          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.6rem; color: #fff;" data-i18n="b2b_c1_title">Tu Propio Panel Máster Multi-Tenant</h3>
-          <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.5;" data-i18n="b2b_c1_desc">
-            Centro de control administrativo total. Asigná cuentas a tus abonados, agregá cámaras remotas en segundos con su Safety Code y suspendé o reactivá servicios al instante.
+
+          <button class="btn btn-secondary" onclick="openContactModal('Implementación B2B Partner Baddgroup ($300 USD)')" style="width: 100%; justify-content: center;">
+            <span data-i18n="b2b_opt1_btn">Solicitar Partner Baddgroup ($300 USD)</span>
+          </button>
+        </div>
+
+        <!-- Opción 2: Marca Blanca / Plataforma Propia (White-Label) -->
+        <div class="b2b-tier-card" style="background: linear-gradient(180deg, rgba(13, 25, 48, 0.95) 0%, rgba(8, 14, 26, 0.95) 100%); border: 1px solid rgba(6, 182, 212, 0.5); border-radius: 20px; padding: 2.2rem 2rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 0 35px rgba(6, 182, 212, 0.15); transition: var(--transition-smooth);">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <span class="b2b-tier-badge badge-whitelabel" style="background: rgba(6, 182, 212, 0.18); border: 1px solid rgba(6, 182, 212, 0.45); color: var(--cyan-bright); padding: 0.3rem 0.8rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);">MÁXIMA AUTONOMÍA • TU PROPIA EMPRESA</span>
+            </div>
+            <h3 style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;" data-i18n="b2b_opt2_title">Marca Blanca (Plataforma Propia)</h3>
+            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.5;" data-i18n="b2b_opt2_desc">
+              Tu propia plataforma con tu marca para proveer los servicios de instalación e IA de forma independiente como empresa/negocio frente a tus clientes (sin mención de Baddgroup).
+            </p>
+
+            <div style="margin: 1.25rem 0; padding: 1.2rem; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.28); border-radius: 14px;">
+              <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--cyan-bright); font-weight: 700; letter-spacing: 0.05em;">Inversión Única Marca Blanca</div>
+              <div style="display: flex; align-items: baseline; gap: 0.6rem; margin-top: 0.3rem;">
+                <span style="font-size: 2.4rem; font-weight: 800; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif;">$500 USD</span>
+                <span id="b2bWhiteArs" style="font-size: 0.95rem; color: var(--cyan-bright); font-weight: 700;">(~$780.000 ARS)</span>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Pago único: Software personalizado con tu logo, paleta corporativa y dominio propio.</div>
+            </div>
+
+            <ul class="plan-features-list" style="margin-bottom: 1.5rem;">
+              <li class="plan-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span><strong>100% tu Marca:</strong> Tu logo, nombre, favicon y colores</span>
+              </li>
+              <li class="plan-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span><strong>Dominio Propio:</strong> <code>seguridad.tuempresa.com</code></span>
+              </li>
+              <li class="plan-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span><strong>Cero mención de Baddgroup:</strong> Todo pertenece a tu negocio</span>
+              </li>
+              <li class="plan-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span><strong>Fijá tus propios precios:</strong> 100% de margen de ganancia</span>
+              </li>
+              <li class="plan-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Portal de clientes y reportes con la identidad de tu empresa</span>
+              </li>
+            </ul>
+          </div>
+
+          <button class="btn btn-primary" onclick="openContactModal('Implementación B2B Marca Blanca Propia ($500 USD)')" style="width: 100%; justify-content: center;">
+            <span data-i18n="b2b_opt2_btn">Lanzar con Marca Blanca ($500 USD)</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ESTRUCTURA DE ABONO MENSUAL SAAS Y MARGEN DE GANANCIA -->
+      <div style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(13, 18, 30, 0.95) 100%); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 20px; padding: 2.2rem 2.2rem; margin-bottom: 2.5rem; box-shadow: 0 16px 40px rgba(0,0,0,0.5);">
+        <div style="text-align: center; max-width: 780px; margin: 0 auto 2rem;">
+          <span style="font-size: 0.8rem; font-weight: 800; color: #34d399; letter-spacing: 0.1em; text-transform: uppercase;">ABONO MENSUAL SAAS RECURRENTE • MÁXIMA ESCALABILIDAD</span>
+          <h3 style="font-size: 1.8rem; font-weight: 800; color: #fff; margin: 0.4rem 0;" data-i18n="b2b_monthly_title">Estructura de Abono Mensual para la Empresa de Seguridad</h3>
+          <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;" data-i18n="b2b_monthly_desc">
+            Pagás un costo base mínimo de plataforma y escalás por bloques de cámaras a un costo ultrabajo, asegurando un margen neto superior al 500% en cada cliente.
           </p>
         </div>
 
-        <!-- Card 2: Setup Inicial -->
-        <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 2rem 1.75rem; transition: var(--transition-smooth); box-shadow: var(--shadow-card);">
-          <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(37, 99, 235, 0.15); border: 1px solid var(--border-glow); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; color: #60a5fa;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 1.75rem;">
+          <!-- Bloque Base -->
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 1.5rem;">
+            <div style="font-size: 0.78rem; font-weight: 700; color: #60a5fa; text-transform: uppercase;">1. Abono Base Mensual</div>
+            <div style="font-size: 2.1rem; font-weight: 800; color: #fff; margin: 0.3rem 0;">$15 USD <span style="font-size: 0.9rem; font-weight: 500; color: var(--text-muted);">/ mes</span></div>
+            <div id="b2bBaseMonthlyArs" style="font-size: 0.85rem; color: var(--cyan-bright); font-weight: 600; margin-bottom: 0.5rem;">(~$23.500 ARS/mes)</div>
+            <p style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.45;">Mantiene activo tu servidor en la nube, panel máster, backups automáticos y actualizaciones del motor de IA.</p>
           </div>
-          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.6rem; color: #fff;" data-i18n="b2b_c2_title">Adelanto por Instalación de Software</h3>
-          <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.5;" data-i18n="b2b_c2_desc">
-            Configuración integral, despliegue del software y asignación de servidores dedicados por un adelanto inicial de <strong style="color: var(--cyan-bright);">$300 USD (~$470.000 ARS)</strong> pago único.
-          </p>
+
+          <!-- Bloque Escala -->
+          <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 1.5rem;">
+            <div style="font-size: 0.78rem; font-weight: 700; color: #34d399; text-transform: uppercase;">2. Escala de Cámaras con IA</div>
+            <div style="font-size: 2.1rem; font-weight: 800; color: #fff; margin: 0.3rem 0;">+$50 USD <span style="font-size: 0.9rem; font-weight: 500; color: var(--text-muted);">/ 30 cámaras</span></div>
+            <div id="b2bPer30CamsArs" style="font-size: 0.85rem; color: #34d399; font-weight: 600; margin-bottom: 0.5rem;">(~$78.000 ARS cada 30 cámaras)</div>
+            <p style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.45;">¡Cuesta solo <strong>$1.67 USD por cámara al mes</strong> para tu empresa! Vos le cobrás a tus abonados entre $10 y $25 USD por cámara.</p>
+          </div>
+
+          <!-- Proyección de Ganancia -->
+          <div style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(37, 99, 235, 0.12) 100%); border: 1px solid rgba(6, 182, 212, 0.35); border-radius: 14px; padding: 1.5rem;">
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--cyan-bright); text-transform: uppercase;">3. Ejemplo de Rentabilidad Real</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #fff; margin: 0.3rem 0;">Con 30 Cámaras Vendidas:</div>
+            <ul style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; list-style: none; padding: 0; margin: 0.5rem 0 0;">
+              <li>• Tu costo con nosotros: <strong style="color:#fff;">$65 USD/mes</strong> ($15 + $50)</li>
+              <li>• Facturación a tus clientes: <strong style="color:#34d399;">$450 USD/mes</strong> ($15/cam)</li>
+              <li style="margin-top: 0.35rem; padding-top: 0.35rem; border-top: 1px solid rgba(255,255,255,0.1); color: #fff; font-weight: 700;">
+                Tu Ganancia Neta: <span style="color: var(--cyan-bright); font-size: 1rem;">+$385 USD/mes (+590% margen)</span>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        <!-- Card 3: Modelo Escalar por Cámara -->
-        <div style="background: var(--bg-card); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 16px; padding: 2rem 1.75rem; transition: var(--transition-smooth); box-shadow: 0 0 25px rgba(6, 182, 212, 0.12);">
-          <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; color: #34d399;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-          </div>
-          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.6rem; color: #fff;" data-i18n="b2b_c3_title">Abono Base + Escala por Cámara Vendida</h3>
-          <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.5;" data-i18n="b2b_c3_desc">
-            Precio base de plataforma de <strong style="color: #fff;">$95.000 ARS/mes ($60 USD/mo)</strong> + solo <strong style="color: #34d399;">$4.500 ARS/cámara ($3 USD/cámara)</strong>. Revendé a tus clientes con más de un 200% de margen.
-          </p>
-        </div>
-
-        <!-- Card 4: Operativa Pericial -->
-        <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 2rem 1.75rem; transition: var(--transition-smooth); box-shadow: var(--shadow-card);">
-          <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; color: #fbbf24;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-          </div>
-          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.6rem; color: #fff;" data-i18n="b2b_c4_title">Búsqueda Forense y Alertas en tu Central</h3>
-          <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.5;" data-i18n="b2b_c4_desc">
-            Tus operadores no pierden horas mirando pantallas inactivas. Detección YOLOv11 en milisegundos y búsqueda forense en lenguaje natural para esclarecer incidentes al instante.
-          </p>
+        <div style="text-align: center;">
+          <button class="btn btn-primary" onclick="openContactModal('Alianza B2B Empresas de Seguridad')" style="padding: 0.9rem 2rem;">
+            <span data-i18n="b2b_banner_btn">Solicitar Alianza y Demo para Empresas de Seguridad</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
         </div>
       </div>
 
-      <!-- Banner de Alianza Comercial -->
-      <div style="background: linear-gradient(135deg, rgba(13, 22, 45, 0.85) 0%, rgba(20, 32, 60, 0.75) 100%); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 20px; padding: 2.2rem 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; box-shadow: 0 12px 35px rgba(0,0,0,0.5);">
-        <div>
-          <h4 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 0.4rem; color: #fff;" data-i18n="b2b_banner_title">¿Sos dueño de una empresa de seguridad o central de monitoreo?</h4>
-          <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 680px;" data-i18n="b2b_banner_desc">
-            Solicitá una demostración corporativa y conocé nuestro plan mayorista para equipar a todos tus abonados con tecnología de videovigilancia con IA.
-          </p>
-        </div>
-        <button class="btn btn-primary" onclick="openContactModal('Alianza B2B Empresas de Seguridad')" style="padding: 0.9rem 1.8rem;">
-          <span data-i18n="b2b_banner_btn">Solicitar Alianza para Empresas</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        </button>
-      </div>
     </div>
   </section>
 
@@ -2437,9 +2567,13 @@
         <p class="section-desc" data-i18n="pricing_desc">
           Elegí la cobertura ideal para tu hogar, comercio o empresa. Todos los planes incluyen detección en tiempo real con IA.
         </p>
-        <div class="pricing-setup-notice" style="margin-top: 1.25rem; display: inline-flex; align-items: center; gap: 0.6rem; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 9999px; padding: 0.5rem 1.25rem; font-size: 0.85rem; color: #e2e8f0;">
+        <div class="pricing-setup-notice" style="margin-top: 1.25rem; display: inline-flex; align-items: center; gap: 0.75rem; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 9999px; padding: 0.5rem 1.25rem; font-size: 0.85rem; color: #e2e8f0; flex-wrap: wrap; justify-content: center;">
           <span style="color: var(--cyan-bright); font-weight: 700;">💡 Onboarding & Activación:</span>
-          <span data-i18n="pricing_setup_notice">Adelanto único por instalación y puesta en marcha de software: <strong>$300 USD (~$470.000 ARS)</strong></span>
+          <span>Adelanto único por instalación de software: <strong>$300 USD (<span id="setupNoticeARS">~$470.000 ARS</span>)</strong></span>
+          <span style="color: rgba(255,255,255,0.2);">|</span>
+          <span class="dolar-live-indicator" style="display: inline-flex; align-items: center; gap: 0.35rem; color: #34d399; font-size: 0.82rem;">
+            <span class="live-pulse-dot"></span> Dólar Blue: <strong id="pricingDolarRate">$1.565 ARS</strong> (En vivo)
+          </span>
         </div>
       </div>
 
@@ -2464,8 +2598,8 @@
             <span class="plan-amount" id="priceStarter">29.000</span>
             <span class="plan-period" id="starterPeriodLabel">ARS / mes</span>
           </div>
-          <div style="font-size: 0.78rem; color: var(--cyan-bright); font-weight: 600; margin-top: -0.6rem; margin-bottom: 0.8rem;" data-i18n="plan_setup_sub">
-            + $470.000 ARS ($300 USD) adelanto de software
+          <div style="font-size: 0.78rem; color: var(--cyan-bright); font-weight: 600; margin-top: -0.6rem; margin-bottom: 0.8rem;" class="dyn-setup-badge">
+            + $300 USD (<span class="dyn-setup-ars">~$470.000 ARS</span>) adelanto de software
           </div>
           <ul class="plan-features-list">
             <li class="plan-feature-item">
@@ -2502,8 +2636,8 @@
             <span class="plan-amount" id="pricePro">59.000</span>
             <span class="plan-period" id="proPeriodLabel">ARS / mes</span>
           </div>
-          <div style="font-size: 0.78rem; color: var(--cyan-bright); font-weight: 600; margin-top: -0.6rem; margin-bottom: 0.8rem;" data-i18n="plan_setup_sub">
-            + $470.000 ARS ($300 USD) adelanto de software
+          <div style="font-size: 0.78rem; color: var(--cyan-bright); font-weight: 600; margin-top: -0.6rem; margin-bottom: 0.8rem;" class="dyn-setup-badge">
+            + $300 USD (<span class="dyn-setup-ars">~$470.000 ARS</span>) adelanto de software
           </div>
           <ul class="plan-features-list">
             <li class="plan-feature-item">
@@ -2541,8 +2675,8 @@
           <div class="plan-price-wrap">
             <span class="plan-amount" style="font-size: 2.1rem;" data-i18n="ent_price">A Medida</span>
           </div>
-          <div style="font-size: 0.78rem; color: var(--cyan-bright); font-weight: 600; margin-top: -0.6rem; margin-bottom: 0.8rem;" data-i18n="plan_setup_sub">
-            + $470.000 ARS ($300 USD) adelanto de software
+          <div style="font-size: 0.78rem; color: var(--cyan-bright); font-weight: 600; margin-top: -0.6rem; margin-bottom: 0.8rem;" class="dyn-setup-badge">
+            + $300 USD (<span class="dyn-setup-ars">~$470.000 ARS</span>) adelanto de software
           </div>
           <ul class="plan-features-list">
             <li class="plan-feature-item">
@@ -2758,6 +2892,8 @@
             <option value="Plan Pro Comercio" selected>Plan Pro Comercio (3-6 Cámaras)</option>
             <option value="Plan Enterprise">Plan Enterprise Corporativo</option>
             <option value="Instalación Llave en Mano">Instalación Física Llave en Mano</option>
+            <option value="Implementación B2B Partner Baddgroup ($300 USD)">Empresas: Plataforma Partner Baddgroup ($300 USD)</option>
+            <option value="Implementación B2B Marca Blanca Propia ($500 USD)">Empresas: Plataforma Marca Blanca Propia ($500 USD)</option>
           </select>
         </div>
 
@@ -2847,75 +2983,82 @@
        ======================================================================== -->
   <script>
     // ==========================================================================
-    // ESTADO GLOBAL: IDIOMA, MONEDA, FACTURACIÓN Y AUTENTICACIÓN
+    // ESTADO GLOBAL: IDIOMA, MONEDA, FACTURACIÓN, DÓLAR BLUE Y AUTENTICACIÓN
     // ==========================================================================
     let currentLang = localStorage.getItem("baddgroup_lang") || "es";
     let currentCurrency = localStorage.getItem("baddgroup_currency") || "ARS";
     let currentBilling = "monthly";
+    let liveDolarBlue = parseInt(localStorage.getItem("baddgroup_dolar_rate"), 10) || 1565;
+    let dolarBlueUpdatedAt = "";
 
-    // Diccionario de Precios y Cotizador por Moneda
-    const PRICING_DATA = {
-      ARS: {
-        symbol: "$",
-        code: "ARS",
-        periodMonth: "ARS / mes",
-        periodAnnual: "ARS / mes (anual)",
-        starterMonth: "29.000",
-        starterAnnual: "23.200",
-        proMonth: "59.000",
-        proAnnual: "47.200",
-        calcBaseMonth: 10000,
-        calcBaseAnnual: 8000,
-        calcSoftwareSetup: 470000,
-        calcInstallPerCam: 200000, // 5 cámaras = $1.000.000 ARS llave en mano
-        formatPrice: (n) => `$${n.toLocaleString('es-AR')}`,
-        calcDescHardware: (monthly, equip, setup, totalInitial, cams) => 
-          `<div style="display:flex; flex-direction:column; gap:0.4rem; text-align:left; font-size:0.88rem; line-height:1.45;">
-            <div>• Abono mensual con IA: <strong style="color:var(--cyan-bright);">$${monthly.toLocaleString('es-AR')} ARS/mes</strong></div>
-            <div>• Adelanto por instalación de software: <strong style="color:#fff;">$${setup.toLocaleString('es-AR')} ARS</strong> (pago único)</div>
-            <div>• Provisión de ${cams} cámaras 2K e instalación física: <strong style="color:#34d399;">$${equip.toLocaleString('es-AR')} ARS</strong> (pago único)</div>
-            <div style="margin-top:0.35rem; padding-top:0.4rem; border-top:1px solid rgba(255,255,255,0.1); color:#fff; font-weight:700;">
-              Total Inicial (Instalación + Cámaras + Software): $${totalInitial.toLocaleString('es-AR')} ARS
-            </div>
-          </div>`,
-        calcDescSoftware: (monthly, setup, cams) => 
-          `<div style="display:flex; flex-direction:column; gap:0.4rem; text-align:left; font-size:0.88rem; line-height:1.45;">
-            <div>• Abono mensual con IA (${cams} cámaras): <strong style="color:var(--cyan-bright);">$${monthly.toLocaleString('es-AR')} ARS/mes</strong></div>
-            <div>• Adelanto por instalación de software y alta P2P: <strong style="color:#fff;">$${setup.toLocaleString('es-AR')} ARS</strong> (pago único)</div>
-            <div style="font-size:0.8rem; color:var(--text-muted);">Aprovechando tus cámaras existentes IP / RTSP sin compra de equipos nuevos.</div>
-          </div>`
-      },
-      USD: {
-        symbol: "$",
-        code: "USD",
-        periodMonth: "USD / mo",
-        periodAnnual: "USD / mo (annual)",
-        starterMonth: "19",
-        starterAnnual: "15",
-        proMonth: "39",
-        proAnnual: "31",
-        calcBaseMonth: 7,
-        calcBaseAnnual: 5.5,
-        calcSoftwareSetup: 300,
-        calcInstallPerCam: 130, // 5 cameras = $650 USD turnkey
-        formatPrice: (n) => `$${n.toLocaleString('en-US')} USD`,
-        calcDescHardware: (monthly, equip, setup, totalInitial, cams) => 
-          `<div style="display:flex; flex-direction:column; gap:0.4rem; text-align:left; font-size:0.88rem; line-height:1.45;">
-            <div>• Monthly AI fee: <strong style="color:var(--cyan-bright);">$${monthly.toLocaleString('en-US')} USD/mo</strong></div>
-            <div>• Software setup & onboarding fee: <strong style="color:#fff;">$${setup.toLocaleString('en-US')} USD</strong> (one-time)</div>
-            <div>• ${cams} 2K cameras provision & turnkey installation: <strong style="color:#34d399;">$${equip.toLocaleString('en-US')} USD</strong> (one-time)</div>
-            <div style="margin-top:0.35rem; padding-top:0.4rem; border-top:1px solid rgba(255,255,255,0.1); color:#fff; font-weight:700;">
-              Total Initial Investment (Hardware + Setup): $${totalInitial.toLocaleString('en-US')} USD
-            </div>
-          </div>`,
-        calcDescSoftware: (monthly, setup, cams) => 
-          `<div style="display:flex; flex-direction:column; gap:0.4rem; text-align:left; font-size:0.88rem; line-height:1.45;">
-            <div>• Monthly AI fee (${cams} cameras): <strong style="color:var(--cyan-bright);">$${monthly.toLocaleString('en-US')} USD/mo</strong></div>
-            <div>• Software installation & P2P cloud bridge: <strong style="color:#fff;">$${setup.toLocaleString('en-US')} USD</strong> (one-time)</div>
-            <div style="font-size:0.8rem; color:var(--text-muted);">Using your existing cameras (SaaS Software Only). No new hardware purchase needed.</div>
-          </div>`
+    // Diccionario de Precios y Cotizador Dinámico por Moneda
+    function getPricingConfig(curr) {
+      const isARS = (curr || currentCurrency) === 'ARS';
+      const setupCostARS = Math.round(300 * liveDolarBlue);
+      const setupCostUSD = 300;
+      const installPerCamARS = 200000; // 5 cámaras = $1.000.000 ARS llave en mano
+      const installPerCamUSD = Math.round(200000 / liveDolarBlue);
+
+      if (isARS) {
+        return {
+          symbol: "$",
+          code: "ARS",
+          periodMonth: "ARS / mes",
+          periodAnnual: "ARS / mes (anual)",
+          starterMonth: "29.000",
+          starterAnnual: "23.200",
+          proMonth: "59.000",
+          proAnnual: "47.200",
+          calcSoftwareSetup: setupCostARS,
+          calcInstallPerCam: installPerCamARS,
+          formatPrice: (n) => `$${Math.round(n).toLocaleString('es-AR')}`,
+          calcDescHardware: (monthly, equip, setup, totalInitial, cams) => 
+            `<div style="display:flex; flex-direction:column; gap:0.4rem; text-align:left; font-size:0.88rem; line-height:1.45;">
+              <div>• Abono mensual con IA: <strong style="color:var(--cyan-bright);">$${monthly.toLocaleString('es-AR')} ARS/mes</strong></div>
+              <div>• Adelanto por instalación de software: <strong style="color:#fff;">$${setup.toLocaleString('es-AR')} ARS</strong> ($300 USD)</div>
+              <div>• Provisión de ${cams} cámaras 2K e instalación física: <strong style="color:#34d399;">$${equip.toLocaleString('es-AR')} ARS</strong> (pago único)</div>
+              <div style="margin-top:0.35rem; padding-top:0.4rem; border-top:1px solid rgba(255,255,255,0.1); color:#fff; font-weight:700;">
+                Total Inicial (Instalación + Cámaras + Software): $${totalInitial.toLocaleString('es-AR')} ARS
+              </div>
+            </div>`,
+          calcDescSoftware: (monthly, setup, cams) => 
+            `<div style="display:flex; flex-direction:column; gap:0.4rem; text-align:left; font-size:0.88rem; line-height:1.45;">
+              <div>• Abono mensual con IA (${cams} cámaras): <strong style="color:var(--cyan-bright);">$${monthly.toLocaleString('es-AR')} ARS/mes</strong></div>
+              <div>• Adelanto por instalación de software y alta P2P: <strong style="color:#fff;">$${setup.toLocaleString('es-AR')} ARS</strong> ($300 USD)</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Aprovechando tus cámaras existentes IP / RTSP sin compra de equipos nuevos.</div>
+            </div>`
+        };
+      } else {
+        return {
+          symbol: "$",
+          code: "USD",
+          periodMonth: "USD / mo",
+          periodAnnual: "USD / mo (annual)",
+          starterMonth: "19",
+          starterAnnual: "15",
+          proMonth: "39",
+          proAnnual: "31",
+          calcSoftwareSetup: setupCostUSD,
+          calcInstallPerCam: installPerCamUSD,
+          formatPrice: (n) => `$${Math.round(n).toLocaleString('en-US')} USD`,
+          calcDescHardware: (monthly, equip, setup, totalInitial, cams) => 
+            `<div style="display:flex; flex-direction:column; gap:0.4rem; text-align:left; font-size:0.88rem; line-height:1.45;">
+              <div>• Monthly AI fee: <strong style="color:var(--cyan-bright);">$${monthly.toLocaleString('en-US')} USD/mo</strong></div>
+              <div>• Software setup & onboarding fee: <strong style="color:#fff;">$${setup.toLocaleString('en-US')} USD</strong> (one-time)</div>
+              <div>• ${cams} 2K cameras provision & turnkey installation: <strong style="color:#34d399;">$${equip.toLocaleString('en-US')} USD</strong> (one-time)</div>
+              <div style="margin-top:0.35rem; padding-top:0.4rem; border-top:1px solid rgba(255,255,255,0.1); color:#fff; font-weight:700;">
+                Total Initial Investment (Hardware + Setup): $${totalInitial.toLocaleString('en-US')} USD
+              </div>
+            </div>`,
+          calcDescSoftware: (monthly, setup, cams) => 
+            `<div style="display:flex; flex-direction:column; gap:0.4rem; text-align:left; font-size:0.88rem; line-height:1.45;">
+              <div>• Monthly AI fee (${cams} cameras): <strong style="color:var(--cyan-bright);">$${monthly.toLocaleString('en-US')} USD/mo</strong></div>
+              <div>• Software installation & P2P cloud bridge: <strong style="color:#fff;">$${setup.toLocaleString('en-US')} USD</strong> (one-time)</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Using your existing cameras (SaaS Software Only). No new hardware purchase needed.</div>
+            </div>`
+        };
       }
-    };
+    }
 
     const I18N = {
       es: {
@@ -2968,19 +3111,17 @@
         hire_desc: "Ya sea que tengas cámaras existentes instaladas o necesites un proyecto integral desde cero, Baddgroup tiene la solución adecuada para tu empresa o residencia.",
 
         b2b_tag: "SOLUCIÓN B2B PARA EMPRESAS DE SEGURIDAD & MONITOREO",
-        b2b_title: "Potenciá tu Empresa de Seguridad con IA de Baddgroup",
-        b2b_desc: "Te proveemos el software completo, tu propio panel máster multi-tenant, cuentas independientes para tus clientes e infraestructura en la nube. Vos vendés el servicio con tu marca a tus abonados y nosotros ponemos la inteligencia artificial pericial.",
-        b2b_c1_title: "Tu Propio Panel Máster Multi-Tenant",
-        b2b_c1_desc: "Centro de control administrativo total. Asigná cuentas a tus abonados, agregá cámaras remotas en segundos con su Safety Code y suspendé o reactivá servicios al instante.",
-        b2b_c2_title: "Adelanto por Instalación de Software",
-        b2b_c2_desc: "Configuración integral, despliegue del software y asignación de servidores dedicados por un adelanto inicial de $300 USD (~$470.000 ARS) pago único.",
-        b2b_c3_title: "Abono Base + Escala por Cámara Vendida",
-        b2b_c3_desc: "Precio base de plataforma de $95.000 ARS/mes ($60 USD/mo) + solo $4.500 ARS/cámara ($3 USD/cámara). Revendé a tus clientes con más de un 200% de margen.",
-        b2b_c4_title: "Búsqueda Forense y Alertas en tu Central",
-        b2b_c4_desc: "Tus operadores no pierden horas mirando pantallas inactivas. Detección YOLOv11 en milisegundos y búsqueda forense en lenguaje natural para esclarecer incidentes al instante.",
-        b2b_banner_title: "¿Sos dueño de una empresa de seguridad o central de monitoreo?",
-        b2b_banner_desc: "Solicitá una demostración corporativa y conocé nuestro plan mayorista para equipar a todos tus abonados con tecnología de videovigilancia con IA.",
-        b2b_banner_btn: "Solicitar Alianza para Empresas",
+        b2b_title: "Vendé Videovigilancia Forense con IA a tus Propios Clientes",
+        b2b_desc: "Te proveemos la plataforma de software completa, tu propio panel máster multi-tenant y los servidores en la nube con IA pericial YOLOv11. Vos comercializás las cámaras e IA a tus clientes con tu propia marca o como partner oficial, con márgenes superiores al 500%.",
+        b2b_opt1_title: "Plataforma Baddgroup Partner",
+        b2b_opt1_desc: "Implementación del software donde vendés y ofrecés la IA respaldado por la plataforma Baddgroup Vision AI a tus abonados.",
+        b2b_opt1_btn: "Solicitar Partner Baddgroup ($300 USD)",
+        b2b_opt2_title: "Marca Blanca (Plataforma Propia)",
+        b2b_opt2_desc: "Tu propia plataforma con tu marca para proveer los servicios de instalación e IA de forma independiente como empresa/negocio frente a tus clientes (sin mención de Baddgroup).",
+        b2b_opt2_btn: "Lanzar con Marca Blanca ($500 USD)",
+        b2b_monthly_title: "Estructura de Abono Mensual para la Empresa de Seguridad",
+        b2b_monthly_desc: "Pagás un costo base mínimo de plataforma y escalás por bloques de cámaras a un costo ultrabajo, asegurando un margen neto superior al 500% en cada cliente.",
+        b2b_banner_btn: "Solicitar Alianza y Demo para Empresas de Seguridad",
 
         pricing_tag: "TRANSPARENCIA TOTAL",
         pricing_title: "Planes diseñados para cada escala",
@@ -3061,19 +3202,17 @@
         hire_desc: "Whether you already have cameras installed or need a complete turnkey project from scratch, Baddgroup has the right solution for your home or enterprise.",
 
         b2b_tag: "B2B SOLUTION FOR SECURITY COMPANIES & ALARM STATIONS",
-        b2b_title: "Empower Your Security Company with Baddgroup AI",
-        b2b_desc: "We provide you with the complete software, your dedicated multi-tenant master panel, independent client accounts, and cloud infrastructure. You sell the service under your brand to your subscribers while we power the forensic AI.",
-        b2b_c1_title: "Your Own Multi-Tenant Master Panel",
-        b2b_c1_desc: "Total administrative control. Provision accounts for your subscribers, link remote cameras in seconds via Safety Code, and suspend or restore services instantly.",
-        b2b_c2_title: "Software Installation & Setup Advance",
-        b2b_c2_desc: "Comprehensive onboarding, software deployment, and dedicated server setup for a one-time initial fee of $300 USD (~$470.000 ARS).",
-        b2b_c3_title: "Base Platform Fee + Scale per Camera Sold",
-        b2b_c3_desc: "Base platform fee of $60 USD/mo ($95.000 ARS/mo) + only $3 USD/camera/mo ($4.500 ARS/camera). Resell to your clients with over 200% margin.",
-        b2b_c4_title: "Forensic Search & Real-Time Alerts for Guards",
-        b2b_c4_desc: "Operators no longer waste hours staring at idle screens. YOLOv11 detection in milliseconds and plain-language forensic queries solve events instantly.",
-        b2b_banner_title: "Do you run a security company or monitoring center?",
-        b2b_banner_desc: "Request an executive demo and discover our wholesale partner program to equip all your clients with AI video surveillance.",
-        b2b_banner_btn: "Request B2B Security Partnership",
+        b2b_title: "Sell AI Forensic Video Surveillance to Your Own Clients",
+        b2b_desc: "We provide the complete software platform, your dedicated multi-tenant master dashboard, and cloud servers running YOLOv11 forensic AI. You sell security cameras and AI to your clients under your own brand or as an official partner, with net margins over 500%.",
+        b2b_opt1_title: "Baddgroup Partner Platform",
+        b2b_opt1_desc: "Software implementation where you sell and offer AI backed by the Baddgroup Vision AI brand to your subscribers.",
+        b2b_opt1_btn: "Apply for Partner ($300 USD)",
+        b2b_opt2_title: "White-Label (Your Own Platform)",
+        b2b_opt2_desc: "Your independent platform branded with your company logo, domain, and colors to provide installation and AI services autonomously as your own business (zero Baddgroup mention).",
+        b2b_opt2_btn: "Launch with White-Label ($500 USD)",
+        b2b_monthly_title: "Monthly SaaS Fee Structure for Security Companies",
+        b2b_monthly_desc: "Pay a minimal base platform fee and scale in camera bundles at ultra-low cost, locking in net margins above 500% on every client.",
+        b2b_banner_btn: "Request B2B Security Company Partnership",
 
         pricing_tag: "TOTAL TRANSPARENCY",
         pricing_title: "Plans tailored for every scale",
@@ -3162,9 +3301,13 @@
       document.querySelectorAll('#currBtnARS, #currBtnARSMobile').forEach(el => el.classList.toggle('active', currentCurrency === 'ARS'));
       document.querySelectorAll('#currBtnUSD, #currBtnUSDMobile').forEach(el => el.classList.toggle('active', currentCurrency === 'USD'));
 
-      // Actualizar tarjetas de planes
-      updateBillingPeriodUI();
-      updateCalculator();
+      // Actualizar tarjetas de planes, conversión dólar blue y calculadora
+      if (typeof updateDolarDependentPrices === 'function') {
+        updateDolarDependentPrices();
+      } else {
+        updateBillingPeriodUI();
+        updateCalculator();
+      }
     }
 
     // 4. Selector Mensual / Anual
@@ -3192,7 +3335,7 @@
     }
 
     function updateBillingPeriodUI() {
-      const cfg = PRICING_DATA[currentCurrency] || PRICING_DATA.ARS;
+      const cfg = getPricingConfig(currentCurrency);
       const pStarter = document.getElementById('priceStarter');
       const pPro = document.getElementById('pricePro');
       const sLabel = document.getElementById('starterPeriodLabel');
@@ -3212,6 +3355,37 @@
       if (pLabel) pLabel.textContent = label;
     }
 
+    // Función armónica para calcular la cuota mensual de la calculadora (alineada con los Planes)
+    function getCameraMonthlyRate(cams, isAnnual, currency) {
+      if (currency === 'ARS') {
+        if (cams === 1) return isAnnual ? 19900 : 24900;
+        if (cams === 2) return isAnnual ? 23200 : 29000; // Plan Starter exacto ($29.000 ARS)
+        if (cams === 3) return isAnnual ? 33600 : 42000;
+        if (cams === 4) return isAnnual ? 40800 : 51000;
+        if (cams === 5) return isAnnual ? 47200 : 59000; // Plan Pro exacto ($59.000 ARS)
+        if (cams === 6) return isAnnual ? 53600 : 67000;
+        // 7 a 24 cámaras: base Plan Pro (5 cámaras) + adicional por cámara con descuentos por volumen
+        const base = isAnnual ? 47200 : 59000;
+        let extra = isAnnual ? 6800 : 8500;
+        if (cams >= 18) extra = isAnnual ? 5200 : 6500;
+        else if (cams >= 12) extra = isAnnual ? 6000 : 7500;
+        return base + (cams - 5) * extra;
+      } else {
+        // USD
+        if (cams === 1) return isAnnual ? 13 : 16;
+        if (cams === 2) return isAnnual ? 15 : 19; // Plan Starter exacto ($19 USD)
+        if (cams === 3) return isAnnual ? 22 : 28;
+        if (cams === 4) return isAnnual ? 27 : 34;
+        if (cams === 5) return isAnnual ? 31 : 39; // Plan Pro exacto ($39 USD)
+        if (cams === 6) return isAnnual ? 35 : 44;
+        const base = isAnnual ? 31 : 39;
+        let extra = isAnnual ? 4.5 : 5.5;
+        if (cams >= 18) extra = isAnnual ? 3.4 : 4.2;
+        else if (cams >= 12) extra = isAnnual ? 3.9 : 4.8;
+        return Math.round(base + (cams - 5) * extra);
+      }
+    }
+
     // 5. Calculadora Dinámica de Presupuesto
     function updateCalculator() {
       const slider = document.getElementById('camRangeSlider');
@@ -3227,15 +3401,12 @@
         : (cams === 1 ? 'Cámara' : 'Cámaras');
       badge.textContent = `${cams} ${camWord}`;
 
-      const cfg = PRICING_DATA[currentCurrency] || PRICING_DATA.ARS;
-      const basePerCam = currentBilling === 'annual' ? cfg.calcBaseAnnual : cfg.calcBaseMonth;
-      let monthlyCost = Math.round(cams * basePerCam);
+      const cfg = getPricingConfig(currentCurrency);
+      const isAnnual = currentBilling === 'annual';
+      const monthlyCost = getCameraMonthlyRate(cams, isAnnual, currentCurrency);
 
-      if (cams >= 8) {
-        monthlyCost = Math.round(monthlyCost * 0.85); // 15% Descuento por volumen
-      }
-
-      totalEl.textContent = `${cfg.formatPrice(monthlyCost)} / mes`;
+      const periodSuffix = currentLang === 'en' ? (isAnnual ? ' / mo (annual)' : ' / mo') : (isAnnual ? ' / mes (anual)' : ' / mes');
+      totalEl.textContent = `${cfg.formatPrice(monthlyCost)}${periodSuffix}`;
 
       const setupCost = cfg.calcSoftwareSetup;
       if (installCheck && installCheck.checked) {
@@ -3502,6 +3673,89 @@
       window.open(`https://wa.me/5491169957772?text=${encodeURIComponent(msg)}`, '_blank');
       closeContactModal();
     }
+
+
+    // ==========================================================================
+    // INTEGRACIÓN API DÓLAR BLUE EN TIEMPO REAL (DOLARAPI + FALLBACK PROXY)
+    // ==========================================================================
+    async function fetchLiveDolarBlue() {
+      try {
+        const res = await fetch('https://dolarapi.com/v1/dolares/blue', { mode: 'cors' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.venta) {
+            applyDolarBlueRate(data.venta, data.fechaActualizacion);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn("Direct DolarApi error, attempting backend proxy...", e);
+      }
+
+      try {
+        const res = await fetch('/api/dolar-blue');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.venta) {
+            applyDolarBlueRate(data.venta, data.fechaActualizacion);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn("Backend Dolar Blue proxy error, using cached rate", e);
+      }
+    }
+
+    function applyDolarBlueRate(rate, fecha) {
+      if (!rate || isNaN(rate)) return;
+      liveDolarBlue = Math.round(rate);
+      dolarBlueUpdatedAt = fecha || "";
+      localStorage.setItem("baddgroup_dolar_rate", liveDolarBlue);
+
+      // Actualizar indicadores visuales de tasa
+      const formattedRate = `$${liveDolarBlue.toLocaleString('es-AR')}`;
+      const headerRateEl = document.getElementById('headerDolarRate');
+      const mobileRateEl = document.getElementById('mobileDolarRate');
+      const pricingRateEl = document.getElementById('pricingDolarRate');
+      if (headerRateEl) headerRateEl.textContent = formattedRate;
+      if (mobileRateEl) mobileRateEl.textContent = formattedRate;
+      if (pricingRateEl) pricingRateEl.textContent = `${formattedRate} ARS`;
+
+      // Actualizar precios dinámicos vinculados al dólar
+      updateDolarDependentPrices();
+    }
+
+    function updateDolarDependentPrices() {
+      const setupARS = Math.round(300 * liveDolarBlue);
+      const b2bPartnerARS = Math.round(300 * liveDolarBlue);
+      const b2bWhiteARS = Math.round(500 * liveDolarBlue);
+      const b2bBaseMonthlyARS = Math.round(15 * liveDolarBlue);
+      const b2bPer30CamsARS = Math.round(50 * liveDolarBlue);
+
+      const setupNoticeARSEl = document.getElementById('setupNoticeARS');
+      if (setupNoticeARSEl) setupNoticeARSEl.textContent = `~$${setupARS.toLocaleString('es-AR')} ARS`;
+
+      document.querySelectorAll('.dyn-setup-ars').forEach(el => {
+        el.textContent = `~$${setupARS.toLocaleString('es-AR')} ARS`;
+      });
+
+      const partnerArsEl = document.getElementById('b2bPartnerArs');
+      const whiteArsEl = document.getElementById('b2bWhiteArs');
+      const baseMonthlyArsEl = document.getElementById('b2bBaseMonthlyArs');
+      const per30CamsArsEl = document.getElementById('b2bPer30CamsArs');
+
+      if (partnerArsEl) partnerArsEl.textContent = `(~$${b2bPartnerARS.toLocaleString('es-AR')} ARS)`;
+      if (whiteArsEl) whiteArsEl.textContent = `(~$${b2bWhiteARS.toLocaleString('es-AR')} ARS)`;
+      if (baseMonthlyArsEl) baseMonthlyArsEl.textContent = `(~$${b2bBaseMonthlyARS.toLocaleString('es-AR')} ARS/mes)`;
+      if (per30CamsArsEl) per30CamsArsEl.textContent = `(~$${b2bPer30CamsARS.toLocaleString('es-AR')} cada 30 cámaras)`;
+
+      updateBillingPeriodUI();
+      updateCalculator();
+    }
+
+    // Inicializar Dólar Blue en tiempo real
+    fetchLiveDolarBlue();
+    setInterval(fetchLiveDolarBlue, 300000); // Actualizar cada 5 minutos
 
     // Inicialización al cargar la página
     document.addEventListener("DOMContentLoaded", () => {
