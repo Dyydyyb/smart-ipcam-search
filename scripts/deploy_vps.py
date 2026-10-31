@@ -48,6 +48,14 @@ def main():
         ("frontend/index.html", "/tmp/index.html", "/app/frontend/index.html"),
         ("frontend/landing.html", "/tmp/landing.html", "/app/frontend/landing.html"),
         ("frontend/platform_demo_capture.jpg", "/tmp/platform_demo_capture.jpg", "/app/frontend/platform_demo_capture.jpg"),
+        ("frontend/cam_feed_1.jpg", "/tmp/cam_feed_1.jpg", "/app/frontend/cam_feed_1.jpg"),
+        ("frontend/cam_feed_2.jpg", "/tmp/cam_feed_2.jpg", "/app/frontend/cam_feed_2.jpg"),
+        ("frontend/cam_feed_3.jpg", "/tmp/cam_feed_3.jpg", "/app/frontend/cam_feed_3.jpg"),
+        ("frontend/cam_feed_4.jpg", "/tmp/cam_feed_4.jpg", "/app/frontend/cam_feed_4.jpg"),
+        ("frontend/event_thumb_1.jpg", "/tmp/event_thumb_1.jpg", "/app/frontend/event_thumb_1.jpg"),
+        ("frontend/event_thumb_2.jpg", "/tmp/event_thumb_2.jpg", "/app/frontend/event_thumb_2.jpg"),
+        ("frontend/event_thumb_3.jpg", "/tmp/event_thumb_3.jpg", "/app/frontend/event_thumb_3.jpg"),
+        ("frontend/event_thumb_4.jpg", "/tmp/event_thumb_4.jpg", "/app/frontend/event_thumb_4.jpg"),
         ("storage/cameras.json", "/tmp/cameras.json", "/app/storage/cameras.json"),
         (".env", "/tmp/.env", "/app/.env")
     ]
