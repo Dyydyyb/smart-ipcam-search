@@ -10,9 +10,9 @@ class Settings(BaseSettings):
     CAMERA_IP: str = "192.168.100.209"
     CAMERA_PORT: int = 554
     CAMERA_USER: str = "admin"
-    CAMERA_PASSWORD: str = "L27EA4F3"
-    CAMERA_RTSP_MAIN: str = "rtsp://admin:L27EA4F3@192.168.100.209:554/cam/realmonitor?channel=1&subtype=0"
-    CAMERA_RTSP_SUB: str = "rtsp://admin:L27EA4F3@192.168.100.209:554/cam/realmonitor?channel=1&subtype=1"
+    CAMERA_PASSWORD: str = "BG-SEC-01"
+    CAMERA_RTSP_MAIN: str = "rtsp://admin:BG-SEC-01@192.168.100.209:554/cam/realmonitor?channel=1&subtype=0"
+    CAMERA_RTSP_SUB: str = "rtsp://admin:BG-SEC-01@192.168.100.209:554/cam/realmonitor?channel=1&subtype=1"
 
     # Database
     DATABASE_URL: str = f"sqlite+aiosqlite:///{BASE_DIR / 'storage' / 'smart_cam.db'}"

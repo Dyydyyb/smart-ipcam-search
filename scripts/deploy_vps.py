@@ -46,6 +46,7 @@ def main():
         ("frontend/login.html", "/tmp/login.html", "/app/frontend/login.html"),
         ("frontend/crm.html", "/tmp/crm.html", "/app/frontend/crm.html"),
         ("frontend/index.html", "/tmp/index.html", "/app/frontend/index.html"),
+        ("frontend/landing.html", "/tmp/landing.html", "/app/frontend/landing.html"),
         ("storage/cameras.json", "/tmp/cameras.json", "/app/storage/cameras.json"),
         (".env", "/tmp/.env", "/app/.env")
     ]

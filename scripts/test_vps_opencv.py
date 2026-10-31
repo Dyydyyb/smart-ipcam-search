@@ -70,7 +70,7 @@ def test_vps_opencv():
     
     time.sleep(2)
     print("Probando captura con OpenCV dentro del contenedor Docker en el VPS...")
-    cmd = "docker exec baddgroup-vision-ai python -c \"import cv2, os; os.environ['OPENCV_FFMPEG_CAPTURE_OPTIONS']='rtsp_transport;tcp'; cap=cv2.VideoCapture('rtsp://admin:L27EA4F3@host.docker.internal:18554/cam/realmonitor?channel=1&subtype=1'); print('VPS OPENCV OPENED:', cap.isOpened()); ret, frame = cap.read(); print('VPS READ FRAME:', ret, 'SHAPE:', frame.shape if ret else None); cap.release()\""
+    cmd = "docker exec baddgroup-vision-ai python -c \"import cv2, os; os.environ['OPENCV_FFMPEG_CAPTURE_OPTIONS']='rtsp_transport;tcp'; cap=cv2.VideoCapture('rtsp://admin:BG-SEC-01@host.docker.internal:18554/cam/realmonitor?channel=1&subtype=1'); print('VPS OPENCV OPENED:', cap.isOpened()); ret, frame = cap.read(); print('VPS READ FRAME:', ret, 'SHAPE:', frame.shape if ret else None); cap.release()\""
     
     stdin, stdout, stderr = ssh.exec_command(cmd)
     out = stdout.read().decode('utf-8', errors='replace')

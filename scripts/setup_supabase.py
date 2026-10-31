@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS cameras (
     port INT DEFAULT 554,
     camera_user VARCHAR(80) DEFAULT 'admin',
     serial_number VARCHAR(100), -- Para IMOU / Dahua P2P Cloud
-    safety_code VARCHAR(100),   -- Clave de seguridad (ej: L27EA4F3)
+    safety_code VARCHAR(100),   -- Clave de seguridad (ej: BG-SEC-01)
     rtsp_sub TEXT,
     rtsp_main TEXT,
     stream_url TEXT,

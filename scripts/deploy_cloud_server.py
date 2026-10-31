@@ -75,9 +75,9 @@ def main():
     env_content = """CAMERA_IP=192.168.100.209
 CAMERA_PORT=554
 CAMERA_USER=admin
-CAMERA_PASSWORD=L27EA4F3
-CAMERA_RTSP_SUB=rtsp://admin:L27EA4F3@192.168.100.209:554/cam/realmonitor?channel=1&subtype=1
-CAMERA_RTSP_MAIN=rtsp://admin:L27EA4F3@192.168.100.209:554/cam/realmonitor?channel=1&subtype=0
+CAMERA_PASSWORD=BG-SEC-01
+CAMERA_RTSP_SUB=rtsp://admin:BG-SEC-01@192.168.100.209:554/cam/realmonitor?channel=1&subtype=1
+CAMERA_RTSP_MAIN=rtsp://admin:BG-SEC-01@192.168.100.209:554/cam/realmonitor?channel=1&subtype=0
 GEMINI_API_KEY=
 GEMINI_MODEL=gemini-1.5-flash
 OLLAMA_HOST=http://host.docker.internal:11434

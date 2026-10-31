@@ -307,6 +307,9 @@
         <span id="submitBtnText">Ingresar al Sistema</span>
         <svg class="v-icon" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
       </button>
+      <div style="text-align:center; margin-top:0.75rem;">
+        <a href="/" style="color:#64748b; font-size:0.82rem; text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#00f2fe'" onmouseout="this.style.color='#64748b'">← Volver a la Presentación Baddgroup</a>
+      </div>
     </form>
   </div>
 
@@ -379,7 +382,7 @@
           } else if (data.user.role === "admin") {
             window.location.href = "/crm";
           } else {
-            window.location.href = "/";
+            window.location.href = "/cameras";
           }
         } else {
           errMsg.textContent = data.detail || "Usuario o contraseña incorrectos.";

@@ -1,0 +1,2693 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baddgroup Vision AI | Plataforma de Videovigilancia Inteligente y Búsqueda Forense con IA</title>
+  <meta name="description" content="Transformá tus cámaras de seguridad pasivas en un sistema de videovigilancia inteligente activo. Detección YOLOv11 en tiempo real, búsqueda pericial en lenguaje natural y compatibilidad universal.">
+  <meta name="theme-color" content="#06080e">
+
+  <!-- OpenGraph / Social -->
+  <meta property="og:title" content="Baddgroup Vision AI | Videovigilancia Inteligente con IA">
+  <meta property="og:description" content="Detección instantánea de personas y vehículos, búsqueda en lenguaje natural y monitoreo 24/7 en la nube.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       VARIABLES Y PALETA DE COLORES PREMIUM (DARK TECH / GLOW CYBERNETIC)
+       ========================================================================== */
+    :root {
+      --bg-dark: #05070e;
+      --bg-surface: #0a0e17;
+      --bg-card: rgba(13, 18, 30, 0.72);
+      --bg-card-hover: rgba(20, 28, 48, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(37, 99, 235, 0.4);
+      --border-cyan: rgba(6, 182, 212, 0.5);
+
+      --cyan-bright: #00f2fe;
+      --cyan-glow: #06b6d4;
+      --blue-accent: #2563eb;
+      --blue-electric: #3b82f6;
+      --indigo-glow: #6366f1;
+      --emerald-accent: #10b981;
+      --amber-accent: #f59e0b;
+
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --gradient-brand: linear-gradient(135deg, #00f2fe 0%, #3b82f6 50%, #6366f1 100%);
+      --gradient-glow: radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.22) 0%, rgba(37, 99, 235, 0.12) 45%, transparent 75%);
+      --glass-blur: blur(20px);
+      --shadow-glow: 0 16px 48px -12px rgba(6, 182, 212, 0.25);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+      --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* BACKGROUND PARTICLES / MESH */
+    .bg-mesh-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(37, 99, 235, 0.18), transparent 70%),
+        radial-gradient(circle at 85% 30%, rgba(6, 182, 212, 0.12), transparent 50%),
+        radial-gradient(circle at 15% 60%, rgba(99, 102, 241, 0.1), transparent 50%),
+        linear-gradient(180deg, rgba(5, 7, 14, 0.4) 0%, rgba(5, 7, 14, 1) 100%);
+    }
+
+    #neural-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.45;
+    }
+
+    /* CONTENEDOR GENERAL */
+    .container {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* TIPOGRAFÍA */
+    h1, h2, h3, h4, .font-display {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.03em;
+      color: var(--text-main);
+    }
+
+    .gradient-text {
+      background: var(--gradient-brand);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+
+    /* BOTONES */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.4rem;
+      border-radius: 9999px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--gradient-brand);
+      color: #06080e;
+      font-weight: 700;
+      box-shadow: 0 0 24px rgba(6, 182, 212, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 32px rgba(6, 182, 212, 0.6);
+      filter: brightness(1.08);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      backdrop-filter: blur(12px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      color: #fff;
+    }
+
+    .btn-glow {
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid var(--border-cyan);
+      color: var(--cyan-bright);
+    }
+
+    .btn-glow:hover {
+      background: rgba(6, 182, 212, 0.22);
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.35);
+      transform: translateY(-2px);
+    }
+
+    /* BADGE CON GLOW */
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      color: var(--cyan-bright);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      box-shadow: 0 0 18px rgba(6, 182, 212, 0.2);
+    }
+
+    .pill-badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cyan-bright);
+      box-shadow: 0 0 8px var(--cyan-bright);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* ==========================================================================
+       HEADER & NAVEGACIÓN
+       ========================================================================== */
+    header.site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(6, 9, 16, 0.82);
+      backdrop-filter: var(--glass-blur);
+      border-bottom: 1px solid var(--border-subtle);
+      transition: var(--transition-smooth);
+    }
+
+    .nav-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .brand-icon-wrap {
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      line-height: 1.1;
+    }
+
+    .brand-tagline {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan-bright);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: var(--transition-smooth);
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    /* ==========================================================================
+       HERO SECTION (DISEÑO SAAS INSPIRADO EN LA REFERENCIA)
+       ========================================================================== */
+    section.hero-section {
+      padding: 5rem 0 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.75rem;
+    }
+
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      color: #ffffff;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-subtitle {
+      font-size: 1.18rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+      max-width: 740px;
+      font-weight: 400;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+
+    .hero-trust-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      margin-top: 0.5rem;
+    }
+
+    .hero-trust-strip span {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .hero-trust-strip svg {
+      color: var(--emerald-accent);
+    }
+
+    /* ==========================================================================
+       HERO INTERACTIVE SHOWCASE (FLOATING SAAS UI PREVIEW)
+       ========================================================================== */
+    .hero-preview-wrapper {
+      margin-top: 3.5rem;
+      position: relative;
+      perspective: 1200px;
+    }
+
+    /* Aura de luz radial bajo el mockup de la captura */
+    .hero-preview-glow {
+      position: absolute;
+      bottom: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 85%;
+      height: 240px;
+      background: radial-gradient(ellipse at 50% 100%, rgba(0, 242, 254, 0.28) 0%, rgba(37, 99, 235, 0.2) 40%, transparent 75%);
+      filter: blur(40px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .saas-mockup-card {
+      background: rgba(11, 15, 26, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(6, 182, 212, 0.15);
+      backdrop-filter: var(--glass-blur);
+      position: relative;
+      z-index: 2;
+      transition: var(--transition-smooth);
+    }
+
+    .saas-mockup-card:hover {
+      border-color: rgba(6, 182, 212, 0.35);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85), 0 0 30px rgba(6, 182, 212, 0.25);
+    }
+
+    /* Mockup Header Bar */
+    .mockup-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 1.5rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .mockup-left {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .mockup-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mockup-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .mockup-dot.red { background: #ef4444; }
+    .mockup-dot.yellow { background: #f59e0b; }
+    .mockup-dot.green { background: #10b981; }
+
+    .mockup-cam-select {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      padding: 0.4rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mockup-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .live-status-pill {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: var(--emerald-accent);
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .live-status-pill .indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--emerald-accent);
+      box-shadow: 0 0 8px var(--emerald-accent);
+      animation: pulse-dot 1.5s infinite;
+    }
+
+    /* Mockup Metrics Grid */
+    .mockup-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .mockup-metric-card {
+      background: rgba(17, 24, 39, 0.55);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+      text-align: left;
+      transition: var(--transition-smooth);
+    }
+
+    .mockup-metric-card:hover {
+      background: rgba(24, 34, 56, 0.75);
+      border-color: rgba(6, 182, 212, 0.3);
+    }
+
+    .metric-label {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      margin-bottom: 0.35rem;
+    }
+
+    .metric-value {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+    }
+
+    .metric-delta {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--emerald-accent);
+    }
+
+    /* Mockup Viewport & AI Live Interaction */
+    .mockup-viewport-split {
+      display: grid;
+      grid-template-columns: 1.8fr 1.2fr;
+      gap: 1.25rem;
+      text-align: left;
+    }
+
+    .mockup-camera-viewport {
+      background: #020408;
+      border-radius: 14px;
+      border: 1px solid var(--border-subtle);
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 16/9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .simulated-stream-bg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: contrast(1.05) brightness(0.9);
+      opacity: 0.85;
+    }
+
+    /* Canvas de Bounding Boxes de IA */
+    .ai-bounding-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .bbox-simulated {
+      position: absolute;
+      top: 25%;
+      left: 38%;
+      width: 24%;
+      height: 52%;
+      border: 2px solid #00f2fe;
+      border-radius: 4px;
+      box-shadow: 0 0 16px rgba(0, 242, 254, 0.4);
+      animation: bbox-float 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes bbox-float {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(8px, -4px); }
+      100% { transform: translate(-6px, 6px); }
+    }
+
+    .bbox-tag {
+      position: absolute;
+      top: -24px;
+      left: -2px;
+      background: #00f2fe;
+      color: #040711;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 3px;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .cam-osd-top {
+      position: absolute;
+      top: 12px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.74rem;
+      font-family: monospace;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .cam-osd-bottom {
+      position: absolute;
+      bottom: 12px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Mockup AI Search Engine Panel */
+    .mockup-ai-panel {
+      background: rgba(14, 20, 34, 0.65);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .ai-panel-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ai-search-interactive-box {
+      background: rgba(6, 9, 16, 0.85);
+      border: 1px solid var(--border-cyan);
+      border-radius: 10px;
+      padding: 0.75rem 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      box-shadow: 0 0 16px rgba(6, 182, 212, 0.15);
+    }
+
+    .ai-search-interactive-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 0.82rem;
+      width: 100%;
+      font-family: inherit;
+    }
+
+    .ai-chips-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .ai-chip-prompt {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      text-align: left;
+    }
+
+    .ai-chip-prompt:hover {
+      background: rgba(6, 182, 212, 0.12);
+      border-color: var(--border-cyan);
+      color: #fff;
+      transform: translateX(3px);
+    }
+
+    .ai-result-demo-card {
+      background: rgba(6, 182, 212, 0.06);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      border-radius: 10px;
+      padding: 0.85rem;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: #e2e8f0;
+      margin-top: auto;
+    }
+
+    .ai-result-demo-card .highlight {
+      color: var(--cyan-bright);
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       SECCIÓN: DE QUÉ TRATA (EL VALOR) - COMPARATIVA
+       ========================================================================== */
+    section.section-value {
+      padding: 6rem 0;
+      position: relative;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 3.5rem;
+    }
+
+    .section-tag {
+      color: var(--cyan-bright);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.65rem;
+      display: block;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .section-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Comparison Grid */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .comparison-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 2rem;
+      backdrop-filter: var(--glass-blur);
+      transition: var(--transition-smooth);
+    }
+
+    .comparison-card.bad {
+      border-color: rgba(239, 68, 68, 0.25);
+    }
+
+    .comparison-card.good {
+      border-color: rgba(6, 182, 212, 0.4);
+      background: linear-gradient(180deg, rgba(13, 22, 40, 0.85) 0%, rgba(8, 14, 25, 0.85) 100%);
+      box-shadow: 0 0 35px rgba(6, 182, 212, 0.12);
+    }
+
+    .comparison-header {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .comparison-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .comparison-card.bad .comparison-icon {
+      background: rgba(239, 68, 68, 0.12);
+      color: #ef4444;
+    }
+
+    .comparison-card.good .comparison-icon {
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--cyan-bright);
+    }
+
+    .comparison-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .comparison-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .comparison-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: var(--text-muted);
+    }
+
+    .comparison-card.bad .item-icon { color: #ef4444; flex-shrink: 0; margin-top: 2px; }
+    .comparison-card.good .item-icon { color: var(--cyan-bright); flex-shrink: 0; margin-top: 2px; }
+
+    /* 4 Pillars Grid */
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+
+    .pillar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.75rem 1.4rem;
+      backdrop-filter: var(--glass-blur);
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+
+    .pillar-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-cyan);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .pillar-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan-bright);
+      margin-bottom: 1.2rem;
+    }
+
+    .pillar-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+
+    .pillar-desc {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    /* ==========================================================================
+       SECCIÓN: CÓMO CONTRATAR (SOFTWARE VS INSTALACIÓN FÍSICA)
+       ========================================================================== */
+    section.section-hire {
+      padding: 6rem 0;
+      position: relative;
+    }
+
+    .hire-options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .hire-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 22px;
+      padding: 2.5rem;
+      backdrop-filter: var(--glass-blur);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition-smooth);
+    }
+
+    .hire-card:hover {
+      border-color: rgba(6, 182, 212, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    }
+
+    .hire-tag-badge {
+      display: inline-block;
+      align-self: flex-start;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.2rem;
+    }
+
+    .hire-card.software .hire-tag-badge {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--blue-electric);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .hire-card.installation .hire-tag-badge {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald-accent);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .hire-card-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+    }
+
+    .hire-card-desc {
+      font-size: 0.96rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .hire-features-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      margin-bottom: 2.2rem;
+    }
+
+    .hire-feature-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 0.92rem;
+      color: #e2e8f0;
+    }
+
+    .hire-feature-item svg {
+      color: var(--cyan-bright);
+      flex-shrink: 0;
+    }
+
+    .hire-card .btn {
+      margin-top: auto;
+      width: 100%;
+    }
+
+    /* ==========================================================================
+       SECCIÓN: PLANES Y PRECIOS (PRICING)
+       ========================================================================== */
+    section.section-pricing {
+      padding: 6rem 0;
+      position: relative;
+    }
+
+    /* Pricing Switch Toggle */
+    .billing-toggle-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .billing-label {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .billing-label.active {
+      color: #fff;
+    }
+
+    .toggle-switch {
+      width: 54px;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 9999px;
+      position: relative;
+      cursor: pointer;
+      border: 1px solid var(--border-subtle);
+      transition: var(--transition-smooth);
+    }
+
+    .toggle-switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 4px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--cyan-bright);
+      transition: var(--transition-smooth);
+      box-shadow: 0 0 10px var(--cyan-bright);
+    }
+
+    .toggle-switch.annual {
+      background: rgba(6, 182, 212, 0.25);
+    }
+
+    .toggle-switch.annual::after {
+      left: 26px;
+    }
+
+    .discount-badge {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: var(--emerald-accent);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+    }
+
+    /* Pricing Cards Grid */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      align-items: stretch;
+    }
+
+    .pricing-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 2.25rem 1.8rem;
+      backdrop-filter: var(--glass-blur);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: var(--transition-smooth);
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Plan Destacado (Pro) */
+    .pricing-card.featured {
+      background: linear-gradient(180deg, rgba(16, 26, 48, 0.9) 0%, rgba(9, 15, 28, 0.9) 100%);
+      border: 1px solid var(--border-cyan);
+      box-shadow: 0 0 45px rgba(6, 182, 212, 0.22);
+      transform: scale(1.03);
+    }
+
+    .pricing-card.featured:hover {
+      transform: scale(1.03) translateY(-4px);
+    }
+
+    .featured-ribbon {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gradient-brand);
+      color: #06080e;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.3rem 0.9rem;
+      border-radius: 9999px;
+      box-shadow: 0 0 16px rgba(6, 182, 212, 0.4);
+    }
+
+    .plan-name {
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+    }
+
+    .plan-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+      min-height: 42px;
+    }
+
+    .plan-price-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 0.35rem;
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .plan-currency {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .plan-amount {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 2.6rem;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .plan-period {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+
+    .plan-features-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      margin-bottom: 2rem;
+    }
+
+    .plan-feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      font-size: 0.88rem;
+      color: #e2e8f0;
+      line-height: 1.4;
+    }
+
+    .plan-feature-item svg {
+      color: var(--cyan-bright);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .pricing-card .btn {
+      margin-top: auto;
+      width: 100%;
+    }
+
+    /* ==========================================================================
+       SECCIÓN: CALCULADORA INTERACTIVA DE PRESUPUESTO
+       ========================================================================== */
+    section.section-calculator {
+      padding: 5rem 0;
+      position: relative;
+    }
+
+    .calculator-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 24px;
+      padding: 3rem;
+      backdrop-filter: var(--glass-blur);
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      box-shadow: var(--shadow-card);
+    }
+
+    .calc-slider-wrapper {
+      margin: 1.8rem 0;
+    }
+
+    .calc-slider-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .calc-slider-header .badge-count {
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid var(--border-cyan);
+      color: var(--cyan-bright);
+      padding: 0.2rem 0.65rem;
+      border-radius: 6px;
+      font-weight: 800;
+    }
+
+    .custom-range {
+      width: 100%;
+      height: 8px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    .custom-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--cyan-bright);
+      cursor: pointer;
+      box-shadow: 0 0 12px var(--cyan-bright);
+      transition: var(--transition-smooth);
+    }
+
+    .custom-range::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .calc-checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+      cursor: pointer;
+      user-select: none;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .calc-checkbox-wrapper input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--cyan-bright);
+      cursor: pointer;
+    }
+
+    .calc-quote-box {
+      background: rgba(6, 12, 24, 0.75);
+      border: 1px solid var(--border-cyan);
+      border-radius: 18px;
+      padding: 2rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      box-shadow: 0 0 35px rgba(6, 182, 212, 0.15);
+    }
+
+    .quote-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+    }
+
+    .quote-amount {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .quote-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* ==========================================================================
+       SECCIÓN: GESTIÓN DE CÁMARAS (ACCESO DIRECTO AL SISTEMA EN VIVO)
+       ========================================================================== */
+    section.section-portal-access {
+      padding: 6rem 0;
+      position: relative;
+    }
+
+    .portal-banner-card {
+      background: linear-gradient(135deg, rgba(14, 25, 48, 0.9) 0%, rgba(6, 12, 24, 0.9) 100%);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      border-radius: 24px;
+      padding: 3.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2.5rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(6, 182, 212, 0.18);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .portal-banner-card::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(0, 242, 254, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .portal-banner-info {
+      max-width: 620px;
+    }
+
+    .portal-banner-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 0.85rem;
+    }
+
+    .portal-banner-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 1.8rem;
+    }
+
+    .portal-banner-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .portal-security-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-top: 1rem;
+    }
+
+    .portal-security-badge svg {
+      color: var(--emerald-accent);
+    }
+
+    /* ==========================================================================
+       SECCIÓN: PREGUNTAS FRECUENTES (FAQ)
+       ========================================================================== */
+    section.section-faq {
+      padding: 5rem 0;
+      position: relative;
+    }
+
+    .faq-accordion-list {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      overflow: hidden;
+      backdrop-filter: var(--glass-blur);
+      transition: var(--transition-smooth);
+    }
+
+    .faq-item:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .faq-question {
+      padding: 1.25rem 1.5rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    .faq-icon {
+      width: 20px;
+      height: 20px;
+      transition: transform 0.3s ease;
+      color: var(--cyan-bright);
+    }
+
+    .faq-item.open .faq-icon {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 1.5rem;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 300px;
+      padding: 0 1.5rem 1.4rem;
+    }
+
+    /* ==========================================================================
+       MODAL DE CONTACTO / COTIZACIÓN
+       ========================================================================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(4, 7, 14, 0.85);
+      backdrop-filter: blur(16px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #0d121f;
+      border: 1px solid var(--border-cyan);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 500px;
+      padding: 2.25rem;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.9), 0 0 40px rgba(6, 182, 212, 0.2);
+      position: relative;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.4rem;
+      line-height: 1;
+      transition: var(--transition-smooth);
+    }
+
+    .modal-close-btn:hover {
+      color: #fff;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+    }
+
+    .modal-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      background: #060911;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.75rem 0.9rem;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--cyan-bright);
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.25);
+    }
+
+    /* ==========================================================================
+       FOOTER
+       ========================================================================== */
+    footer.site-footer {
+      background: #04060b;
+      border-top: 1px solid var(--border-subtle);
+      padding: 4rem 0 2.5rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr 1fr 1fr;
+      gap: 2.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 340px;
+      margin-top: 0.85rem;
+    }
+
+    .footer-col-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 1rem;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .footer-links a {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: var(--transition-smooth);
+    }
+
+    .footer-links a:hover {
+      color: var(--cyan-bright);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    /* ==========================================================================
+       RESPONSIVE DESIGN (MOBILE & TABLET)
+       ========================================================================== */
+    @media (max-width: 1024px) {
+      .hero-title { font-size: 2.8rem; }
+      .mockup-metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .mockup-viewport-split { grid-template-columns: 1fr; }
+      .pillars-grid { grid-template-columns: repeat(2, 1fr); }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
+      .pricing-card.featured { transform: none; }
+      .pricing-card.featured:hover { transform: translateY(-4px); }
+      .hire-options-grid { grid-template-columns: 1fr; }
+      .calculator-card { grid-template-columns: 1fr; gap: 2rem; }
+      .portal-banner-card { flex-direction: column; text-align: center; }
+      .portal-banner-actions { justify-content: center; }
+      .portal-security-badge { justify-content: center; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero-title { font-size: 2.2rem; }
+      .hero-subtitle { font-size: 1rem; }
+      .comparison-grid { grid-template-columns: 1fr; }
+      .pillars-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BACKGROUND RADIALS & CANVAS PARTICLES -->
+  <div class="bg-mesh-glow"></div>
+  <canvas id="neural-canvas"></canvas>
+
+  <!-- ========================================================================
+       HEADER / NAVBAR
+       ======================================================================== -->
+  <header class="site-header">
+    <div class="container nav-wrapper">
+      <a href="#" class="brand-logo" aria-label="Baddgroup Vision AI">
+        <div class="brand-icon-wrap">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+            <polygon points="50,4 92,26 92,74 50,96 8,74 8,26" fill="#1e293b" stroke="#00f2fe" stroke-width="2.5"/>
+            <path d="M28 24 H48 C54.5 24 59 28 59 33.5 C59 37.5 56.5 41 52.5 42.5 C57.5 44 61 48 61 53.5 C61 60 55.5 64 48 64 H28 V24 Z" 
+                  fill="none" stroke="#2563eb" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+            <path d="M28 44 H48" stroke="#2563eb" stroke-width="4.5" stroke-linecap="round"/>
+            <path d="M72 40 V62 C72 68 66 73 58 73 H46" 
+                  fill="none" stroke="#00f2fe" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M58 58 H72" stroke="#00f2fe" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">BADDGROUP</span>
+          <span class="brand-tagline">VISION AI • SECURITY SAAS</span>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#que-es">¿De qué trata?</a></li>
+          <li><a href="#modalidades">Cómo Contratar</a></li>
+          <li><a href="#planes">Planes & Precios</a></li>
+          <li><a href="#calculadora">Cotizador</a></li>
+          <li><a href="#faq">Preguntas</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="#demo" class="btn btn-secondary" onclick="openDemoViewer(event)">Ver Demo</a>
+        <a href="/cameras" id="dynamicPortalBtn" class="btn btn-primary">
+          <span>Ingresar a Gestión</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="7" y1="17" x2="17" y2="7"></line>
+            <polyline points="7 7 17 7 17 17"></polyline>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       HERO SECTION
+       ======================================================================== -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-content">
+        <div class="pill-badge">
+          <span class="dot"></span>
+          <span>Plataforma de Videovigilancia Inteligente • Algoritmos YOLOv11 & Visión Forense</span>
+        </div>
+
+        <h1 class="hero-title">
+          De Cámaras Pasivas a <br>
+          <span class="gradient-text">Seguridad Inteligente en Tiempo Real.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Explicá el valor. Llevá al usuario a probarlo. Monitoreo preventivo 24/7 con detección de personas, 
+          vehículos y conductas en milisegundos, búsqueda forense en lenguaje natural y compatibilidad 
+          con cualquier cámara IP sin cambiar tu equipamiento.
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="#planes" class="btn btn-primary" style="padding: 0.95rem 2rem; font-size: 1rem;">
+            <span>Contratar Planes</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="7" y1="17" x2="17" y2="7"></line>
+              <polyline points="7 7 17 7 17 17"></polyline>
+            </svg>
+          </a>
+
+          <a href="/cameras" class="btn btn-secondary" style="padding: 0.95rem 1.8rem; font-size: 1rem;">
+            <span>Ingresar a Gestión de Cámaras</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+          </a>
+        </div>
+
+        <div class="hero-trust-strip">
+          <span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Compatible con Dahua, Hikvision, IMOU y RTSP
+          </span>
+          <span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Conexión en 1 minuto vía Safety Code
+          </span>
+          <span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Servidores Cloud DonWeb con Latencia &lt; 15ms
+          </span>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           HERO INTERACTIVE SHOWCASE (FLOATING SAAS UI PREVIEW)
+           ==================================================================== -->
+      <div class="hero-preview-wrapper" id="demo">
+        <div class="hero-preview-glow"></div>
+
+        <div class="saas-mockup-card">
+          <!-- Mockup Top Bar -->
+          <div class="mockup-topbar">
+            <div class="mockup-left">
+              <div class="mockup-dots">
+                <span class="mockup-dot red"></span>
+                <span class="mockup-dot yellow"></span>
+                <span class="mockup-dot green"></span>
+              </div>
+              <div class="mockup-cam-select">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                <span>Cámara 1: Entrada Principal [Safety Code: BG-SEC-01]</span>
+              </div>
+            </div>
+
+            <div class="mockup-right">
+              <div class="live-status-pill">
+                <span class="indicator"></span>
+                <span>STREAM EN VIVO • 15 FPS</span>
+              </div>
+              <div class="live-status-pill" style="background: rgba(37,99,235,0.15); border-color: rgba(37,99,235,0.35); color: #60a5fa;">
+                <span>YOLOv11 TRACKING ACTIVO</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mockup Metrics Row -->
+          <div class="mockup-metrics-grid">
+            <div class="mockup-metric-card">
+              <div class="metric-label">Cámaras Conectadas</div>
+              <div class="metric-value">
+                <span>4 Activas</span>
+                <span class="metric-delta">↑ 100% Uptime</span>
+              </div>
+            </div>
+            <div class="mockup-metric-card">
+              <div class="metric-label">Eventos Analizados Hoy</div>
+              <div class="metric-value">
+                <span>1,420</span>
+                <span class="metric-delta">0 Falsos Positivos</span>
+              </div>
+            </div>
+            <div class="mockup-metric-card">
+              <div class="metric-label">Velocidad Búsqueda Forense</div>
+              <div class="metric-value">
+                <span>0.8 seg</span>
+                <span class="metric-delta">Lenguaje Natural</span>
+              </div>
+            </div>
+            <div class="mockup-metric-card">
+              <div class="metric-label">Consumo de Red & CPU</div>
+              <div class="metric-value">
+                <span>15.8%</span>
+                <span class="metric-delta">Zero-Copy Fluid</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mockup Viewport & AI Engine Split -->
+          <div class="mockup-viewport-split">
+            <!-- Simulated Live Camera Viewport -->
+            <div class="mockup-camera-viewport">
+              <!-- Background Camera SVG Grid Scene -->
+              <svg class="simulated-stream-bg" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="wallGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#141c2e"/>
+                    <stop offset="100%" stop-color="#0a0f1d"/>
+                  </linearGradient>
+                </defs>
+                <rect width="640" height="360" fill="url(#wallGrad)"/>
+                <!-- Floor grid lines -->
+                <path d="M 0 360 L 240 200 L 400 200 L 640 360" fill="none" stroke="#1f2d48" stroke-width="1.5"/>
+                <line x1="320" y1="200" x2="320" y2="360" stroke="#1f2d48" stroke-width="1"/>
+                <line x1="160" y1="280" x2="480" y2="280" stroke="#1f2d48" stroke-width="0.8"/>
+                <!-- Doorway outline -->
+                <rect x="270" y="90" width="100" height="150" fill="#090d18" stroke="#253554" stroke-width="2"/>
+                <!-- Person silhouette walking -->
+                <circle cx="340" cy="140" r="14" fill="#64748b"/>
+                <path d="M 328 158 Q 340 156 352 158 L 350 210 L 330 210 Z" fill="#475569"/>
+                <line x1="335" y1="210" x2="328" y2="260" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+                <line x1="345" y1="210" x2="352" y2="258" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+                <line x1="328" y1="168" x2="315" y2="200" stroke="#475569" stroke-width="4.5" stroke-linecap="round"/>
+                <line x1="352" y1="168" x2="368" y2="195" stroke="#475569" stroke-width="4.5" stroke-linecap="round"/>
+              </svg>
+
+              <!-- Dynamic AI Bounding Box Overlay -->
+              <div class="ai-bounding-overlay">
+                <div class="bbox-simulated">
+                  <div class="bbox-tag">#19 person 0.94 • Movimiento</div>
+                </div>
+              </div>
+
+              <!-- Camera OSD overlay -->
+              <div class="cam-osd-top">
+                <span>CAM 01: ENTRADA COMERCIO</span>
+                <span id="liveOsdClock">2026-10-31 10:14:52</span>
+              </div>
+
+              <div class="cam-osd-bottom">
+                <span>RTSP PROXY • BUFFER PRE-ROLL 3.0s</span>
+                <span style="color: #00f2fe; font-weight: 600;">BADDGROUP VISION AI</span>
+              </div>
+            </div>
+
+            <!-- Simulated Natural Language Forensic Search Engine -->
+            <div class="mockup-ai-panel">
+              <div class="ai-panel-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span>Búsqueda Forense con IA en Tiempo Real</span>
+              </div>
+
+              <div class="ai-search-interactive-box">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="demoQueryInput" value="¿En qué momento alguien movió un brazo?" readonly>
+                <button class="btn btn-primary" style="padding: 0.35rem 0.85rem; font-size: 0.74rem;" onclick="runDemoSearch()">Buscar</button>
+              </div>
+
+              <div class="ai-chips-container">
+                <span style="font-size: 0.72rem; color: var(--text-dim); font-weight: 600;">PROBÁ ESTAS CONSULTAS EN VIVO:</span>
+                <div class="ai-chip-prompt" onclick="setDemoQuery('¿En qué momento alguien movió los brazos?')">
+                  🔍 "¿En qué momento alguien movió los brazos?"
+                </div>
+                <div class="ai-chip-prompt" onclick="setDemoQuery('¿Cuándo pasó una persona vestida de negro?')">
+                  🔍 "¿Cuándo pasó una persona vestida de negro?"
+                </div>
+                <div class="ai-chip-prompt" onclick="setDemoQuery('¿A qué hora entró un auto a la propiedad?')">
+                  🔍 "¿A qué hora entró un auto a la propiedad?"
+                </div>
+              </div>
+
+              <div class="ai-result-demo-card" id="demoResultBox">
+                <span class="highlight">Respuesta Forense de IA:</span> "A las <strong>10:14:25 hs</strong> se detectó la presencia de <strong>persona</strong> con ropa oscura realizando <strong>movimiento de brazos</strong> en Entrada Principal (duración 1.8s). Clip 2K disponible."
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECCIÓN: ¿DE QUÉ TRATA? (EL VALOR DEL SOFTWARE BADDGROUP)
+       ======================================================================== -->
+  <section class="section-value" id="que-es">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">EL VALOR REAL PARA TU CLIENTE</span>
+        <h2 class="section-title">¿Por qué cambiar el paradigma de la seguridad?</h2>
+        <p class="section-desc">
+          Las cámaras tradicionales solo sirven para ver qué pasó después del robo. Baddgroup Vision AI 
+          convierte tu sistema en un detector proactivo con análisis en milisegundos y búsqueda forense inmediata.
+        </p>
+      </div>
+
+      <!-- Comparativa Visual -->
+      <div class="comparison-grid">
+        <div class="comparison-card bad">
+          <div class="comparison-header">
+            <div class="comparison-icon">✕</div>
+            <div>
+              <div class="comparison-title">Cámaras Tradicionales (El Pasado)</div>
+              <div style="font-size: 0.78rem; color: #ef4444; font-weight: 600;">GRABACIÓN CIEGA Y PASIVA</div>
+            </div>
+          </div>
+          <ul class="comparison-list">
+            <li class="comparison-item">
+              <span class="item-icon">✕</span>
+              <span><strong>Horas perdidas buscando:</strong> Tenés que revisar filmaciones interminables adelantando el video a ciegas para encontrar un hecho.</span>
+            </li>
+            <li class="comparison-item">
+              <span class="item-icon">✕</span>
+              <span><strong>Falsas alarmas permanentes:</strong> Notificaciones molestas cada vez que se mueve una rama, cambia la luz o llueve.</span>
+            </li>
+            <li class="comparison-item">
+              <span class="item-icon">✕</span>
+              <span><strong>Discos llenos e inseguros:</strong> Si un delincuente se lleva el grabador DVR/NVR, perdés toda la evidencia física.</span>
+            </li>
+            <li class="comparison-item">
+              <span class="item-icon">✕</span>
+              <span><strong>Configuración de red compleja:</strong> Requiere abrir puertos, pagar IP fijas o instalar VPNs difíciles de mantener.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="comparison-card good">
+          <div class="comparison-header">
+            <div class="comparison-icon">✓</div>
+            <div>
+              <div class="comparison-title">Baddgroup Vision AI (La Nueva Era)</div>
+              <div style="font-size: 0.78rem; color: var(--cyan-bright); font-weight: 700;">INTELIGENCIA ARTIFICIAL EN TIEMPO REAL</div>
+            </div>
+          </div>
+          <ul class="comparison-list">
+            <li class="comparison-item">
+              <span class="item-icon">✓</span>
+              <span><strong>Búsqueda pericial en segundos:</strong> Escribís <em>"¿cuándo pasó alguien con mochila?"</em> y la IA te muestra el momento exacto.</span>
+            </li>
+            <li class="comparison-item">
+              <span class="item-icon">✓</span>
+              <span><strong>Precisión humana con YOLOv11:</strong> Distingue personas, autos, motos y mascotas sin falsas alertas meteorológicas.</span>
+            </li>
+            <li class="comparison-item">
+              <span class="item-icon">✓</span>
+              <span><strong>Clips 2K en la nube con Pre-Roll:</strong> Graba 3 segundos antes de que ocurra la acción para no perder el inicio de nada.</span>
+            </li>
+            <li class="comparison-item">
+              <span class="item-icon">✓</span>
+              <span><strong>Conexión Cero Fricción:</strong> Vinculás cualquier cámara en 1 minuto ingresando únicamente su <strong>Safety Code</strong>.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 4 Pilares Fundamentales -->
+      <div class="pillars-grid">
+        <div class="pillar-card">
+          <div class="pillar-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </div>
+          <h3 class="pillar-title">Visión en Vivo 15-25 FPS</h3>
+          <p class="pillar-desc">
+            Transmisión fluida con tecnología Zero-Copy que reduce 85% el consumo de CPU y elimina los tirones en vivo.
+          </p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </div>
+          <h3 class="pillar-title">Búsqueda en Lenguaje Natural</h3>
+          <p class="pillar-desc">
+            Consultá filmaciones históricas en español cotidiano como si le hablaras a un operador de seguridad dedicado.
+          </p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          <h3 class="pillar-title">Conexión por Safety Code</h3>
+          <p class="pillar-desc">
+            Seguridad sin abrir puertos ni IPs fijas. Enlazá las cámaras a la cuenta del usuario en menos de 60 segundos.
+          </p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+          </div>
+          <h3 class="pillar-title">Respaldo Inmune en la Nube</h3>
+          <p class="pillar-desc">
+            Grabaciones almacenadas en servidores de alta seguridad de Baddgroup, a salvo de robos o roturas del grabador.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECCIÓN: CÓMO CONTRATAR (SOFTWARE VS INSTALACIÓN FÍSICA)
+       ======================================================================== -->
+  <section class="section-hire" id="modalidades">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">DOS MODALIDADES A TU MEDIDA</span>
+        <h2 class="section-title">Elegí cómo comenzar con Baddgroup</h2>
+        <p class="section-desc">
+          Ya sea que tengas cámaras existentes instaladas o necesites un proyecto integral desde cero, 
+          Baddgroup tiene la solución adecuada para tu empresa o residencia.
+        </p>
+      </div>
+
+      <div class="hire-options-grid">
+        <!-- Opción 1: Solo Software SaaS -->
+        <div class="hire-card software">
+          <span class="hire-tag-badge">MODALIDAD 100% CLOUD</span>
+          <h3 class="hire-card-title">Solo Software SaaS (Tus Cámaras)</h3>
+          <p class="hire-card-desc">
+            Aprovechá las cámaras que ya tenés instaladas en tu comercio, empresa o casa. Las conectamos 
+            a la plataforma Baddgroup Vision AI de forma remota en menos de 10 minutos.
+          </p>
+          <ul class="hire-features-list">
+            <li class="hire-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Compatible con Dahua, Hikvision, IMOU, EZVIZ y RTSP</span>
+            </li>
+            <li class="hire-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Sin costo de instalación física ni cables nuevos</span>
+            </li>
+            <li class="hire-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Activación inmediata en el mismo día</span>
+            </li>
+            <li class="hire-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Planes mensuales flexibles cancelables cuando quieras</span>
+            </li>
+          </ul>
+          <a href="#planes" class="btn btn-secondary">
+            <span>Ver Planes de Software</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </a>
+        </div>
+
+        <!-- Opción 2: Instalación Llave en Mano -->
+        <div class="hire-card installation">
+          <span class="hire-tag-badge">SERVICIO INTEGRAL LLAVE EN MANO</span>
+          <h3 class="hire-card-title">Instalación + Equipamiento Pericial</h3>
+          <p class="hire-card-desc">
+            Instalamos equipamiento de alta gama desde cero con técnicos certificados. Cámaras 2K/4K para intemperie, 
+            cableado estructurado y puesta en marcha completa con garantía Baddgroup.
+          </p>
+          <ul class="hire-features-list">
+            <li class="hire-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Cámaras profesionales 2K/4K con visión nocturna a color</span>
+            </li>
+            <li class="hire-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Cableado UTP Cat6 para intemperie y switch PoE industrial</span>
+            </li>
+            <li class="hire-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Instalación física estética y protegida contra vandalismo</span>
+            </li>
+            <li class="hire-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Mantenimiento preventivo presencial y garantía extendida</span>
+            </li>
+          </ul>
+          <button class="btn btn-primary" onclick="openContactModal('Instalación Llave en Mano + Cámaras')">
+            <span>Solicitar Relevamiento Técnico</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECCIÓN: PLANES Y PRECIOS (PRICING)
+       ======================================================================== -->
+  <section class="section-pricing" id="planes">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">TRANSPARENCIA TOTAL</span>
+        <h2 class="section-title">Planes diseñados para cada escala</h2>
+        <p class="section-desc">
+          Elegí la cobertura ideal para tu hogar, comercio o empresa. Todos los planes incluyen detección en tiempo real con IA.
+        </p>
+      </div>
+
+      <!-- Selector Mensual / Anual -->
+      <div class="billing-toggle-wrapper">
+        <span class="billing-label active" id="labelMonthly" onclick="setBillingPeriod('monthly')">Facturación Mensual</span>
+        <div class="toggle-switch" id="billingToggle" onclick="toggleBillingPeriod()"></div>
+        <span class="billing-label" id="labelAnnual" onclick="setBillingPeriod('annual')">
+          Facturación Anual
+          <span class="discount-badge">2 Meses Bonificados (-20%)</span>
+        </span>
+      </div>
+
+      <!-- Tarjetas de Planes -->
+      <div class="pricing-grid">
+        <!-- Plan Starter -->
+        <div class="pricing-card">
+          <h3 class="plan-name">Plan Starter</h3>
+          <p class="plan-desc">Ideal para residencias, oficinas pequeñas y accesos puntuales.</p>
+          <div class="plan-price-wrap">
+            <span class="plan-currency">$</span>
+            <span class="plan-amount" id="priceStarter">14.900</span>
+            <span class="plan-period">ARS / mes</span>
+          </div>
+          <ul class="plan-features-list">
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Hasta <strong>2 Cámaras</strong> conectadas</span>
+            </li>
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Detección de personas en tiempo real</span>
+            </li>
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span><strong>7 Días</strong> de grabaciones en la nube</span>
+            </li>
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Búsqueda forense estándar</span>
+            </li>
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Soporte por WhatsApp y portal</span>
+            </li>
+          </ul>
+          <button class="btn btn-secondary" onclick="openContactModal('Plan Starter (1-2 Cámaras)')">Contratar Starter</button>
+        </div>
+
+        <!-- Plan Pro (Destacado) -->
+        <div class="pricing-card featured">
+          <div class="featured-ribbon">MÁS POPULAR • RECOMENDADO</div>
+          <h3 class="plan-name">Plan Pro Comercio</h3>
+          <p class="plan-desc">Para comercios, depósitos, gastronómicos y pymes con necesidad pericial.</p>
+          <div class="plan-price-wrap">
+            <span class="plan-currency">$</span>
+            <span class="plan-amount" id="pricePro">29.900</span>
+            <span class="plan-period">ARS / mes</span>
+          </div>
+          <ul class="plan-features-list">
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Hasta <strong>6 Cámaras</strong> simultáneas</span>
+            </li>
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span><strong>YOLOv11 Acelerado:</strong> Personas, autos y motos</span>
+            </li>
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span><strong>Búsqueda Forense con IA ILIMITADA</strong></span>
+            </li>
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span><strong>30 Días</strong> de grabaciones 2K con Pre-Roll</span>
+            </li>
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Alertas instantáneas por WhatsApp / Telegram</span>
+            </li>
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Acceso multi-usuario con permisos</span>
+            </li>
+          </ul>
+          <button class="btn btn-primary" onclick="openContactModal('Plan Pro Comercio (3-6 Cámaras)')">Contratar Plan Pro</button>
+        </div>
+
+        <!-- Plan Enterprise -->
+        <div class="pricing-card">
+          <h3 class="plan-name">Plan Enterprise</h3>
+          <p class="plan-desc">Para industrias, predios logísticos, countries y cadenas comerciales.</p>
+          <div class="plan-price-wrap">
+            <span class="plan-amount" style="font-size: 2.1rem;">A Medida</span>
+          </div>
+          <ul class="plan-features-list">
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span><strong>Cámaras ilimitadas</strong> multi-sucursal</span>
+            </li>
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Servidor dedicado con SLA 99.9%</span>
+            </li>
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Analítica pericial multi-zona y merodeo</span>
+            </li>
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Instalación física y cableado bonificado</span>
+            </li>
+            <li class="plan-feature-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Gerente de cuenta técnico 24/7 dedicado</span>
+            </li>
+          </ul>
+          <button class="btn btn-secondary" onclick="openContactModal('Plan Enterprise Corporativo')">Solicitar Asesor Corporativo</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECCIÓN: CALCULADORA INTERACTIVA DE PRESUPUESTO
+       ======================================================================== -->
+  <section class="section-calculator" id="calculadora">
+    <div class="container">
+      <div class="calculator-card">
+        <div class="calc-controls">
+          <span class="section-tag">SIMULADOR EN TIEMPO REAL</span>
+          <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.75rem;">Calculá tu Presupuesto</h2>
+          <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;">
+            Deslizá la cantidad de cámaras y configurá si requerís instalación física para ver el valor estimado.
+          </p>
+
+          <div class="calc-slider-wrapper">
+            <div class="calc-slider-header">
+              <span>Cantidad de Cámaras:</span>
+              <span class="badge-count" id="calcCamCountBadge">4 Cámaras</span>
+            </div>
+            <input type="range" class="custom-range" id="camRangeSlider" min="1" max="24" value="4" oninput="updateCalculator()">
+          </div>
+
+          <label class="calc-checkbox-wrapper">
+            <input type="checkbox" id="calcIncludeInstall" onchange="updateCalculator()">
+            <span>Incluir provisión de cámaras 2K e instalación física profesional</span>
+          </label>
+        </div>
+
+        <div class="calc-quote-box">
+          <div class="quote-title">Abono Mensual Estimado</div>
+          <div class="quote-amount" id="calcMonthlyTotal">$29.900</div>
+          <div class="quote-desc" id="calcInstallDesc">
+            Incluye Inteligencia Artificial en la nube, búsqueda forense y 30 días de grabaciones.
+          </div>
+          <button class="btn btn-primary" onclick="requestCalculatedQuote()">
+            <span>Pedir Cotización Formal</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECCIÓN: ACCESO A LA GESTIÓN DE CÁMARAS (EL SISTEMA ACTIVO)
+       ======================================================================== -->
+  <section class="section-portal-access">
+    <div class="container">
+      <div class="portal-banner-card">
+        <div class="portal-banner-info">
+          <span class="pill-badge" style="margin-bottom: 1rem;">
+            <span class="dot"></span>
+            <span>PORTAL DE MONITOREO ACTIVO</span>
+          </span>
+          <h2 class="portal-banner-title">¿Ya sos cliente o querés probar la plataforma?</h2>
+          <p class="portal-banner-desc">
+            Accedé ahora al panel centralizado de Baddgroup. Visualizá tus cámaras en tiempo real, 
+            configurá nuevos códigos Safety Code de cámaras y utilizá el buscador con IA.
+          </p>
+
+          <div class="portal-banner-actions">
+            <a href="/cameras" class="btn btn-primary" style="padding: 0.9rem 1.8rem;">
+              <span>Ingresar a Gestión de Cámaras</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            </a>
+
+            <a href="/crm" class="btn btn-secondary" style="padding: 0.9rem 1.6rem;">
+              <span>Panel CRM Administradores</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </a>
+          </div>
+
+          <div class="portal-security-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>Autenticación Segura JWT • Cifrado de Punta a Punta • Base de Datos Supabase</span>
+          </div>
+        </div>
+
+        <div style="flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+          <svg width="180" height="180" viewBox="0 0 100 100" style="opacity: 0.85;">
+            <polygon points="50,4 92,26 92,74 50,96 8,74 8,26" fill="rgba(6, 182, 212, 0.08)" stroke="#00f2fe" stroke-width="1.5"/>
+            <circle cx="50" cy="50" r="28" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="4,4"/>
+            <circle cx="50" cy="50" r="14" fill="#00f2fe" opacity="0.6"/>
+            <circle cx="50" cy="50" r="6" fill="#fff"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       SECCIÓN: PREGUNTAS FRECUENTES (FAQ)
+       ======================================================================== -->
+  <section class="section-faq" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">DUDAS RESUELTAS</span>
+        <h2 class="section-title">Preguntas Frecuentes</h2>
+        <p class="section-desc">Todo lo que necesitás saber antes de dar el salto a Baddgroup Vision AI.</p>
+      </div>
+
+      <div class="faq-accordion-list">
+        <div class="faq-item open" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>¿Mis cámaras actuales son compatibles con el software?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+          <div class="faq-answer">
+            Sí, el 99% de las cámaras IP del mercado (Dahua, Hikvision, IMOU, EZVIZ, Axis o cámaras genéricas ONVIF/RTSP) son compatibles. No necesitás cambiar de marca ni comprar equipamiento nuevo.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>¿Cómo se vincula una cámara mediante el Safety Code?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+          <div class="faq-answer">
+            Cada cámara posee un código de seguridad único (por ejemplo: <code>BG-SEC-01</code>). En nuestro panel de administración simplemente se registra ese código y el sistema establece un puente seguro con el servidor en la nube sin que tengas que tocar el módem ni abrir puertos.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>¿Cómo funciona la búsqueda con Inteligencia Artificial?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+          <div class="faq-answer">
+            Nuestros servidores procesan cada fotograma extrayendo metadatos periciales (tipo de objeto, color de ropa, dirección de movimiento y gestos). Al consultar en lenguaje cotidiano como <em>"¿en qué momento alguien movió un brazo?"</em> o <em>"¿cuándo pasó un auto blanco?"</em>, el motor forense localiza el segundo exacto al instante.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>¿Qué ocurre si se corta la conexión a Internet en el lugar?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+          <div class="faq-answer">
+            Las cámaras continúan grabando localmente en sus tarjetas de memoria MicroSD o grabador. En cuanto el servicio de internet se restablece, el puente de Baddgroup reanuda la sincronización de eventos automáticamente.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>¿En qué consiste el servicio de instalación física?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+          <div class="faq-answer">
+            Nuestro equipo técnico acude al domicilio o empresa, realiza el cableado de red categoría 6 para exterior, coloca las cámaras periciales 2K/4K en ubicaciones estratégicas, instala los switches PoE y deja el sistema completamente configurado y funcionando en tu celular o PC.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       MODAL DE CONTACTO / CONTRATACIÓN
+       ======================================================================== -->
+  <div class="modal-overlay" id="contactModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeContactModal()">&times;</button>
+      <h3 class="modal-title">Contratar Baddgroup Vision AI</h3>
+      <p class="modal-subtitle" id="modalPlanSubtitle">Completá tus datos y un asesor se pondrá en contacto en minutos.</p>
+
+      <form id="contactForm" onsubmit="handleFormSubmit(event)">
+        <div class="form-group">
+          <label>Nombre y Apellido *</label>
+          <input type="text" id="formName" required placeholder="Ej: Dylan Badd">
+        </div>
+
+        <div class="form-group">
+          <label>Teléfono / WhatsApp *</label>
+          <input type="tel" id="formPhone" required placeholder="Ej: 11 6995 7772">
+        </div>
+
+        <div class="form-group">
+          <label>Empresa / Comercio (Opcional)</label>
+          <input type="text" id="formCompany" placeholder="Ej: Baddgroup Corp">
+        </div>
+
+        <div class="form-group">
+          <label>Plan o Servicio de Interés</label>
+          <select id="formServiceSelect">
+            <option value="Plan Starter">Plan Starter (1-2 Cámaras)</option>
+            <option value="Plan Pro Comercio" selected>Plan Pro Comercio (3-6 Cámaras)</option>
+            <option value="Plan Enterprise">Plan Enterprise Corporativo</option>
+            <option value="Instalación Llave en Mano">Instalación Física Llave en Mano</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Notas o Requerimientos Especiales</label>
+          <textarea id="formNotes" rows="2" placeholder="¿Cuántas cámaras tenés o necesitás instalar?"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.9rem; margin-top: 0.5rem;">
+          <span>Enviar Solicitud a Baddgroup</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       FOOTER
+       ======================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="#" class="brand-logo" aria-label="Baddgroup Vision AI">
+            <div class="brand-icon-wrap" style="width: 32px; height: 32px;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+                <polygon points="50,4 92,26 92,74 50,96 8,74 8,26" fill="#1e293b" stroke="#00f2fe" stroke-width="3"/>
+                <path d="M28 24 H48 C54.5 24 59 28 59 33.5 C59 37.5 56.5 41 52.5 42.5 C57.5 44 61 48 61 53.5 C61 60 55.5 64 48 64 H28 V24 Z" 
+                      fill="none" stroke="#2563eb" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="brand-text">
+              <span class="brand-name" style="font-size: 1.15rem;">BADDGROUP</span>
+              <span class="brand-tagline">VISION AI • SECURITY SAAS</span>
+            </div>
+          </a>
+          <p class="footer-desc">
+            Plataforma argentina de videovigilancia inteligente y analítica forense en la nube. 
+            Seguridad proactiva para hogares, comercios y corporaciones.
+          </p>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Soluciones</div>
+          <ul class="footer-links">
+            <li><a href="#que-es">Visión Artificial en Vivo</a></li>
+            <li><a href="#demo">Búsqueda Forense con IA</a></li>
+            <li><a href="#modalidades">Solo Software SaaS</a></li>
+            <li><a href="#modalidades">Instalación Llave en Mano</a></li>
+            <li><a href="#calculadora">Calculadora de Planes</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Plataforma</div>
+          <ul class="footer-links">
+            <li><a href="/cameras">Monitoreo de Cámaras</a></li>
+            <li><a href="/login">Acceso Clientes</a></li>
+            <li><a href="/crm">Panel Administrador CRM</a></li>
+            <li><a href="#faq">Preguntas Frecuentes</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Contacto Comercial</div>
+          <ul class="footer-links">
+            <li><a href="https://wa.me/5491169957772" target="_blank">WhatsApp: +54 9 11 6995-7772</a></li>
+            <li><a href="mailto:info@baddgroup.com">info@baddgroup.com</a></li>
+            <li><a href="#">Buenos Aires, Argentina</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 Baddgroup Vision AI. Todos los derechos reservados.</div>
+        <div style="display: flex; gap: 1.5rem;">
+          <a href="#" style="color: inherit; text-decoration: none;">Términos del Servicio</a>
+          <a href="#" style="color: inherit; text-decoration: none;">Privacidad & Encriptación</a>
+          <a href="/login" style="color: var(--cyan-bright); text-decoration: none; font-weight: 600;">Ingreso a Gestión de Cámaras</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================================
+       SCRIPTS INTERACTIVOS (CANVAS, CALCULADORA, RELOJ OSD, IA DEMO)
+       ======================================================================== -->
+  <script>
+    // 1. Reloj en vivo para el OSD de la cámara simulada
+    function updateClock() {
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      const y = now.getFullYear();
+      const m = pad(now.getMonth() + 1);
+      const d = pad(now.getDate());
+      const h = pad(now.getHours());
+      const min = pad(now.getMinutes());
+      const s = pad(now.getSeconds());
+      const clockEl = document.getElementById('liveOsdClock');
+      if (clockEl) {
+        clockEl.textContent = `${y}-${m}-${d} ${h}:${min}:${s}`;
+      }
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 2. Personalizar botón de gestión de cámaras si el usuario ya está autenticado
+    document.addEventListener("DOMContentLoaded", () => {
+      try {
+        const token = localStorage.getItem("baddgroup_auth_token");
+        const userRaw = localStorage.getItem("baddgroup_user");
+        const btn = document.getElementById("dynamicPortalBtn");
+        if (token && userRaw && btn) {
+          const user = JSON.parse(userRaw);
+          if (user.role === "admin") {
+            btn.innerHTML = `<span>Panel CRM (Admin)</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
+            btn.href = "/crm";
+          } else {
+            btn.innerHTML = `<span>Mis Cámaras (${user.username || 'Cliente'})</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
+            btn.href = "/cameras";
+          }
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    });
+
+    // 3. Canvas de Ondas Neurales / Partículas
+    const canvas = document.getElementById('neural-canvas');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      const particles = [];
+      const particleCount = Math.min(width > 768 ? 45 : 20, 50);
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          radius: Math.random() * 2 + 1
+        });
+      }
+
+      function animateCanvas() {
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = "rgba(6, 182, 212, 0.5)";
+        ctx.strokeStyle = "rgba(6, 182, 212, 0.08)";
+
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < 0) p.x = width;
+          if (p.x > width) p.x = 0;
+          if (p.y < 0) p.y = height;
+          if (p.y > height) p.y = 0;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          for (let j = i + 1; j < particles.length; j++) {
+            const p2 = particles[j];
+            const dx = p.x - p2.x;
+            const dy = p.y - p2.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < 130) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(animateCanvas);
+      }
+      animateCanvas();
+    }
+
+    // 4. Selector de Período Mensual / Anual
+    let currentBilling = 'monthly';
+    function toggleBillingPeriod() {
+      setBillingPeriod(currentBilling === 'monthly' ? 'annual' : 'monthly');
+    }
+
+    function setBillingPeriod(period) {
+      currentBilling = period;
+      const toggle = document.getElementById('billingToggle');
+      const lMonthly = document.getElementById('labelMonthly');
+      const lAnnual = document.getElementById('labelAnnual');
+      const pStarter = document.getElementById('priceStarter');
+      const pPro = document.getElementById('pricePro');
+
+      if (period === 'annual') {
+        toggle.classList.add('annual');
+        lAnnual.classList.add('active');
+        lMonthly.classList.remove('active');
+        pStarter.textContent = "11.900";
+        pPro.textContent = "23.900";
+      } else {
+        toggle.classList.remove('annual');
+        lMonthly.classList.add('active');
+        lAnnual.classList.remove('active');
+        pStarter.textContent = "14.900";
+        pPro.textContent = "29.900";
+      }
+      updateCalculator();
+    }
+
+    // 5. Calculadora Dinámica de Presupuesto
+    function updateCalculator() {
+      const slider = document.getElementById('camRangeSlider');
+      const badge = document.getElementById('calcCamCountBadge');
+      const totalEl = document.getElementById('calcMonthlyTotal');
+      const descEl = document.getElementById('calcInstallDesc');
+      const installCheck = document.getElementById('calcIncludeInstall');
+
+      const cams = parseInt(slider.value, 10);
+      badge.textContent = `${cams} ${cams === 1 ? 'Cámara' : 'Cámaras'}`;
+
+      let basePerCam = currentBilling === 'annual' ? 6200 : 7500;
+      let monthlyCost = Math.round(cams * basePerCam);
+
+      if (cams >= 8) monthlyCost = Math.round(monthlyCost * 0.85); // Descuento por volumen
+
+      totalEl.textContent = `$${monthlyCost.toLocaleString('es-AR')}`;
+
+      if (installCheck && installCheck.checked) {
+        const equipTotal = cams * 65000;
+        descEl.innerHTML = `Abono mensual con IA: <strong>$${monthlyCost.toLocaleString('es-AR')}</strong><br>+ Instalación y provisión llave en mano: <strong>$${equipTotal.toLocaleString('es-AR')}</strong> (pago único)`;
+      } else {
+        descEl.innerHTML = `Aprovechando tus cámaras actuales (Solo Software SaaS). Incluye detección continua con IA y 30 días de grabaciones.`;
+      }
+    }
+
+    function requestCalculatedQuote() {
+      const cams = document.getElementById('camRangeSlider').value;
+      const install = document.getElementById('calcIncludeInstall').checked;
+      const text = `Hola Baddgroup, quiero solicitar presupuesto para ${cams} cámaras (${install ? 'con instalación y cámaras nuevas' : 'solo software para cámaras existentes'}) en plan ${currentBilling}.`;
+      window.open(`https://wa.me/5491169957772?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    // 6. Demo Interactiva del Buscador Forense con IA
+    function setDemoQuery(query) {
+      const input = document.getElementById('demoQueryInput');
+      input.value = query;
+      runDemoSearch();
+    }
+
+    function runDemoSearch() {
+      const input = document.getElementById('demoQueryInput');
+      const resBox = document.getElementById('demoResultBox');
+      resBox.innerHTML = `<span style="color: var(--cyan-bright);">Procesando metadatos periciales con YOLOv11 en servidor Cloud...</span>`;
+
+      setTimeout(() => {
+        const q = input.value.toLowerCase();
+        if (q.includes("brazo") || q.includes("brazos")) {
+          resBox.innerHTML = `<span class="highlight">Coincidencia Forense Exacta:</span> "A las <strong>10:14:25 hs</strong> se visualizó en Cámara Entrada a una <strong>persona realizando movimiento corporal y de brazos</strong> frente a la cámara (duración 1.8s, conf 0.94). Clip 2K disponible."`;
+        } else if (q.includes("negro") || q.includes("oscura")) {
+          resBox.innerHTML = `<span class="highlight">Coincidencia Forense Exacta:</span> "A las <strong>09:48:12 hs</strong> se registró el paso de un sujeto con <strong>ropa oscura / negra</strong> en acceso lateral (duración 3.2s). Miniatura pericial generada."`;
+        } else if (q.includes("auto") || q.includes("vehiculo")) {
+          resBox.innerHTML = `<span class="highlight">Coincidencia Forense Exacta:</span> "A las <strong>08:30:19 hs</strong> ingresó un <strong>vehículo (car)</strong> a la dársena de ingreso (duración 9.8s). Patente y trayectoria guardadas."`;
+        } else {
+          resBox.innerHTML = `<span class="highlight">Coincidencia Forense Exacta:</span> "Evento detectado a las <strong>10:14 hs</strong> correspondiente a tu consulta: presencia humana y movimiento verificado."`;
+        }
+      }, 550);
+    }
+
+    // 7. Acordeón FAQ
+    function toggleFaq(element) {
+      element.classList.toggle('open');
+    }
+
+    // 8. Modales de Contacto
+    function openContactModal(planName) {
+      const modal = document.getElementById('contactModal');
+      const select = document.getElementById('formServiceSelect');
+      const sub = document.getElementById('modalPlanSubtitle');
+
+      if (planName) {
+        sub.textContent = `Interés en: ${planName}. Te contactaremos de inmediato.`;
+        if (select) {
+          for (let opt of select.options) {
+            if (opt.text.toLowerCase().includes(planName.toLowerCase())) {
+              opt.selected = true;
+              break;
+            }
+          }
+        }
+      }
+      modal.classList.add('active');
+    }
+
+    function closeContactModal() {
+      document.getElementById('contactModal').classList.remove('active');
+    }
+
+    function openDemoViewer(e) {
+      e.preventDefault();
+      document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('formName').value;
+      const phone = document.getElementById('formPhone').value;
+      const company = document.getElementById('formCompany').value;
+      const service = document.getElementById('formServiceSelect').value;
+      const notes = document.getElementById('formNotes').value;
+
+      const msg = `Hola Baddgroup! Mi nombre es ${name}${company ? ' de ' + company : ''}. Me interesa contratar ${service}. Mi WhatsApp es ${phone}. Nota: ${notes || 'Quiero más información.'}`;
+      window.open(`https://wa.me/5491169957772?text=${encodeURIComponent(msg)}`, '_blank');
+      closeContactModal();
+    }
+  </script>
+</body>
+</html>

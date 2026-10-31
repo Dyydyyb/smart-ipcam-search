@@ -19,7 +19,7 @@ def main():
         'monthly_fee': 28000,
         'billing_day': 10,
         'cameras': [
-            {'name': 'Cámara 1: Entrada y Vereda', 'safety_code': 'L27EA4F3', 'serial_number': 'SN-IMOU-01', 'rtsp': 'rtsp://66.97.44.166:8554/live/caye1'},
+            {'name': 'Cámara 1: Entrada y Vereda', 'safety_code': 'BG-SEC-01', 'serial_number': 'SN-IMOU-01', 'rtsp': 'rtsp://66.97.44.166:8554/live/caye1'},
             {'name': 'Cámara 2: Línea de Cajas', 'safety_code': 'K88BC291', 'serial_number': 'SN-IMOU-02', 'rtsp': 'rtsp://66.97.44.166:8554/live/caye2'}
         ]
     }
@@ -44,7 +44,7 @@ def main():
     # 5. Agregar una 3ra cámara al cliente desde el CRM
     updated_data = {
         'cameras': [
-            {'name': 'Cámara 1: Entrada y Vereda', 'safety_code': 'L27EA4F3', 'serial_number': 'SN-IMOU-01', 'rtsp': 'rtsp://66.97.44.166:8554/live/caye1'},
+            {'name': 'Cámara 1: Entrada y Vereda', 'safety_code': 'BG-SEC-01', 'serial_number': 'SN-IMOU-01', 'rtsp': 'rtsp://66.97.44.166:8554/live/caye1'},
             {'name': 'Cámara 2: Línea de Cajas', 'safety_code': 'K88BC291', 'serial_number': 'SN-IMOU-02', 'rtsp': 'rtsp://66.97.44.166:8554/live/caye2'},
             {'name': 'Cámara 3: Depósito y Stock', 'safety_code': 'M99XX441', 'serial_number': 'SN-IMOU-03', 'rtsp': 'rtsp://66.97.44.166:8554/live/caye3'}
         ]
@@ -60,7 +60,7 @@ def main():
     # 7. Eliminar cámaras dejando solo 1
     updated_data_v3 = {
         'cameras': [
-            {'name': 'Cámara 1: Entrada y Vereda', 'safety_code': 'L27EA4F3', 'serial_number': 'SN-IMOU-01', 'rtsp': 'rtsp://66.97.44.166:8554/live/caye1'}
+            {'name': 'Cámara 1: Entrada y Vereda', 'safety_code': 'BG-SEC-01', 'serial_number': 'SN-IMOU-01', 'rtsp': 'rtsp://66.97.44.166:8554/live/caye1'}
         ]
     }
     requests.put(f'{BASE_URL}/api/crm/clients/{client_id}', headers=headers_admin, json=updated_data_v3)

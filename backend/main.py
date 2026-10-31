@@ -245,12 +245,27 @@ class RecordSoftwarePaymentRequest(BaseModel):
     notes: Optional[str] = ""
 
 @app.get("/", response_class=HTMLResponse)
-async def serve_index():
-    """Sirve la interfaz web principal."""
+@app.get("/presentacion", response_class=HTMLResponse)
+@app.get("/landing", response_class=HTMLResponse)
+async def serve_landing():
+    """Sirve la presentación comercial y landing page de Baddgroup Vision AI."""
+    landing_file = frontend_dir / "landing.html"
+    if landing_file.exists():
+        return HTMLResponse(content=landing_file.read_text(encoding="utf-8"))
     index_file = frontend_dir / "index.html"
     if index_file.exists():
         return HTMLResponse(content=index_file.read_text(encoding="utf-8"))
-    return HTMLResponse("<h1>Smart IP Camera AI Search</h1><p>Frontend no encontrado en frontend/index.html</p>")
+    return HTMLResponse("<h1>Baddgroup Vision AI</h1><p>Archivo frontend no encontrado.</p>")
+
+@app.get("/cameras", response_class=HTMLResponse)
+@app.get("/app", response_class=HTMLResponse)
+@app.get("/dashboard", response_class=HTMLResponse)
+async def serve_cameras():
+    """Sirve la plataforma de monitoreo y gestión de cámaras de los usuarios."""
+    index_file = frontend_dir / "index.html"
+    if index_file.exists():
+        return HTMLResponse(content=index_file.read_text(encoding="utf-8"))
+    return HTMLResponse("<h1>Smart IP Camera AI Search</h1><p>Frontend no encontrado en frontend/index.html</p>", status_code=404)
 
 @app.get("/login", response_class=HTMLResponse)
 async def serve_login():
@@ -303,7 +318,7 @@ async def auth_login(req: LoginRequest, response: Response):
         "status": "ok",
         "token": token,
         "user": user,
-        "redirect": "/crm" if user.get("role") == "admin" else "/"
+        "redirect": "/crm" if user.get("role") == "admin" else "/cameras"
     }
 
 @app.get("/api/auth/me")

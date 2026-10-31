@@ -10,9 +10,15 @@ import numpy as np
 # Configurar RTSP sobre TCP y buffer mínimo de FFmpeg para latencia cero
 os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;tcp|buffer_size;102400|max_delay;500000|reorder_queue_size;0"
 
-CAMERA_IP = "192.168.100.198"
-CAMERA_USER = "admin"
-SAFETY_CODE = os.environ.get("SAFETY_CODE", sys.argv[1] if len(sys.argv) > 1 else "L27EA4F3").strip().upper()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+CAMERA_IP = os.environ.get("CAMERA_IP", "192.168.100.198")
+CAMERA_USER = os.environ.get("CAMERA_USER", "admin")
+SAFETY_CODE = (os.environ.get("SAFETY_CODE") or os.environ.get("CAMERA_PASSWORD") or (sys.argv[1] if len(sys.argv) > 1 else "BG-SEC-01")).strip().upper()
 CAMERA_PASS = SAFETY_CODE
 VPS_PUSH_URL = f"http://66.97.44.166/api/stream/push?safety_code={SAFETY_CODE}"
 
