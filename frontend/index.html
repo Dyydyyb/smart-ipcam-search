@@ -2706,6 +2706,18 @@
         .replace(/'/g, "&#039;");
     }
 
+    
+    function getAuthHeaders(extra = {}) {
+      let token = localStorage.getItem("baddgroup_auth_token");
+      if (!token) {
+        const match = document.cookie.match(/baddgroup_token=([^;]+)/);
+        if (match) token = match[1];
+      }
+      const headers = { ...extra };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      return headers;
+    }
+
     let currentFilterClass = '';
     let currentCameraId = 'all';
     let allCamerasList = [];
@@ -2763,10 +2775,7 @@
     // ==========================================
     async function loadCameras() {
       try {
-        const token = localStorage.getItem("baddgroup_auth_token");
-        const res = await fetch('/api/cameras', {
-          headers: token ? { "Authorization": `Bearer ${token}` } : {}
-        });
+        const res = await fetch('/api/cameras', { headers: getAuthHeaders(), credentials: 'include' });
         if (!res.ok) return;
         const freshList = await res.json();
         allCamerasList = freshList;
@@ -3140,10 +3149,7 @@
     // ==========================================
     async function updateStatus() {
       try {
-        const token = localStorage.getItem("baddgroup_auth_token");
-        const res = await fetch('/api/status', {
-          headers: token ? { "Authorization": `Bearer ${token}` } : {}
-        });
+        const res = await fetch('/api/status', { headers: getAuthHeaders(), credentials: 'include' });
         const data = await res.json();
         if (data.camera) {
           document.getElementById('cameraResBadge').innerText = `${data.camera.width}x${data.camera.height} (${data.camera.fps} FPS)`;
@@ -3185,10 +3191,7 @@
         if (currentCameraId && currentCameraId !== 'all') {
           url += `&camera_id=${encodeURIComponent(currentCameraId)}`;
         }
-        const token = localStorage.getItem("baddgroup_auth_token");
-        const res = await fetch(url, {
-          headers: token ? { "Authorization": `Bearer ${token}` } : {}
-        });
+        const res = await fetch(url, { headers: getAuthHeaders(), credentials: 'include' });
         const events = await res.json();
         renderEvents(events, false);
       } catch (e) {
@@ -3952,11 +3955,8 @@
 
     // Inicialización y Polling continuo con Auth Guard
     async function initAuthAndApp() {
-      const token = localStorage.getItem("baddgroup_auth_token");
       try {
-        const authRes = await fetch("/api/auth/me", {
-          headers: token ? { "Authorization": `Bearer ${token}` } : {}
-        });
+        const authRes = await fetch('/api/auth/me', { headers: getAuthHeaders(), credentials: 'include' });
         if (!authRes.ok) {
           window.location.href = "/login?redirect=/cameras";
           return;
