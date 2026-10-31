@@ -2448,7 +2448,7 @@
             opts += '<option value="all">Todas las Cámaras (Mosaico)</option>';
           }
           opts += allCamerasList.map(c => {
-            const extra = c.safety_code ? ` [Code: ${escapeHtml(c.safety_code)}]` : (c.ip ? ` (${c.ip})` : '');
+            const extra = c.location ? ` (${escapeHtml(c.location)})` : '';
             return `<option value="${c.id}" ${c.id === prevVal ? 'selected' : ''}>${escapeHtml(c.name)}${extra}</option>`;
           }).join('');
           
@@ -2522,8 +2522,8 @@
           const titleEl = document.getElementById('liveHeroCamTitle');
           if (titleEl) titleEl.innerHTML = `${escapeHtml(activeCam.name)} &bull; En Tiempo Real`;
           const hudEl = document.getElementById('liveHudCamIp');
-          const codeInfo = activeCam.safety_code ? `Code: ${escapeHtml(activeCam.safety_code)}` : (activeCam.ip ? `IP: ${activeCam.ip}` : 'Cloud');
-          if (hudEl) hudEl.innerHTML = `${escapeHtml(activeCam.name)} &bull; ${codeInfo}`;
+          const secStatus = activeCam.safety_code ? 'Canal P2P Encriptado' : (activeCam.ip ? `IP: ${activeCam.ip}` : 'Cloud P2P');
+          if (hudEl) hudEl.innerHTML = `${escapeHtml(activeCam.name)} &bull; ${secStatus}`;
           const streamImg = document.getElementById('liveStreamImg');
           if (streamImg) streamImg.src = `/api/live?camera_id=${activeCam.id}`;
         }
@@ -2666,7 +2666,7 @@
             </div>
 
             <div class="camera-item-detail">
-              ${c.safety_code ? `Safety Code: ${escapeHtml(c.safety_code)}` : `IP: ${c.ip || 'Cloud P2P'}`}
+              ${c.safety_code ? 'Safety Code: &bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull; (Protegido)' : `IP: ${c.ip || 'Cloud P2P'}`}
             </div>
             <div class="camera-item-detail" style="font-size:0.7rem; color:var(--text-muted);" title="${c.serial_number || ''}">
               ${c.serial_number ? `S/N: ${escapeHtml(c.serial_number)}` : 'Cámara IP Encriptada'}

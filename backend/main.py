@@ -654,7 +654,7 @@ def live_stream(request: Request, camera_id: Optional[str] = None):
                 banner_text = f"BADDGROUP VISION - {to_ascii_banner(cam_name)}"
                 cv2.putText(canvas, banner_text, (25, 55), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (248, 250, 252), 2)
                 
-                details = f"SAFETY CODE: {cam_code}" if cam_code else (f"IP: {cam_ip}" if cam_ip else "STREAM P2P")
+                details = "CANAL P2P ENCRIPTADO" if cam_code else (f"IP: {cam_ip}" if cam_ip else "STREAM P2P")
                 if cam_serial:
                     details += f" | S/N: {cam_serial}"
                 cv2.putText(canvas, details, (25, 95), cv2.FONT_HERSHEY_SIMPLEX, 0.48, (59, 130, 246), 1)
