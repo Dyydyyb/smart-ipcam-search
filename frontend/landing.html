@@ -213,20 +213,23 @@
     header.site-header {
       position: sticky;
       top: 0;
-      z-index: 100;
-      background: rgba(6, 9, 16, 0.88);
+      z-index: 1000;
+      background: rgba(6, 9, 16, 0.92);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       transition: var(--transition-smooth);
+      width: 100%;
     }
 
     .nav-wrapper {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 74px;
-      gap: 1rem;
+      height: 76px;
+      width: 100%;
+      padding: 0 clamp(1.25rem, 2.5vw, 3rem);
+      gap: 1.5rem;
     }
 
     /* ZONA 1: BRAND LOGO */
@@ -314,8 +317,16 @@
     .nav-controls-suite {
       display: flex;
       align-items: center;
-      gap: 0.65rem;
+      gap: 0.75rem;
       flex-shrink: 0;
+      justify-content: flex-end;
+    }
+
+    .nav-actions-divider {
+      width: 1px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.14);
+      margin: 0 0.15rem;
     }
 
     /* SEGMENTED SWITCHER PILLS (CURRENCY & LANGUAGE) */
@@ -1774,9 +1785,21 @@
     /* ==========================================================================
        RESPONSIVE DESIGN (MOBILE & TABLET)
        ========================================================================== */
-    @media (max-width: 1080px) {
+    @media (max-width: 1260px) {
+      .nav-capsule li a {
+        padding: 0.38rem 0.62rem;
+        font-size: 0.82rem;
+      }
+      .nav-wrapper {
+        gap: 0.85rem;
+        padding: 0 1.25rem;
+      }
+    }
+
+    @media (max-width: 1100px) {
       .nav-capsule-wrapper { display: none; }
       .btn-nav-demo { display: none; }
+      .nav-actions-divider { display: none; }
       .mobile-menu-btn { display: flex; }
       .hero-title { font-size: 2.8rem; }
       .mockup-metrics-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1816,7 +1839,7 @@
        HEADER / NAVBAR
        ======================================================================== -->
   <header class="site-header">
-    <div class="container nav-wrapper">
+    <div class="nav-wrapper">
       <!-- 1. Brand Logo -->
       <a href="#" class="brand-logo" aria-label="Baddgroup Vision AI">
         <div class="brand-icon-wrap">
@@ -1864,6 +1887,8 @@
             <button type="button" class="segmented-btn" id="langBtnEN" onclick="setLanguage('en')">EN</button>
           </div>
         </div>
+
+        <div class="nav-actions-divider"></div>
 
         <a href="#demo" class="btn-nav-demo" onclick="openDemoViewer(event)" data-i18n="nav_demo">Ver Demo</a>
 
@@ -3268,12 +3293,12 @@
             footerBtn.textContent = dict.nav_my_cameras;
           }
         } else if (user) {
-          // Cliente Autenticado -> va directo a sus cámaras
-          const label = `${dict.nav_my_cameras} (${user.username || 'Cliente'})`;
+          // Cliente Autenticado -> va directo a sus cámaras (nombre limpio en tooltip)
           navBtns.forEach(btn => {
             if (btn) {
               btn.href = "/cameras";
-              btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg><span>${label}</span>`;
+              btn.title = `Conectado como: ${user.username || 'Cliente'}`;
+              btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg><span>${dict.nav_my_cameras}</span>`;
             }
           });
           if (heroBtn) {
