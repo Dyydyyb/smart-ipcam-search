@@ -1120,6 +1120,112 @@
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
+  
+    /* STANDBY EMPTY CELL STYLES (CERO DATOS MOCK) */
+    .cam-cell.standby {
+      background: radial-gradient(circle at center, rgba(6, 182, 212, 0.04) 0%, #050911 75%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .cam-cell.standby:hover {
+      background: radial-gradient(circle at center, rgba(6, 182, 212, 0.09) 0%, #070e1c 75%);
+      border-color: rgba(6, 182, 212, 0.4);
+    }
+    .standby-radar-ring {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 1px dashed rgba(6, 182, 212, 0.15);
+      pointer-events: none;
+    }
+    .standby-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      margin-bottom: 0.65rem;
+      transition: all 0.2s;
+    }
+    .cam-cell.standby:hover .standby-icon-box {
+      color: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.15);
+      transform: scale(1.08);
+    }
+    .standby-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-bottom: 0.25rem;
+    }
+    .standby-subtitle {
+      font-size: 0.72rem;
+      color: #64748b;
+      margin-bottom: 0.75rem;
+    }
+    .btn-standby-add {
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      color: var(--accent-cyan);
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.35rem 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s;
+    }
+    .btn-standby-add:hover {
+      background: var(--accent-cyan);
+      color: #000;
+    }
+    .sidebar-empty-state, .timeline-empty-state {
+      padding: 2.5rem 1rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .empty-icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      margin-bottom: 0.75rem;
+    }
+    .empty-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 0.3rem;
+    }
+    .empty-desc {
+      font-size: 0.74rem;
+      color: #64748b;
+      line-height: 1.45;
+      max-width: 240px;
+    }
+
   </style>
 </head>
 <body>
@@ -1255,76 +1361,9 @@
 
       <!-- VIEWPORT STAGE -->
       <div class="stage-viewport-card" id="stageViewportCard">
-        <!-- 2x2 GRID MODE (MATCHING DEMO CAPTURE) -->
+        <!-- 2x2 GRID DINÁMICO (SIN DATOS MOCK) -->
         <div class="grid-2x2-container" id="grid2x2View">
-          <!-- Cell 1: Cam 1 (Live Stream) -->
-          <div class="cam-cell active-focus" id="cell1" onclick="focusCellCamera(0)">
-            <div class="cam-cell-header">
-              <span class="cam-cell-title" id="cell1Title">
-                <span class="cam-dot-pulse"></span> Modern Building Entrance
-              </span>
-              <span class="cam-cell-time live-sync-time">--/--/---- --:--:--</span>
-            </div>
-            <img id="cell1StreamImg" class="cam-cell-video" src="/api/live" alt="Stream en vivo" onerror="this.src='/static/platform_demo_capture.jpg';">
-            <!-- Simulated/Live YOLO Box Overlays -->
-            <div class="yolo-box" style="top: 25%; left: 25%; width: 14%; height: 50%;">
-              <span class="yolo-label">Persona</span>
-            </div>
-            <div class="yolo-box" style="top: 24%; left: 34%; width: 12%; height: 42%;">
-              <span class="yolo-label">Persona</span>
-            </div>
-            <div class="yolo-box vehicle" style="top: 24%; left: 74%; width: 22%; height: 35%;">
-              <span class="yolo-label">Vehículo</span>
-            </div>
-          </div>
-
-          <!-- Cell 2: Cam 2 (Retail Store) -->
-          <div class="cam-cell" id="cell2" onclick="focusCellCamera(1)">
-            <div class="cam-cell-header">
-              <span class="cam-cell-title" id="cell2Title">
-                <span class="cam-dot-pulse"></span> Retail Store
-              </span>
-              <span class="cam-cell-time live-sync-time">--/--/---- --:--:--</span>
-            </div>
-            <img id="cell2StreamImg" class="cam-cell-video" src="/static/cam_feed_2.jpg" alt="Cámara 2">
-            <div class="yolo-box" style="top: 28%; left: 32%; width: 16%; height: 52%;">
-              <span class="yolo-label">Persona</span>
-            </div>
-            <div class="yolo-box" style="top: 26%; left: 68%; width: 14%; height: 58%;">
-              <span class="yolo-label">Adulto</span>
-            </div>
-          </div>
-
-          <!-- Cell 3: Cam 3 (Building Access) -->
-          <div class="cam-cell" id="cell3" onclick="focusCellCamera(2)">
-            <div class="cam-cell-header">
-              <span class="cam-cell-title" id="cell3Title">
-                <span class="cam-dot-pulse"></span> Modern Building Entrance
-              </span>
-              <span class="cam-cell-time live-sync-time">--/--/---- --:--:--</span>
-            </div>
-            <img id="cell3StreamImg" class="cam-cell-video" src="/static/cam_feed_3.jpg" alt="Cámara 3">
-            <div class="yolo-box yellow" style="top: 35%; left: 16%; width: 12%; height: 50%;">
-              <span class="yolo-label">Adulto</span>
-            </div>
-            <div class="yolo-box" style="top: 40%; left: 32%; width: 16%; height: 50%;">
-              <span class="yolo-label">Persona</span>
-            </div>
-          </div>
-
-          <!-- Cell 4: Cam 4 (Pasillo Retail) -->
-          <div class="cam-cell" id="cell4" onclick="focusCellCamera(3)">
-            <div class="cam-cell-header">
-              <span class="cam-cell-title" id="cell4Title">
-                <span class="cam-dot-pulse"></span> Retail Store - Pasillo 3
-              </span>
-              <span class="cam-cell-time live-sync-time">--/--/---- --:--:--</span>
-            </div>
-            <img id="cell4StreamImg" class="cam-cell-video" src="/static/cam_feed_4.jpg" alt="Cámara 4">
-            <div class="yolo-box" style="top: 45%; left: 42%; width: 14%; height: 48%;">
-              <span class="yolo-label">Persona</span>
-            </div>
-          </div>
+          <!-- Renderizado dinámico vía renderGridCells() según cámaras reales conectadas -->
         </div>
 
         <!-- 1x1 SINGLE FOCUSED VIEW -->
@@ -1359,7 +1398,7 @@
           </button>
         </form>
 
-        <!-- Filter Tags Row (exact replica of demo capture) -->
+        <!-- Filter Tags Row (Filtros Reales Funcionales) -->
         <div class="forensic-chips-row">
           <button type="button" class="f-chip active" id="chipAll" onclick="filterByChip('')">
             <span>Todos los eventos</span>
@@ -1373,11 +1412,8 @@
           <button type="button" class="f-chip" id="chipLastHour" onclick="searchPreset('personas de la última hora')">
             <span>Última hora ▾</span>
           </button>
-          <button type="button" class="f-chip tag-chip" onclick="searchPreset('entrada')">
-            <span>Entrada ✕</span>
-          </button>
-          <button type="button" class="f-chip tag-chip" onclick="searchPreset('pasillo')">
-            <span>Pasillo 3 ✕</span>
+          <button type="button" class="f-chip" onclick="searchPreset('en qué momento alguien movió un brazo')">
+            <span>Movimiento corporal</span>
           </button>
         </div>
 
@@ -1505,19 +1541,28 @@
         </div>
 
         <form id="addCameraForm" onsubmit="handleAddCamera(event)" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:1rem;">
-          <div style="font-size:0.85rem; font-weight:700; color:var(--accent-cyan); margin-bottom:0.75rem;">+ Vincular Cámara Cloud P2P</div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+          <div style="font-size:0.88rem; font-weight:700; color:var(--accent-cyan); margin-bottom:0.35rem;">+ Vincular Cámara o Grabador (100% Software • Cero Hardware)</div>
+          <p style="font-size:0.74rem; color:#94a3b8; margin-bottom:0.85rem; line-height:1.4;">
+            Conectá cualquier DVR/NVR existente o cámara IP (Dahua, Hikvision, etc.) mediante su stream RTSP directo o código de credencial.
+          </p>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem;">
             <div>
-              <label style="font-size:0.75rem; color:#94a3b8; display:block; margin-bottom:4px;">Nombre de la Cámara *</label>
-              <input type="text" id="camName" placeholder="Ej: Cámara 1: Entrada" required style="width:100%; background:#060b13; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:0.5rem; color:#fff; font-size:0.82rem;">
+              <label style="font-size:0.75rem; color:#e2e8f0; display:block; margin-bottom:4px;">Nombre del Canal / Cámara *</label>
+              <input type="text" id="camName" placeholder="Ej: Entrada Principal / Cochera" required style="width:100%; background:#060b13; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:0.55rem; color:#fff; font-size:0.82rem;">
             </div>
             <div>
-              <label style="font-size:0.75rem; color:#10b981; display:block; margin-bottom:4px; font-weight:700;">Safety Code *</label>
-              <input type="text" id="camSafetyCode" placeholder="Ej: BG-SEC-01" required style="width:100%; background:#060b13; border:1px solid rgba(16,185,129,0.3); border-radius:6px; padding:0.5rem; color:#10b981; font-weight:700; font-size:0.82rem; text-transform:uppercase;">
+              <label style="font-size:0.75rem; color:#e2e8f0; display:block; margin-bottom:4px;">Sector / Ubicación</label>
+              <input type="text" id="camLocation" placeholder="Ej: Acceso Calle / Interior" style="width:100%; background:#060b13; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:0.55rem; color:#fff; font-size:0.82rem;">
             </div>
           </div>
-          <div style="display:flex; justify-content:flex-end; margin-top:1rem;">
-            <button type="submit" class="btn-play-clip"><span>Vincular Inmediatamente</span></button>
+          <div style="margin-bottom:0.75rem;">
+            <label style="font-size:0.75rem; color:#38bdf8; display:block; margin-bottom:4px; font-weight:600;">Stream RTSP Directo (DVR/NVR/IP) o Safety Code *</label>
+            <input type="text" id="camRtspOrCode" placeholder="rtsp://admin:pass@ip-o-dominio:554/cam/realmonitor o Safety Code" required style="width:100%; background:#060b13; border:1px solid rgba(56,189,248,0.4); border-radius:6px; padding:0.55rem; color:#38bdf8; font-size:0.82rem; font-family:monospace;">
+            <span style="font-size:0.68rem; color:#64748b; margin-top:3px; display:block;">Compatible con cualquier DVR/NVR Dahua, Hikvision, IMOU, Ezviz y cámaras ONVIF.</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem;">
+            <span style="font-size:0.72rem; color:#10b981; font-weight:600;">● Procesamiento IA 24/7 en la nube</span>
+            <button type="submit" class="btn-play-clip"><span>Vincular Cámara Inmediatamente</span></button>
           </div>
         </form>
       </div>
@@ -1652,48 +1697,14 @@
       const container = document.getElementById('cameraTreeList');
       if (!container) return;
 
-      if (allCamerasList.length === 0) {
-        // Fallback with modern demo items
+      if (!allCamerasList || allCamerasList.length === 0) {
         container.innerHTML = `
-          <div class="cam-tree-node active">
-            <div class="cam-tree-header" onclick="focusCellCamera(0)">
-              <div class="cam-header-left">
-                <span class="cam-dot-pulse"></span>
-                <span>Edificio Principal</span>
-              </div>
-              <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+          <div class="sidebar-empty-state">
+            <div class="empty-icon-wrap">
+              <svg class="v-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
             </div>
-            <div class="cam-preview-box" onclick="focusCellCamera(0)">
-              <img class="cam-preview-img" src="/static/cam_feed_1.jpg" alt="Preview">
-              <span class="cam-preview-tag">ACTIVA</span>
-            </div>
-          </div>
-          <div class="cam-tree-node">
-            <div class="cam-tree-header" onclick="focusCellCamera(1)">
-              <div class="cam-header-left">
-                <span class="cam-dot-pulse"></span>
-                <span>Tienda Retail</span>
-              </div>
-              <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
-            </div>
-          </div>
-          <div class="cam-tree-node">
-            <div class="cam-tree-header" onclick="focusCellCamera(2)">
-              <div class="cam-header-left">
-                <span class="cam-dot-pulse"></span>
-                <span>Acceso Principal</span>
-              </div>
-              <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
-            </div>
-          </div>
-          <div class="cam-tree-node">
-            <div class="cam-tree-header" onclick="focusCellCamera(3)">
-              <div class="cam-header-left">
-                <span class="cam-dot-pulse"></span>
-                <span>Pasillo 3 Retail</span>
-              </div>
-              <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
-            </div>
+            <div class="empty-title">Sin cámaras vinculadas</div>
+            <div class="empty-desc">Conectá un stream RTSP o Safety Code para iniciar el monitoreo.</div>
           </div>
         `;
         return;
@@ -1712,7 +1723,7 @@
             </div>
             ${isSelected ? `
               <div class="cam-preview-box" onclick="focusCellCamera(${idx})">
-                <img class="cam-preview-img" src="/api/live?camera_id=${c.id}" alt="${escapeHtml(c.name)}" onerror="this.src='/static/platform_demo_capture.jpg';">
+                <img class="cam-preview-img" src="/api/live?camera_id=${c.id}" alt="${escapeHtml(c.name)}" onerror="this.style.opacity='0.5';">
                 <span class="cam-preview-tag">${escapeHtml(c.location || 'EN VIVO')}</span>
               </div>
             ` : ''}
@@ -1721,19 +1732,61 @@
       }).join('');
     }
 
-    function updateCellsWithCameras() {
-      if (allCamerasList.length > 0) {
-        const c1 = allCamerasList[0];
-        document.getElementById('cell1Title').innerHTML = `<span class="cam-dot-pulse"></span> ${escapeHtml(c1.name)}`;
-        const stream1 = document.getElementById('cell1StreamImg');
-        if (stream1) stream1.src = `/api/live?camera_id=${c1.id}`;
+    // RENDERIZADO DE CELDAS REALES Y SLOTS STANDBY (CERO IMÁGENES MOCK)
+    function renderGridCells() {
+      const container = document.getElementById('grid2x2View');
+      if (!container) return;
 
-        if (allCamerasList.length > 1) {
-          const c2 = allCamerasList[1];
-          document.getElementById('cell2Title').innerHTML = `<span class="cam-dot-pulse"></span> ${escapeHtml(c2.name)}`;
-          const stream2 = document.getElementById('cell2StreamImg');
-          if (stream2) stream2.src = `/api/live?camera_id=${c2.id}`;
+      let html = '';
+      for (let i = 0; i < 4; i++) {
+        const cam = allCamerasList && allCamerasList[i];
+        if (cam) {
+          const isSelected = i === currentFocusedCellIndex;
+          html += `
+            <div class="cam-cell ${isSelected ? 'active-focus' : ''}" id="cell_${i}" onclick="focusCellCamera(${i})">
+              <div class="cam-cell-header">
+                <span class="cam-cell-title">
+                  <span class="cam-dot-pulse"></span> ${escapeHtml(cam.name)}
+                </span>
+                <span class="cam-cell-time live-sync-time">--/--/---- --:--:--</span>
+              </div>
+              <img class="cam-cell-video" src="/api/live?camera_id=${cam.id}" alt="${escapeHtml(cam.name)}" onerror="this.style.opacity='0.4';">
+            </div>
+          `;
+        } else {
+          html += `
+            <div class="cam-cell standby" onclick="openCameraModal()">
+              <div class="standby-radar-ring"></div>
+              <div class="cam-cell-header" style="background:transparent; border:none;">
+                <span class="cam-cell-title" style="color:#64748b;">
+                  <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#475569;"></span>
+                  Canal ${i + 1}: Disponible
+                </span>
+              </div>
+              <div class="standby-icon-box">
+                <svg class="v-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              </div>
+              <div class="standby-title">Canal ${i + 1} en Espera</div>
+              <div class="standby-subtitle">Sin cámara asignada a este canal</div>
+              <button type="button" class="btn-standby-add" onclick="event.stopPropagation(); openCameraModal();">
+                <svg class="v-icon-sm" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                <span>Vincular Cámara</span>
+              </button>
+            </div>
+          `;
         }
+      }
+      container.innerHTML = html;
+      updateHUDTime();
+    }
+
+    function updateCellsWithCameras() {
+      renderGridCells();
+      if (allCamerasList && allCamerasList.length > 0) {
+        const activeCam = allCamerasList[currentFocusedCellIndex] || allCamerasList[0];
+        document.getElementById('singleCamTitle').innerHTML = `<span class="cam-dot-pulse"></span> ${escapeHtml(activeCam.name)} &bull; En Tiempo Real`;
+        const singleImg = document.getElementById('singleStreamImg');
+        if (singleImg) singleImg.src = `/api/live?camera_id=${activeCam.id}`;
       }
     }
 
@@ -1778,55 +1831,13 @@
       if (!container) return;
 
       if (!events || events.length === 0) {
-        // Fallback events matching demo capture if no server recordings exist yet
         container.innerHTML = `
-          <div class="timeline-item-row" onclick="openDemoClip('persona')">
-            <div class="timeline-node-dot"></div>
-            <div class="timeline-card">
-              <img class="timeline-thumb" src="/static/event_thumb_1.jpg" alt="Persona">
-              <div class="timeline-info">
-                <div class="timeline-classification">Persona Detectada</div>
-                <div class="timeline-cam-name">Modern Building Entrance</div>
-                <div class="timeline-timestamp">2026-10-31 15:59:30</div>
-              </div>
-              <div class="timeline-score-circle">96%</div>
+          <div class="timeline-empty-state">
+            <div class="empty-icon-wrap">
+              <svg class="v-icon" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
             </div>
-          </div>
-          <div class="timeline-item-row" onclick="openDemoClip('vehiculo')">
-            <div class="timeline-node-dot"></div>
-            <div class="timeline-card">
-              <img class="timeline-thumb" src="/static/event_thumb_2.jpg" alt="Vehículo">
-              <div class="timeline-info">
-                <div class="timeline-classification">Vehículo Detectado</div>
-                <div class="timeline-cam-name">Modern Building Entrance</div>
-                <div class="timeline-timestamp">2026-10-31 15:58:30</div>
-              </div>
-              <div class="timeline-score-circle">94%</div>
-            </div>
-          </div>
-          <div class="timeline-item-row" onclick="openDemoClip('persona')">
-            <div class="timeline-node-dot"></div>
-            <div class="timeline-card">
-              <img class="timeline-thumb" src="/static/event_thumb_3.jpg" alt="Persona">
-              <div class="timeline-info">
-                <div class="timeline-classification">Persona Detectada</div>
-                <div class="timeline-cam-name">Retail Store</div>
-                <div class="timeline-timestamp">2026-10-31 15:39:10</div>
-              </div>
-              <div class="timeline-score-circle">98%</div>
-            </div>
-          </div>
-          <div class="timeline-item-row" onclick="openDemoClip('vehiculo')">
-            <div class="timeline-node-dot"></div>
-            <div class="timeline-card">
-              <img class="timeline-thumb" src="/static/event_thumb_4.jpg" alt="Vehículo">
-              <div class="timeline-info">
-                <div class="timeline-classification">Vehículo Detectado</div>
-                <div class="timeline-cam-name">Entrada Cocheras</div>
-                <div class="timeline-timestamp">2026-10-31 14:22:15</div>
-              </div>
-              <div class="timeline-score-circle">91%</div>
-            </div>
+            <div class="empty-title">Sin eventos registrados</div>
+            <div class="empty-desc">Las filmaciones periciales con IA se registrarán en tiempo real cuando ocurran detecciones.</div>
           </div>
         `;
         return;
@@ -1840,7 +1851,7 @@
           <div class="timeline-item-row" onclick="openVideoModal('${ev.id}', '${ev.object_class}', '${timeFormatted}', '${ev.duration_seconds || 5}s')">
             <div class="timeline-node-dot"></div>
             <div class="timeline-card">
-              <img class="timeline-thumb" src="${ev.thumbnail_url || '/static/platform_demo_capture.jpg'}" alt="${ev.object_class}">
+              <img class="timeline-thumb" src="${ev.thumbnail_url || '/api/live'}" alt="${ev.object_class}">
               <div class="timeline-info">
                 <div class="timeline-classification">${clsLabel}</div>
                 <div class="timeline-cam-name">${escapeHtml(ev.camera_name || 'Cámara Principal')}</div>
@@ -2012,15 +2023,24 @@
     async function handleAddCamera(e) {
       e.preventDefault();
       const name = document.getElementById('camName').value.trim();
-      const safetyCode = document.getElementById('camSafetyCode').value.trim();
-      if (!name || !safetyCode) return;
+      const location = (document.getElementById('camLocation') ? document.getElementById('camLocation').value.trim() : '') || 'General';
+      const rtspOrCode = document.getElementById('camRtspOrCode').value.trim();
+      if (!name || !rtspOrCode) return;
+
+      const payload = { name, location };
+      if (rtspOrCode.toLowerCase().startsWith('rtsp://')) {
+        payload.rtsp_main = rtspOrCode;
+        payload.rtsp_sub = rtspOrCode;
+      } else {
+        payload.safety_code = rtspOrCode;
+      }
 
       try {
         const res = await fetch('/api/cameras', {
           method: 'POST',
           headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
           credentials: 'include',
-          body: JSON.stringify({ name, safety_code: safetyCode })
+          body: JSON.stringify(payload)
         });
         if (res.ok) {
           showToast(`Cámara "${name}" vinculada con éxito`);
